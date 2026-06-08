@@ -27,12 +27,15 @@ export default function ProfilePage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch('/api/auth/profile').then(r => r.json()).then(d => {
-      if (d.user) {
+    fetch('/api/auth/profile').then(r => {
+      if (r.status === 401) { window.location.href = '/login'; return null; }
+      return r.json();
+    }).then(d => {
+      if (d?.user) {
         setUser(d.user);
         setDisplayName(d.user.display_name || '');
       }
-    });
+    }).catch(() => {});
   }, []);
 
   const handleSaveProfile = async () => {
