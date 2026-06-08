@@ -20,22 +20,22 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 const navSections = [
   { section: null, sectionEn: null, items: [
-    { href: '/', icon: LayoutDashboard, label: 'nav.dashboard', labelEn: 'Dashboard' },
+    { href: '/', icon: LayoutDashboard, label: 'sidebar.dashboard', labelEn: 'Dashboard' },
   ]},
-  { section: 'section.infrastructure', sectionEn: 'INFRASTRUCTURE', items: [
-    { href: '/projects', icon: Package, label: 'nav.projects', labelEn: 'Projects' },
-    { href: '/deployments', icon: Rocket, label: 'nav.deployments', labelEn: 'Deployments' },
-    { href: '/domains', icon: Globe, label: 'nav.domains', labelEn: 'Domains' },
-    { href: '/relations', icon: GitBranch, label: 'nav.topology', labelEn: 'Topology' },
+  { section: 'sidebar.infrastructure', sectionEn: 'INFRASTRUCTURE', items: [
+    { href: '/projects', icon: Package, label: 'sidebar.projects', labelEn: 'Projects' },
+    { href: '/deployments', icon: Rocket, label: 'sidebar.deployments', labelEn: 'Deployments' },
+    { href: '/domains', icon: Globe, label: 'sidebar.domains', labelEn: 'Domains' },
+    { href: '/relations', icon: GitBranch, label: 'sidebar.topology', labelEn: 'Topology' },
   ]},
-  { section: 'section.integrations', sectionEn: 'INTEGRATIONS', items: [
+  { section: 'sidebar.integrations', sectionEn: 'INTEGRATIONS', items: [
     { href: '/github', icon: GitFork, label: 'GitHub', labelEn: 'GitHub' },
     { href: '/vercel', icon: Cloud, label: 'Vercel', labelEn: 'Vercel' },
-    { href: '/servers', icon: Server, label: 'nav.servers', labelEn: 'Servers' },
+    { href: '/servers', icon: Server, label: 'sidebar.servers', labelEn: 'Servers' },
   ]},
-  { section: 'section.operations', sectionEn: 'OPERATIONS', items: [
-    { href: '/logs', icon: Activity, label: 'nav.logs', labelEn: 'Logs' },
-    { href: '/settings', icon: Settings, label: 'nav.settings', labelEn: 'Settings' },
+  { section: 'sidebar.operations', sectionEn: 'OPERATIONS', items: [
+    { href: '/logs', icon: Activity, label: 'sidebar.logs', labelEn: 'Logs' },
+    { href: '/settings', icon: Settings, label: 'sidebar.settings', labelEn: 'Settings' },
   ]},
 ];
 
@@ -164,7 +164,7 @@ export default function Sidebar() {
                       onMouseOver={e => { if (!isActive) { e.currentTarget.style.background = s.bgHover; e.currentTarget.style.color = s.text; } }}
                       onMouseOut={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = s.textSec; } }}>
                       <Icon style={{ width: 22, height: 22, flexShrink: 0, strokeWidth: 2, color: isActive ? '#FFFFFF' : s.textMuted }} />
-                      <span style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>{t(label)}</span>
+                      <span style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>{label}</span>
                     </Link>
                   );
                 })}
