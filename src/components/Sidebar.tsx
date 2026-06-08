@@ -120,9 +120,9 @@ export default function Sidebar() {
         {/* ═══ Logo ═══ */}
         <div className="flex-shrink-0 flex items-center cursor-pointer"
           style={{
-            height: LOGO_H, padding: collapsed ? '0 20px' : '0 20px', gap: 14,
+            height: LOGO_H, padding: '0 16px', gap: collapsed ? 0 : 14,
             borderBottom: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-            justifyContent: collapsed ? 'center' : 'flex-start',
+            justifyContent: 'center',
             transition: 'padding 250ms ' + EASE,
           }}
           onClick={() => setCollapsed(!collapsed)}
@@ -138,7 +138,7 @@ export default function Sidebar() {
         </div>
 
         {/* ═══ Navigation ═══ */}
-        <nav className="flex-1 overflow-y-auto" style={{ padding: collapsed ? '12px 10px' : '12px 12px', transition: 'padding 250ms ' + EASE }}>
+        <nav className="flex-1 overflow-y-auto" style={{ padding: collapsed ? '12px 8px' : '12px 12px', transition: 'padding 250ms ' + EASE }}>
           {navSections.map((section, si) => (
             <div key={si} style={{ marginBottom: 20 }}>
               {/* Section Title */}
@@ -167,10 +167,11 @@ export default function Sidebar() {
                       onMouseEnter={() => setHoveredItem(item.href)}
                       onMouseLeave={() => setHoveredItem(null)}
                       style={{
-                        display: 'flex', alignItems: 'center', gap: 14,
+                        display: 'flex', alignItems: 'center',
                         height: MENU_H,
-                        padding: collapsed ? '0' : '0 14px',
+                        padding: collapsed ? 0 : '0 14px',
                         justifyContent: collapsed ? 'center' : 'flex-start',
+                        gap: collapsed ? 0 : 14,
                         borderRadius: 12,
                         fontSize: 13, fontWeight: isActive ? 600 : 500,
                         color: isActive
