@@ -94,18 +94,50 @@ body {
 
 /* 侧边栏收起状态引导动画 */
 @keyframes expandHint {
-  0%, 100% { transform: translateX(0); opacity: 0.4; }
-  50% { transform: translateX(3px); opacity: 1; }
+  0%, 100% { transform: translateX(0); opacity: 0.3; }
+  50% { transform: translateX(6px); opacity: 1; }
 }
 @keyframes logoGlow {
   0%, 100% { box-shadow: 0 0 0px rgba(99,102,241,0); }
-  50% { box-shadow: 0 0 12px rgba(99,102,241,0.4); }
+  50% { box-shadow: 0 0 16px rgba(99,102,241,0.5); }
+}
+@keyframes arrowBounce {
+  0%, 100% { transform: translateX(0) scale(1); opacity: 0.5; }
+  50% { transform: translateX(5px) scale(1.15); opacity: 1; }
+}
+@keyframes arrowTrail {
+  0% { opacity: 0; transform: translateX(-4px); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(8px); }
 }
 .sidebar-collapsed-arrow {
-  animation: expandHint 1.8s ease-in-out infinite;
+  animation: arrowBounce 1.5s ease-in-out infinite;
   color: #818CF8 !important;
 }
 .sidebar-collapsed-logo {
   animation: logoGlow 2.5s ease-in-out infinite;
   border-radius: 12px;
+}
+/* 侧边栏右侧边缘的引导箭头 */
+.sidebar-expand-hint {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, rgba(99,102,241,0.25), transparent);
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  z-index: 50;
+}
+.sidebar-expand-hint::after {
+  content: '›';
+  font-size: 16px;
+  font-weight: 700;
+  color: #818CF8;
+  animation: expandHint 1.5s ease-in-out infinite;
 }

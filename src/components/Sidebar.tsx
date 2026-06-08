@@ -43,9 +43,13 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`${collapsed ? 'w-[68px]' : 'w-[250px]'} flex flex-col flex-shrink-0 h-screen sticky top-0 transition-all duration-300`}
+      className={`${collapsed ? 'w-[68px]' : 'w-[250px]'} flex flex-col flex-shrink-0 h-screen sticky top-0 transition-all duration-300 relative`}
       style={{ background: 'var(--bg-surface)', borderRight: '1px solid var(--border)' }}
     >
+      {/* 收起状态：右侧边缘引导箭头 */}
+      {collapsed && (
+        <div className="sidebar-expand-hint" onClick={() => setCollapsed(false)} title="展开侧边栏" />
+      )}
       {/* Logo */}
       <div
         className="h-[72px] flex items-center px-5 gap-3 flex-shrink-0 cursor-pointer transition-colors"
