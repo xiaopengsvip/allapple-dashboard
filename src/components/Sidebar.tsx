@@ -214,13 +214,14 @@ export default function Sidebar() {
         {/* ═══ Footer ═══ */}
         <div className="flex-shrink-0" style={{
           borderTop: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-          padding: collapsed ? '12px 8px' : '12px 12px',
+          padding: collapsed ? '12px 8px' : '12px 14px',
           transition: 'padding 250ms ' + EASE,
         }}>
           {/* User */}
           <div style={{
-            display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 12, padding: collapsed ? '6px 0' : '6px 8px',
-            justifyContent: 'center',
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: collapsed ? '6px 0' : '6px 0',
+            justifyContent: collapsed ? 'center' : 'flex-start',
             borderRadius: 12, marginBottom: 8,
             cursor: 'pointer',
           }}
@@ -241,70 +242,63 @@ export default function Sidebar() {
             </div>
           </div>
 
-          {/* Divider */}
-          <div style={{ height: 1, background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', margin: '4px 0 8px' }} />
-
-          {/* Theme + Language */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <button onClick={toggleTheme}
-              style={{
-                display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 12, height: 36,
-                padding: 0, justifyContent: 'center',
-                borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer',
-                fontSize: 12, fontWeight: 500,
+          {/* Theme + Language (同一行) */}
+          {collapsed ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, marginBottom: 8 }}>
+              <button onClick={toggleTheme} style={{ padding: 8, borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer', color: theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280', transition: `all 150ms ${EASE}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                title={theme === 'dark' ? '浅色模式' : '深色模式'}>
+                {theme === 'dark' ? <Sun style={{ width: 18, height: 18 }} /> : <Moon style={{ width: 18, height: 18 }} />}
+              </button>
+              <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} style={{ padding: 8, borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer', color: theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280', transition: `all 150ms ${EASE}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                title={locale === 'zh' ? 'English' : '中文'}>
+                <Languages style={{ width: 18, height: 18 }} />
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+              <button onClick={toggleTheme} style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                height: 34, borderRadius: 10, border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                background: 'transparent', cursor: 'pointer', fontSize: 11, fontWeight: 500,
                 color: theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280',
-                transition: `background 150ms ${EASE}, color 150ms ${EASE}`,
-                width: '100%',
+                transition: `all 150ms ${EASE}`,
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; e.currentTarget.style.color = theme === 'dark' ? '#FFFFFF' : '#111827'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280'; }}
-            >
-              {theme === 'dark' ? <Sun style={{ width: 18, height: 18, flexShrink: 0 }} /> : <Moon style={{ width: 18, height: 18, flexShrink: 0 }} />}
-              <span style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
-                {theme === 'dark' ? '外观模式' : '外观模式'}
-              </span>
-            </button>
-            <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 12, height: 36,
-                padding: 0, justifyContent: 'center',
-                borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer',
-                fontSize: 12, fontWeight: 500,
+                onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor = theme === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'; }}
+              >
+                {theme === 'dark' ? <Sun style={{ width: 14, height: 14 }} /> : <Moon style={{ width: 14, height: 14 }} />}
+                <span>{theme === 'dark' ? '外观' : '外观'}</span>
+              </button>
+              <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                height: 34, borderRadius: 10, border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                background: 'transparent', cursor: 'pointer', fontSize: 11, fontWeight: 500,
                 color: theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280',
-                transition: `background 150ms ${EASE}, color 150ms ${EASE}`,
-                width: '100%',
+                transition: `all 150ms ${EASE}`,
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; e.currentTarget.style.color = theme === 'dark' ? '#FFFFFF' : '#111827'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280'; }}
-            >
-              <Languages style={{ width: 18, height: 18, flexShrink: 0 }} />
-              <span style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
-                {locale === 'zh' ? '中文' : 'English'}
-              </span>
-              {!collapsed && (
-                <span style={{
-                  fontSize: 10, padding: '2px 6px', borderRadius: 6,
-                  background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
-                  color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF',
-                  border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-                }}>{locale === 'zh' ? 'EN' : '中'}</span>
-              )}
-            </button>
-          </div>
-
-          {/* Divider */}
-          <div style={{ height: 1, background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', margin: '8px 0' }} />
+                onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor = theme === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'; }}
+              >
+                <Languages style={{ width: 14, height: 14 }} />
+                <span>{locale === 'zh' ? '中文' : 'EN'}</span>
+              </button>
+            </div>
+          )}
 
           {/* Version */}
-          <button onClick={() => setShowVersion(true)}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: '100%', padding: '4px 0', height: 32,
-              borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer',
-              fontSize: 10, fontFamily: 'monospace',
-              color: theme === 'dark' ? 'rgba(255,255,255,0.25)' : '#9CA3AF',
-              transition: `background 150ms ${EASE}, color 150ms ${EASE}`,
-            }}
+          <button onClick={() => setShowVersion(true)} style={{
+            display: 'flex', alignItems: 'center',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            gap: 8, width: '100%', padding: '4px 0', height: 28,
+            borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer',
+            fontSize: 10, fontFamily: 'var(--font-mono)',
+            color: theme === 'dark' ? 'rgba(255,255,255,0.25)' : '#9CA3AF',
+            transition: `background 150ms ${EASE}, color 150ms ${EASE}`,
+          }}
             onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.5)' : '#6B7280'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.25)' : '#9CA3AF'; }}
           >
