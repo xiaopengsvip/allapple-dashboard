@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Package, Globe, Rocket, GitBranch,
   GitFork, Cloud, Server, FileText, Settings, ChevronLeft,
   ChevronRight, Activity, Sun, Moon, Languages, LogOut,
-  CheckCircle2, Zap, Shield, Rocket, Code2, Palette
+  CheckCircle2, Zap, Shield, Code2, Palette
 } from 'lucide-react';
 
 const navItems = [
