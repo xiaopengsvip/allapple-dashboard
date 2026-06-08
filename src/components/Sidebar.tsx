@@ -36,6 +36,7 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [user, setUser] = useState<{ username: string; role: string } | null>(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(d => {
@@ -43,7 +44,11 @@ export default function Sidebar() {
     }).catch(() => {});
   }, [pathname]);
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/login');
   };
@@ -167,6 +172,37 @@ export default function Sidebar() {
           </div>
         )}
       </div>
+
+      {/* 退出确认弹窗 */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center" onClick={() => setShowLogoutConfirm(false)}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="relative rounded-2xl p-6 w-[320px] mx-4 animate-fade-up"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="text-center mb-5">
+              <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.1)' }}>
+                <LogOut className="w-6 h-6" style={{ color: '#EF4444' }} />
+              </div>
+              <h3 className="text-[15px] font-semibold text-white mb-1">确认退出</h3>
+              <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>退出后需要重新登录</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 py-2.5 rounded-xl text-[13px] font-medium transition-colors"
+                style={{ background: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+              >取消</button>
+              <button
+                onClick={confirmLogout}
+                className="flex-1 py-2.5 rounded-xl text-[13px] font-medium text-white transition-colors"
+                style={{ background: '#EF4444', boxShadow: '0 2px 8px rgba(239,68,68,0.3)' }}
+              >确认退出</button>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }
