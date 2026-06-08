@@ -31,7 +31,7 @@ export default function SettingsPage() {
 
   return (
     <AppShell>
-      <TopBar title="设置" titleEn="Settings" />
+      <TopBar title="设置" />
       <div className="p-6 max-w-2xl">
         <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl p-6">
           <div className="flex items-center gap-2 mb-6">

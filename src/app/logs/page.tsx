@@ -25,7 +25,7 @@ export default function LogsPage() {
 
   return (
     <AppShell>
-      <TopBar title="操作日志" titleEn="Logs" />
+      <TopBar title="操作日志" />
       <div className="p-6">
         <div className="flex items-center justify-between mb-5">
           <div className="text-sm text-[#71717a]">{logs.length} 条记录</div>

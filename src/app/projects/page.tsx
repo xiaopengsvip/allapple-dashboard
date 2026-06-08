@@ -43,7 +43,7 @@ export default function ProjectsPage() {
 
   return (
     <AppShell>
-      <TopBar title="项目管理" titleEn="Projects" />
+      <TopBar title="项目管理" />
       <div className="p-6">
         {/* Filters */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5">

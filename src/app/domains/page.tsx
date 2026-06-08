@@ -31,7 +31,7 @@ export default function DomainsPage() {
 
   return (
     <AppShell>
-      <TopBar title="域名管理" titleEn="Domains" />
+      <TopBar title="域名管理" />
       <div className="p-6">
         <div className="flex items-center gap-3 mb-5">
           <div className="flex gap-1.5">

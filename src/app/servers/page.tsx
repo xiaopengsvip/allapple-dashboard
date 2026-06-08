@@ -38,7 +38,7 @@ export default function ServersPage() {
 
   return (
     <AppShell>
-      <TopBar title="服务器管理" titleEn="Servers" />
+      <TopBar title="服务器管理" />
       <div className="p-6 space-y-6">
         {/* System Stats */}
         {stats && (

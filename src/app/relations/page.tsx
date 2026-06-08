@@ -15,7 +15,7 @@ export default function RelationsPage() {
 
   return (
     <AppShell>
-      <TopBar title="关联视图" titleEn="Relations" />
+      <TopBar title="关联视图" />
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* GitHub */}

@@ -26,7 +26,7 @@ export default function VercelPage() {
 
   return (
     <AppShell>
-      <TopBar title="Vercel 项目" titleEn="Vercel" />
+      <TopBar title="Vercel 项目" />
       <div className="p-6">
         <div className="flex items-center gap-3 mb-5">
           <div className="text-sm text-[#71717a]">{projects.length} 项目</div>

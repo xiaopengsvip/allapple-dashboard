@@ -26,7 +26,7 @@ export default function GitHubPage() {
 
   return (
     <AppShell>
-      <TopBar title="GitHub 仓库" titleEn="GitHub" />
+      <TopBar title="GitHub 仓库" />
       <div className="p-6">
         <div className="flex items-center gap-3 mb-5">
           <div className="text-sm text-[#71717a]">{repos.length} 仓库</div>

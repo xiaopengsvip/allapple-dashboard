@@ -24,7 +24,7 @@ export default function DeploymentsPage() {
 
   return (
     <AppShell>
-      <TopBar title="部署管理" titleEn="Deployments" />
+      <TopBar title="部署管理" />
       <div className="p-6">
         <div className="flex items-center justify-between mb-5">
           <div className="text-sm text-[#71717a]">所有项目的部署状态</div>
