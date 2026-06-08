@@ -3,88 +3,46 @@
 import { Search, Bell } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
 export default function TopBar({ title, subtitle }: { title: string; subtitle?: string }) {
   const [now, setNow] = useState(new Date());
-  const [hovered, setHovered] = useState<'bj' | 'utc' | null>(null);
-
-  useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
+  useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
 
   const weekDay = ['日', '一', '二', '三', '四', '五', '六'];
-
-  const fmtFull = (offset: number, prefix: string) => {
-    const d = new Date(now.getTime() + offset * 3600000);
-    const y = d.getUTCFullYear();
-    const mo = String(d.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(d.getUTCDate()).padStart(2, '0');
-    const w = weekDay[d.getUTCDay()];
-    const h = String(d.getUTCHours()).padStart(2, '0');
-    const mi = String(d.getUTCMinutes()).padStart(2, '0');
-    const s = String(d.getUTCSeconds()).padStart(2, '0');
-    return `${prefix} ${y}/${mo}/${day} 周${w} ${h}:${mi}:${s}`;
+  const fmtBJ = () => {
+    const bj = new Date(now.getTime() + 8 * 3600000);
+    return `${bj.getUTCFullYear()}/${String(bj.getUTCMonth() + 1).padStart(2, '0')}/${String(bj.getUTCDate()).padStart(2, '0')} 周${weekDay[bj.getUTCDay()]} ${String(bj.getUTCHours()).padStart(2, '0')}:${String(bj.getUTCMinutes()).padStart(2, '0')}:${String(bj.getUTCSeconds()).padStart(2, '0')}`;
   };
+  const fmtUTC = () => `UTC ${now.getUTCFullYear()}/${String(now.getUTCMonth() + 1).padStart(2, '0')}/${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
 
   return (
-    <header className="h-[72px] flex items-center px-6 gap-4 sticky top-0 z-40" style={{ background: 'var(--bg-root)', borderBottom: '1px solid var(--border)' }}>
-      <div className="min-w-0">
-        <h1 className="text-[20px] font-bold text-white tracking-tight">{title}</h1>
-        {subtitle && <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>}
+    <header style={{
+      height: 64, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 16,
+      position: 'sticky', top: 0, zIndex: 40,
+      background: 'var(--bg-root)', borderBottom: '1px solid var(--border)',
+    }}>
+      <div style={{ minWidth: 0 }}>
+        <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>{title}</h1>
+        {subtitle && <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{subtitle}</p>}
       </div>
-      <div className="flex-1" />
-      <div className="hidden lg:flex items-center w-[260px] px-3 py-2 rounded-xl cursor-pointer transition-colors"
-        style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-        <Search className="w-3.5 h-3.5 mr-2" style={{ color: 'var(--text-muted)' }} />
-        <span className="text-[12px] flex-1" style={{ color: 'var(--text-muted)' }}>搜索...</span>
-        <kbd className="text-[9px] px-1.5 py-0.5 rounded-md font-medium" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>⌘K</kbd>
+      <div style={{ flex: 1 }} />
+      <div className="hidden lg:flex" style={{
+        display: 'flex', alignItems: 'center', width: 240, padding: '6px 12px', borderRadius: 12,
+        background: 'var(--bg-card)', border: '1px solid var(--border)', cursor: 'pointer',
+      }}>
+        <Search style={{ width: 14, height: 14, marginRight: 8, color: 'var(--text-muted)' }} />
+        <span style={{ fontSize: 12, flex: 1, color: 'var(--text-muted)' }}>搜索...</span>
+        <kbd style={{ fontSize: 9, padding: '2px 6px', borderRadius: 5, background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)', fontWeight: 500 }}>⌘K</kbd>
       </div>
-      <div className="flex items-center gap-3 pl-4" style={{ borderLeft: '1px solid var(--border)' }}>
-        <div className="flex flex-col items-end gap-0.5 relative">
-          {/* 北京时间 */}
-          <span
-            className="text-[11px] font-mono font-medium cursor-default relative"
-            style={{ color: '#818CF8' }}
-            onMouseEnter={() => setHovered('bj')}
-            onMouseLeave={() => setHovered(null)}
-          >
-            {fmtFull(8, 'BJT')}
-            {/* 浮窗 */}
-            {hovered === 'bj' && (
-              <div className="absolute top-full right-0 mt-2 z-[9999] pointer-events-none">
-                <div className="rounded-xl px-4 py-3 whitespace-nowrap"
-                  style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
-                  <div className="text-[11px] font-semibold text-white mb-1">北京时间 (UTC+8)</div>
-                  <div className="text-[10px] font-mono" style={{ color: '#818CF8' }}>{fmtFull(8, '')}</div>
-                  <div className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>中国 · 新加坡 · 马来西亚</div>
-                </div>
-              </div>
-            )}
-          </span>
-          {/* UTC */}
-          <span
-            className="text-[10px] font-mono cursor-default relative"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={() => setHovered('utc')}
-            onMouseLeave={() => setHovered(null)}
-          >
-            {fmtFull(0, 'UTC')}
-            {/* 浮窗 */}
-            {hovered === 'utc' && (
-              <div className="absolute top-full right-0 mt-2 z-[9999] pointer-events-none">
-                <div className="rounded-xl px-4 py-3 whitespace-nowrap"
-                  style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
-                  <div className="text-[11px] font-semibold text-white mb-1">协调世界时 (UTC+0)</div>
-                  <div className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>{fmtFull(0, '')}</div>
-                  <div className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>伦敦 · 冰岛 · 西非</div>
-                </div>
-              </div>
-            )}
-          </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 16, borderLeft: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+          <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 500, color: '#4D7FFF' }}>{fmtBJ()}</span>
+          <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{fmtUTC()}</span>
         </div>
-        <button className="relative p-2 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}>
-          <Bell className="w-[18px] h-[18px]" />
-          <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full" style={{ background: 'var(--error)', boxShadow: '0 0 6px rgba(239,68,68,0.5)' }} />
+        <button style={{ position: 'relative', padding: 8, borderRadius: 10, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+          <Bell style={{ width: 18, height: 18 }} />
+          <div style={{ position: 'absolute', top: 6, right: 6, width: 7, height: 7, borderRadius: '50%', background: 'var(--error)', boxShadow: '0 0 6px rgba(239,68,68,0.5)' }} />
         </button>
       </div>
     </header>

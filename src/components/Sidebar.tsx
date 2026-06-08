@@ -111,7 +111,7 @@ export default function Sidebar() {
         className="flex flex-col flex-shrink-0 h-screen sticky top-0"
         style={{
           width: collapsed ? SIDEBAR_COLLAPSED_W : SIDEBAR_W,
-          background: theme === 'dark' ? '#0D1320' : '#FFFFFF',
+          background: theme === 'dark' ? 'var(--bg-surface)' : '#FFFFFF',
           borderRight: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
           transition: `width 250ms ${EASE}`,
           overflow: 'hidden',
@@ -177,7 +177,7 @@ export default function Sidebar() {
                           ? '#FFFFFF'
                           : theme === 'dark' ? 'rgba(255,255,255,0.6)' : '#6B7280',
                         background: isActive
-                          ? 'linear-gradient(135deg, #5B8CFF, #6C63FF)'
+                          ? 'linear-gradient(135deg, #4D7FFF, #675BFF)'
                           : 'transparent',
                         boxShadow: isActive ? '0 0 12px rgba(91,140,255,0.25)' : 'none',
                         cursor: 'pointer',
@@ -230,7 +230,7 @@ export default function Sidebar() {
               width: 32, height: 32, borderRadius: 10, flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 13, fontWeight: 700, color: '#FFFFFF',
-              background: 'linear-gradient(135deg, #5B8CFF, #6C63FF)',
+              background: 'linear-gradient(135deg, #4D7FFF, #675BFF)',
             }}>
               {user ? user.username[0].toUpperCase() : '?'}
             </div>
@@ -318,9 +318,9 @@ export default function Sidebar() {
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setShowLogout(false)}>
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} />
           <div className="relative w-full max-w-[400px] rounded-2xl overflow-hidden"
-            style={{ background: theme === 'dark' ? '#0D1320' : '#FFFFFF', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+            style={{ background: theme === 'dark' ? 'var(--bg-surface)' : '#FFFFFF', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
             onClick={e => e.stopPropagation()}>
-            <div style={{ height: 3, background: 'linear-gradient(90deg, #5B8CFF, #6C63FF)' }} />
+            <div style={{ height: 3, background: 'linear-gradient(90deg, #4D7FFF, #675BFF)' }} />
             <div className="p-8 pb-7 relative">
               <button onClick={() => setShowLogout(false)} className="absolute top-5 right-5 p-1.5 rounded-lg"
                 style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF', border: 'none', background: 'transparent', cursor: 'pointer' }}>
@@ -328,7 +328,7 @@ export default function Sidebar() {
               </button>
               <div className="flex justify-center mb-6">
                 <div style={{ width: 56, height: 56, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(91,140,255,0.1)' }}>
-                  <LogOut style={{ width: 28, height: 28, color: '#5B8CFF' }} />
+                  <LogOut style={{ width: 28, height: 28, color: '#4D7FFF' }} />
                 </div>
               </div>
               <div className="text-center mb-8">
@@ -351,9 +351,9 @@ export default function Sidebar() {
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setShowVersion(false)}>
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} />
           <div className="relative w-full max-w-[480px] rounded-2xl overflow-hidden"
-            style={{ background: theme === 'dark' ? '#0D1320' : '#FFFFFF', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+            style={{ background: theme === 'dark' ? 'var(--bg-surface)' : '#FFFFFF', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
             onClick={e => e.stopPropagation()}>
-            <div style={{ height: 3, background: 'linear-gradient(90deg, #5B8CFF, #6C63FF, #06B6D4)' }} />
+            <div style={{ height: 3, background: 'linear-gradient(90deg, #4D7FFF, #675BFF, #06B6D4)' }} />
             <div className="p-8 relative">
               <button onClick={() => setShowVersion(false)} className="absolute top-5 right-5 p-1.5 rounded-lg"
                 style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF', border: 'none', background: 'transparent', cursor: 'pointer' }}>
@@ -364,7 +364,7 @@ export default function Sidebar() {
                 <div>
                   <h2 style={{ fontSize: 18, fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#111827' }}>Everett Operations Center</h2>
                   <div className="flex items-center gap-2 mt-1">
-                    <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 6, fontFamily: 'monospace', background: 'rgba(91,140,255,0.12)', color: '#5B8CFF' }}>v1.0.0</span>
+                    <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 6, fontFamily: 'monospace', background: 'rgba(91,140,255,0.12)', color: '#4D7FFF' }}>v1.0.0</span>
                     <span style={{ fontSize: 11, color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF' }}>Build 2026.06</span>
                   </div>
                 </div>
@@ -394,7 +394,7 @@ export default function Sidebar() {
                 ].map((log, i) => (
                   <div key={i} style={{ padding: '10px 14px', borderRadius: 12, marginBottom: 8, background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
                     <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
-                      <span style={{ fontSize: 11, fontFamily: 'monospace', fontWeight: 600, color: '#5B8CFF' }}>{log.ver}</span>
+                      <span style={{ fontSize: 11, fontFamily: 'monospace', fontWeight: 600, color: '#4D7FFF' }}>{log.ver}</span>
                       <span style={{ fontSize: 10, color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF' }}>{log.date}</span>
                     </div>
                     <div style={{ fontSize: 12, color: theme === 'dark' ? 'rgba(255,255,255,0.8)' : '#374151' }}>{log.text}</div>
