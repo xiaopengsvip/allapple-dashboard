@@ -36,6 +36,7 @@ export default function Sidebar() {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [locale, setLocale] = useState<'zh' | 'en'>('zh');
   const [user, setUser] = useState<{ username: string; role: string } | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -158,6 +159,19 @@ export default function Sidebar() {
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               <span>{theme === 'dark' ? '浅色模式' : '深色模式'}</span>
+            </button>
+            {/* 语言切换 */}
+            <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')}
+              className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <Languages className="w-4 h-4" />
+              <span>{locale === 'zh' ? '中文' : 'English'}</span>
+              <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                {locale === 'zh' ? 'EN' : '中'}
+              </span>
             </button>
             {/* 版本 */}
             <div className="px-3 text-[10px]" style={{ color: 'var(--text-muted)' }}>
