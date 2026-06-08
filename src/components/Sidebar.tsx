@@ -2,36 +2,87 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  LayoutDashboard, Package, Globe, Rocket, GitBranch,
-  GitFork, Cloud, Server, FileText, Settings, ChevronLeft,
-  ChevronRight, Activity, Sun, Moon, Languages, LogOut,
-  CheckCircle2, Zap, Shield, Code2, Palette, X
+  LayoutDashboard, Package, Rocket, Globe, GitBranch,
+  GitFork, Cloud, Server, Activity, Settings,
+  ChevronLeft, ChevronRight, Sun, Moon, Languages,
+  LogOut, X
 } from 'lucide-react';
 
-const navItems = [
-  { section: null, items: [
-    { href: '/', icon: LayoutDashboard, label: '仪表盘' },
-  ]},
-  { section: '基础设施', items: [
-    { href: '/projects', icon: Package, label: '项目中心' },
-    { href: '/deployments', icon: Rocket, label: '部署中心' },
-    { href: '/domains', icon: Globe, label: '域名中心' },
-    { href: '/relations', icon: GitBranch, label: '拓扑视图' },
-  ]},
-  { section: '平台集成', items: [
-    { href: '/github', icon: GitFork, label: 'GitHub' },
-    { href: '/vercel', icon: Cloud, label: 'Vercel' },
-    { href: '/servers', icon: Server, label: '服务器' },
-  ]},
-  { section: '运维中心', items: [
-    { href: '/logs', icon: Activity, label: '日志中心' },
-    { href: '/settings', icon: Settings, label: '系统设置' },
-  ]},
+/* ─── Design Tokens ─── */
+const SIDEBAR_W = 280;
+const SIDEBAR_COLLAPSED_W = 72;
+const LOGO_H = 76;
+const MENU_H = 44;
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+const navSections = [
+  {
+    section: null,
+    items: [
+      { href: '/', icon: LayoutDashboard, label: '仪表盘', labelEn: 'Dashboard' },
+    ],
+  },
+  {
+    section: '基础设施',
+    sectionEn: 'INFRASTRUCTURE',
+    items: [
+      { href: '/projects', icon: Package, label: '项目中心', labelEn: 'Projects' },
+      { href: '/deployments', icon: Rocket, label: '部署中心', labelEn: 'Deployments' },
+      { href: '/domains', icon: Globe, label: '域名中心', labelEn: 'Domains' },
+      { href: '/relations', icon: GitBranch, label: '拓扑视图', labelEn: 'Topology' },
+    ],
+  },
+  {
+    section: '平台集成',
+    sectionEn: 'INTEGRATIONS',
+    items: [
+      { href: '/github', icon: GitFork, label: 'GitHub', labelEn: 'GitHub' },
+      { href: '/vercel', icon: Cloud, label: 'Vercel', labelEn: 'Vercel' },
+      { href: '/servers', icon: Server, label: '服务器', labelEn: 'Servers' },
+    ],
+  },
+  {
+    section: '运维中心',
+    sectionEn: 'OPERATIONS',
+    items: [
+      { href: '/logs', icon: Activity, label: '日志中心', labelEn: 'Logs' },
+      { href: '/settings', icon: Settings, label: '系统设置', labelEn: 'Settings' },
+    ],
+  },
 ];
 
+/* ─── Tooltip ─── */
+function Tooltip({ text, show, targetRef }: { text: string; show: boolean; targetRef: React.RefObject<HTMLElement | null> }) {
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  useEffect(() => {
+    if (show && targetRef.current) {
+      const rect = targetRef.current.getBoundingClientRect();
+      setPos({ top: rect.top + rect.height / 2 - 16, left: rect.right + 12 });
+    }
+  }, [show, targetRef]);
+  if (!show) return null;
+  return createPortal(
+    <div className="fixed z-[9999] px-2.5 py-1.5 rounded-lg text-[12px] font-medium whitespace-nowrap pointer-events-none"
+      style={{
+        top: pos.top, left: pos.left,
+        background: 'var(--bg-elevated)',
+        color: 'var(--text-primary)',
+        border: '1px solid var(--border)',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+        opacity: show ? 1 : 0,
+        transform: show ? 'translateX(0)' : 'translateX(-4px)',
+        transition: `opacity 150ms ${EASE}, transform 150ms ${EASE}`,
+      }}>
+      {text}
+    </div>,
+    document.body
+  );
+}
+
+/* ─── Main Sidebar ─── */
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -39,8 +90,10 @@ export default function Sidebar() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [locale, setLocale] = useState<'zh' | 'en'>('zh');
   const [user, setUser] = useState<{ username: string; role: string } | null>(null);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [showVersionInfo, setShowVersionInfo] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
+  const [showVersion, setShowVersion] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const hoverRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(d => {
@@ -48,266 +101,310 @@ export default function Sidebar() {
     }).catch(() => {});
   }, [pathname]);
 
-  const handleLogout = () => { setShowLogoutConfirm(true); };
+  const handleLogout = () => setShowLogout(true);
   const confirmLogout = async () => { await fetch('/api/auth/logout', { method: 'POST' }); router.push('/login'); };
-  const toggleTheme = () => { const next = theme === 'dark' ? 'light' : 'dark'; setTheme(next); document.documentElement.setAttribute('data-theme', next); };
+  const toggleTheme = () => { const n = theme === 'dark' ? 'light' : 'dark'; setTheme(n); document.documentElement.setAttribute('data-theme', n); };
 
   return (
-    <aside
-      className="flex flex-col flex-shrink-0 h-screen sticky top-0 relative overflow-hidden"
-      style={{
-        width: collapsed ? 68 : 250,
-        background: 'var(--bg-surface)',
-        borderRight: '1px solid var(--border)',
-        transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      }}
-    >
-      {/* Logo + 折叠按钮 */}
-      <div
-        className="h-[60px] flex items-center px-3 gap-2 flex-shrink-0 cursor-pointer"
-        style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}
-        onClick={() => setCollapsed(!collapsed)}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+    <>
+      <aside
+        className="flex flex-col flex-shrink-0 h-screen sticky top-0"
+        style={{
+          width: collapsed ? SIDEBAR_COLLAPSED_W : SIDEBAR_W,
+          background: theme === 'dark' ? '#0D1320' : '#FFFFFF',
+          borderRight: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+          transition: `width 250ms ${EASE}`,
+          overflow: 'hidden',
+        }}
       >
-        <img src="/logo-128.png" alt="EOC"
-          className="w-8 h-8 rounded-lg flex-shrink-0"
-          style={{ transition: 'all 0.3s', ...(collapsed ? { animation: 'logoGlow 2.5s ease-in-out infinite' } : {}) }}
-        />
-        <div className="flex-1 min-w-0 overflow-hidden" style={{ opacity: collapsed ? 0 : 1, maxWidth: collapsed ? 0 : 200, transition: 'opacity 0.2s, max-width 0.3s' }}>
-          <div className="text-[14px] font-bold text-white tracking-tight whitespace-nowrap">EOC</div>
-          <div className="text-[9px] whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>Operations Center</div>
-        </div>
-        <div className="flex-shrink-0">
-          <ChevronRight className="w-4 h-4"
-            style={{
-              transition: 'transform 0.3s',
-              transform: collapsed ? 'rotate(0)' : 'rotate(180deg)',
-              color: collapsed ? '#818CF8' : 'var(--text-muted)',
-              animation: collapsed ? 'arrowBounce 1.5s ease-in-out infinite' : 'none',
-            }} />
-        </div>
-      </div>
-
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3">
-        {navItems.map((section, si) => (
-          <div key={si} className="mb-5">
-            <div className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest whitespace-nowrap"
-              style={{ color: 'var(--text-muted)', opacity: collapsed ? 0 : 1, height: collapsed ? 0 : 'auto', marginBottom: collapsed ? 0 : undefined, transition: 'opacity 0.2s, height 0.3s, margin 0.3s', overflow: 'hidden' }}>
-              {section.section}
-            </div>
-            <div className="space-y-1">
-              {section.items.map((item) => {
-                const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium whitespace-nowrap"
-                    style={{
-                      color: isActive ? '#fff' : 'var(--text-secondary)',
-                      background: isActive ? 'var(--accent-gradient)' : 'transparent',
-                      boxShadow: isActive ? '0 2px 8px rgba(99,102,241,0.3)' : 'none',
-                      transition: 'background 0.15s, color 0.15s, box-shadow 0.15s',
-                    }}
-                    onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-primary)'; } }}
-                    onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; } }}
-                  >
-                    <Icon className="w-[18px] h-[18px] flex-shrink-0" style={{ color: isActive ? '#fff' : 'var(--text-muted)' }} />
-                    <span className="overflow-hidden" style={{ opacity: collapsed ? 0 : 1, maxWidth: collapsed ? 0 : 200, transition: 'opacity 0.2s, max-width 0.3s', whiteSpace: 'nowrap' }}>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
+        {/* ═══ Logo ═══ */}
+        <div className="flex-shrink-0 flex items-center cursor-pointer"
+          style={{
+            height: LOGO_H, padding: collapsed ? '0 20px' : '0 20px', gap: 14,
+            borderBottom: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            transition: 'padding 250ms ' + EASE,
+          }}
+          onClick={() => setCollapsed(!collapsed)}
+          onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+        >
+          <img src="/logo-128.png" alt="EOC" className="flex-shrink-0"
+            style={{ width: 36, height: 36, borderRadius: 10 }} />
+          <div style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#111827', letterSpacing: '-0.02em' }}>EOC</div>
+            <div style={{ fontSize: 10, color: theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF', marginTop: 1 }}>Everett Operations Center</div>
           </div>
-        ))}
-      </nav>
+        </div>
 
-      {/* Footer */}
-      <div className="flex-shrink-0" style={{ borderTop: '1px solid var(--border)' }}>
-        <div>
-          {/* 展开状态 */}
-          <div className="px-3 pb-4 pt-3 space-y-1"
-            style={{ opacity: collapsed ? 0 : 1, pointerEvents: collapsed ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
-            <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ background: 'var(--accent-gradient)' }}>
-                {user ? user.username[0].toUpperCase() : '?'}
+        {/* ═══ Navigation ═══ */}
+        <nav className="flex-1 overflow-y-auto" style={{ padding: collapsed ? '12px 10px' : '12px 12px', transition: 'padding 250ms ' + EASE }}>
+          {navSections.map((section, si) => (
+            <div key={si} style={{ marginBottom: 20 }}>
+              {/* Section Title */}
+              {section.section && (
+                <div style={{
+                  fontSize: 12, fontWeight: 600, letterSpacing: 1,
+                  color: theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF',
+                  padding: collapsed ? '0 0 8px' : '0 12px 8px',
+                  textAlign: collapsed ? 'center' : 'left',
+                  opacity: collapsed ? 0 : 1, height: collapsed ? 0 : 'auto', overflow: 'hidden',
+                  transition: `opacity 200ms ${EASE}, height 250ms ${EASE}, padding 250ms ${EASE}`,
+                  textTransform: 'uppercase' as const,
+                }}>
+                  {locale === 'zh' ? section.section : section.sectionEn}
+                </div>
+              )}
+              {/* Items */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {section.items.map((item) => {
+                  const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+                  const Icon = item.icon;
+                  const label = locale === 'zh' ? item.label : item.labelEn;
+                  return (
+                    <Link key={item.href} href={item.href}
+                      ref={el => { hoverRefs.current[item.href] = el; }}
+                      onMouseEnter={() => setHoveredItem(item.href)}
+                      onMouseLeave={() => setHoveredItem(null)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 14,
+                        height: MENU_H,
+                        padding: collapsed ? '0' : '0 14px',
+                        justifyContent: collapsed ? 'center' : 'flex-start',
+                        borderRadius: 12,
+                        fontSize: 13, fontWeight: isActive ? 600 : 500,
+                        color: isActive
+                          ? '#FFFFFF'
+                          : theme === 'dark' ? 'rgba(255,255,255,0.6)' : '#6B7280',
+                        background: isActive
+                          ? 'linear-gradient(135deg, #5B8CFF, #6C63FF)'
+                          : 'transparent',
+                        boxShadow: isActive ? '0 0 12px rgba(91,140,255,0.25)' : 'none',
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        transition: `background 150ms ${EASE}, color 150ms ${EASE}, box-shadow 150ms ${EASE}`,
+                      }}
+                      onMouseOver={e => {
+                        if (!isActive) {
+                          e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
+                          e.currentTarget.style.color = theme === 'dark' ? '#FFFFFF' : '#111827';
+                        }
+                      }}
+                      onMouseOut={e => {
+                        if (!isActive) {
+                          e.currentTarget.style.background = 'transparent';
+                          e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.6)' : '#6B7280';
+                        }
+                      }}
+                    >
+                      <Icon style={{ width: 22, height: 22, flexShrink: 0, strokeWidth: 2, color: isActive ? '#FFFFFF' : theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }} />
+                      <span style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>{label}</span>
+                      <Tooltip text={label} show={collapsed && hoveredItem === item.href} targetRef={{ current: hoverRefs.current[item.href] }} />
+                    </Link>
+                  );
+                })}
               </div>
-              <div className="flex-1 min-w-0 overflow-hidden">
-                <div className="text-[12px] font-medium text-white truncate">{user?.username || '未登录'}</div>
-                <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{user?.role || '—'}</div>
-              </div>
-              <button onClick={handleLogout} className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'var(--error)'; e.currentTarget.style.background = 'var(--bg-card)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
-                title="退出登录"><LogOut className="w-3.5 h-3.5" /></button>
             </div>
-            <button onClick={toggleTheme} className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors" style={{ color: 'var(--text-secondary)' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              <span>{theme === 'dark' ? '浅色模式' : '深色模式'}</span>
-            </button>
-            <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors" style={{ color: 'var(--text-secondary)' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
-              <Languages className="w-4 h-4" />
-              <span>{locale === 'zh' ? '中文' : 'English'}</span>
-              <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>{locale === 'zh' ? 'EN' : '中'}</span>
-            </button>
-            <button onClick={() => setShowVersionInfo(true)} className="flex items-center justify-between w-full px-3 py-2 rounded-xl text-[10px] transition-colors" style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
-              <span>v1.0.0 · 2026-06-09</span>
-              <ChevronRight className="w-3 h-3" />
-            </button>
-          </div>
-          {/* 收起状态 */}
-          <div className="py-3 space-y-1.5 flex flex-col items-center"
-            style={{ opacity: collapsed ? 1 : 0, pointerEvents: collapsed ? 'auto' : 'none', transition: 'opacity 0.2s 0.1s' }}>
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: 'var(--accent-gradient)' }}>
+          ))}
+        </nav>
+
+        {/* ═══ Footer ═══ */}
+        <div className="flex-shrink-0" style={{
+          borderTop: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+          padding: collapsed ? '12px 10px' : '12px 12px',
+          transition: 'padding 250ms ' + EASE,
+        }}>
+          {/* User */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12, padding: collapsed ? '6px 0' : '6px 8px',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            borderRadius: 12, marginBottom: 8,
+            cursor: 'pointer',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            <div style={{
+              width: 32, height: 32, borderRadius: 10, flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 13, fontWeight: 700, color: '#FFFFFF',
+              background: 'linear-gradient(135deg, #5B8CFF, #6C63FF)',
+            }}>
               {user ? user.username[0].toUpperCase() : '?'}
             </div>
-            <button onClick={toggleTheme} className="p-2 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-              title={theme === 'dark' ? '浅色模式' : '深色模式'}>
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-            <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} className="p-2 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-              title={locale === 'zh' ? 'English' : '中文'}>
-              <Languages className="w-4 h-4" />
-            </button>
-            <button onClick={() => setShowVersionInfo(true)} className="p-2 rounded-lg transition-colors text-[9px] font-mono" style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-              title="v1.0.0">v1</button>
+            <div style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: theme === 'dark' ? '#FFFFFF' : '#111827' }}>{user?.username || '未登录'}</div>
+              <div style={{ fontSize: 11, color: theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF', marginTop: 1 }}>{user?.role || '—'}</div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* 退出确认弹窗 */}
-      {showLogoutConfirm && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setShowLogoutConfirm(false)}>
-          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)' }} />
+          {/* Divider */}
+          <div style={{ height: 1, background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', margin: '4px 0 8px' }} />
+
+          {/* Theme + Language */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <button onClick={toggleTheme}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 12, height: 36,
+                padding: collapsed ? '0' : '0 10px', justifyContent: collapsed ? 'center' : 'flex-start',
+                borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer',
+                fontSize: 12, fontWeight: 500,
+                color: theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280',
+                transition: `background 150ms ${EASE}, color 150ms ${EASE}`,
+                width: '100%',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; e.currentTarget.style.color = theme === 'dark' ? '#FFFFFF' : '#111827'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280'; }}
+            >
+              {theme === 'dark' ? <Sun style={{ width: 18, height: 18, flexShrink: 0 }} /> : <Moon style={{ width: 18, height: 18, flexShrink: 0 }} />}
+              <span style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
+                {theme === 'dark' ? '外观模式' : '外观模式'}
+              </span>
+            </button>
+            <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 12, height: 36,
+                padding: collapsed ? '0' : '0 10px', justifyContent: collapsed ? 'center' : 'flex-start',
+                borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer',
+                fontSize: 12, fontWeight: 500,
+                color: theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280',
+                transition: `background 150ms ${EASE}, color 150ms ${EASE}`,
+                width: '100%',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; e.currentTarget.style.color = theme === 'dark' ? '#FFFFFF' : '#111827'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280'; }}
+            >
+              <Languages style={{ width: 18, height: 18, flexShrink: 0 }} />
+              <span style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
+                {locale === 'zh' ? '中文' : 'English'}
+              </span>
+              {!collapsed && (
+                <span style={{
+                  fontSize: 10, padding: '2px 6px', borderRadius: 6,
+                  background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                  color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF',
+                  border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                }}>{locale === 'zh' ? 'EN' : '中'}</span>
+              )}
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div style={{ height: 1, background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', margin: '8px 0' }} />
+
+          {/* Version */}
+          <button onClick={() => setShowVersion(true)}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between',
+              width: '100%', padding: collapsed ? '4px 0' : '4px 10px', height: 32,
+              borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer',
+              fontSize: 10, fontFamily: 'monospace',
+              color: theme === 'dark' ? 'rgba(255,255,255,0.25)' : '#9CA3AF',
+              transition: `background 150ms ${EASE}, color 150ms ${EASE}`,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.5)' : '#6B7280'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.25)' : '#9CA3AF'; }}
+          >
+            <span>v1.0.0</span>
+            {!collapsed && <span>Build 2026.06</span>}
+          </button>
+        </div>
+      </aside>
+
+      {/* ═══ Logout Modal ═══ */}
+      {showLogout && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setShowLogout(false)}>
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} />
           <div className="relative w-full max-w-[400px] rounded-2xl overflow-hidden"
-            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 16px 64px rgba(0,0,0,0.6)' }}
+            style={{ background: theme === 'dark' ? '#0D1320' : '#FFFFFF', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
             onClick={e => e.stopPropagation()}>
-            <div className="h-[3px]" style={{ background: 'linear-gradient(90deg, #EF4444, #F59E0B)' }} />
+            <div style={{ height: 3, background: 'linear-gradient(90deg, #5B8CFF, #6C63FF)' }} />
             <div className="p-8 pb-7 relative">
-              <button onClick={() => setShowLogoutConfirm(false)} className="absolute top-4 right-4 p-1.5 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
-                <X className="w-4 h-4" />
+              <button onClick={() => setShowLogout(false)} className="absolute top-5 right-5 p-1.5 rounded-lg"
+                style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF', border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                <X style={{ width: 18, height: 18 }} />
               </button>
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.12)' }}>
-                  <LogOut className="w-8 h-8" style={{ color: '#EF4444' }} />
+                <div style={{ width: 56, height: 56, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(91,140,255,0.1)' }}>
+                  <LogOut style={{ width: 28, height: 28, color: '#5B8CFF' }} />
                 </div>
               </div>
               <div className="text-center mb-8">
-                <h3 className="text-[18px] font-bold text-white mb-3">确认退出</h3>
-                <p className="text-[13px] leading-relaxed max-w-[280px] mx-auto" style={{ color: 'var(--text-muted)' }}>退出后将清除登录状态，需要重新输入密码登录</p>
-              </div>
-              <div className="flex items-center gap-3.5 px-4 py-3.5 rounded-xl mb-8" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white flex-shrink-0" style={{ background: 'var(--accent-gradient)' }}>
-                  {user ? user.username[0].toUpperCase() : '?'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-medium text-white">{user?.username || '—'}</div>
-                  <div className="text-[11px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{user?.role || '—'}</div>
-                </div>
-                <div className="w-2 h-2 rounded-full" style={{ background: '#10B981', boxShadow: '0 0 6px rgba(16,185,129,0.5)' }} />
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#111827', marginBottom: 8 }}>确认退出</h3>
+                <p style={{ fontSize: 13, color: theme === 'dark' ? 'rgba(255,255,255,0.45)' : '#6B7280', lineHeight: 1.6 }}>退出后将清除登录状态，需要重新输入密码登录</p>
               </div>
               <div className="flex gap-3">
-                <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 py-3.5 rounded-xl text-[13px] font-semibold transition-all duration-200"
-                  style={{ background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}>取消</button>
-                <button onClick={confirmLogout} className="flex-1 py-3.5 rounded-xl text-[13px] font-semibold text-white transition-all duration-200"
-                  style={{ background: 'linear-gradient(135deg, #DC2626, #EF4444)', boxShadow: '0 4px 16px rgba(239,68,68,0.2)' }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 24px rgba(239,68,68,0.35)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(239,68,68,0.2)'; }}>确认退出</button>
+                <button onClick={() => setShowLogout(false)} className="flex-1 py-3 rounded-xl text-[13px] font-semibold"
+                  style={{ background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', color: theme === 'dark' ? 'rgba(255,255,255,0.7)' : '#6B7280', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, cursor: 'pointer' }}>取消</button>
+                <button onClick={confirmLogout} className="flex-1 py-3 rounded-xl text-[13px] font-semibold text-white"
+                  style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)', border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(239,68,68,0.2)' }}>确认退出</button>
               </div>
             </div>
           </div>
         </div>, document.body
       )}
 
-      {/* 版本信息弹窗 */}
-      {showVersionInfo && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setShowVersionInfo(false)}>
-          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)' }} />
+      {/* ═══ Version Modal ═══ */}
+      {showVersion && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setShowVersion(false)}>
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} />
           <div className="relative w-full max-w-[480px] rounded-2xl overflow-hidden"
-            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 16px 64px rgba(0,0,0,0.6)' }}
+            style={{ background: theme === 'dark' ? '#0D1320' : '#FFFFFF', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
             onClick={e => e.stopPropagation()}>
-            <div className="h-[3px]" style={{ background: 'linear-gradient(90deg, #4F46E5, #7C3AED, #06B6D4)' }} />
+            <div style={{ height: 3, background: 'linear-gradient(90deg, #5B8CFF, #6C63FF, #06B6D4)' }} />
             <div className="p-8 relative">
-              <button onClick={() => setShowVersionInfo(false)} className="absolute top-4 right-4 p-1.5 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
-                <X className="w-4 h-4" />
+              <button onClick={() => setShowVersion(false)} className="absolute top-5 right-5 p-1.5 rounded-lg"
+                style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF', border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                <X style={{ width: 18, height: 18 }} />
               </button>
               <div className="flex items-center gap-4 mb-6">
-                <img src="/logo-128.png" alt="EOC" className="w-14 h-14 rounded-2xl" />
+                <img src="/logo-128.png" alt="EOC" style={{ width: 52, height: 52, borderRadius: 14 }} />
                 <div>
-                  <h2 className="text-[18px] font-bold text-white">Everett Operations Center</h2>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#111827' }}>Everett Operations Center</h2>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[12px] px-2 py-0.5 rounded-md font-mono" style={{ background: 'var(--accent-soft)', color: '#818CF8' }}>v1.0.0</span>
-                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>2026-06-09</span>
+                    <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 6, fontFamily: 'monospace', background: 'rgba(91,140,255,0.12)', color: '#5B8CFF' }}>v1.0.0</span>
+                    <span style={{ fontSize: 11, color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF' }}>Build 2026.06</span>
                   </div>
                 </div>
               </div>
-              <div className="mb-6">
-                <h3 className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>功能亮点</h3>
-                <div className="grid grid-cols-2 gap-2.5">
+              <div style={{ marginBottom: 24 }}>
+                <h3 style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' as const, color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF', marginBottom: 12 }}>功能亮点</h3>
+                <div className="grid grid-cols-2" style={{ gap: 10 }}>
                   {[
                     { icon: Package, text: '20 个项目统一管理', color: '#06B6D4' },
                     { icon: Globe, text: '77 条 DNS 记录', color: '#A78BFA' },
                     { icon: Server, text: '7 个 PM2 进程监控', color: '#10B981' },
                     { icon: GitFork, text: '33 个 GitHub 仓库', color: '#F59E0B' },
-                    { icon: Shield, text: 'JWT 安全认证', color: '#6366F1' },
-                    { icon: Palette, text: '深色/浅色主题', color: '#818CF8' },
                   ].map((f, i) => (
-                    <div key={i} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                      <f.icon className="w-4 h-4 flex-shrink-0" style={{ color: f.color }} />
-                      <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>{f.text}</span>
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
+                      <f.icon style={{ width: 16, height: 16, flexShrink: 0, color: f.color }} />
+                      <span style={{ fontSize: 11, color: theme === 'dark' ? 'rgba(255,255,255,0.6)' : '#6B7280' }}>{f.text}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="mb-6">
-                <h3 className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>更新日志</h3>
-                <div className="space-y-2.5">
-                  {[
-                    { ver: 'v1.0.0', date: '2026-06-09', text: '首次发布 — 完整运维控制中心', tags: ['仪表盘', '项目管理', '域名', 'PM2', '认证'] },
-                    { ver: 'v0.9.0', date: '2026-06-08', text: 'UI 重设计 — 匹配 lyy.allapple.top 风格', tags: ['深色主题', '圆角卡片', '渐变侧边栏'] },
-                    { ver: 'v0.8.0', date: '2026-06-08', text: '登录系统 + 账号管理 + 退出确认', tags: ['JWT', '粒子背景', '二次确认'] },
-                  ].map((log, i) => (
-                    <div key={i} className="px-4 py-3 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className="text-[11px] font-mono font-semibold" style={{ color: '#818CF8' }}>{log.ver}</span>
-                        <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{log.date}</span>
-                      </div>
-                      <div className="text-[12px] text-white mb-2">{log.text}</div>
-                      <div className="flex flex-wrap gap-1">{log.tags.map(t => <span key={t} className="text-[9px] px-1.5 py-0.5 rounded-md" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>{t}</span>)}</div>
+              <div>
+                <h3 style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' as const, color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF', marginBottom: 12 }}>更新日志</h3>
+                {[
+                  { ver: 'v1.0.0', date: '2026-06-09', text: '首次发布 — 完整运维控制中心' },
+                  { ver: 'v0.9.0', date: '2026-06-08', text: 'UI 重设计 — Liquid Glass 风格' },
+                  { ver: 'v0.8.0', date: '2026-06-08', text: '登录系统 + 账号管理' },
+                ].map((log, i) => (
+                  <div key={i} style={{ padding: '10px 14px', borderRadius: 12, marginBottom: 8, background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
+                    <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
+                      <span style={{ fontSize: 11, fontFamily: 'monospace', fontWeight: 600, color: '#5B8CFF' }}>{log.ver}</span>
+                      <span style={{ fontSize: 10, color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF' }}>{log.date}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                {['Next.js 16', 'Tailwind v4', 'SQLite', 'JWT', 'TypeScript', 'PM2', 'Inter'].map(t => (
-                  <span key={t} className="text-[9px] px-2 py-0.5 rounded-full" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>{t}</span>
+                    <div style={{ fontSize: 12, color: theme === 'dark' ? 'rgba(255,255,255,0.8)' : '#374151' }}>{log.text}</div>
+                  </div>
                 ))}
               </div>
             </div>
           </div>
         </div>, document.body
       )}
-    </aside>
+    </>
   );
 }
