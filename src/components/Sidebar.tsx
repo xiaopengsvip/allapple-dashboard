@@ -324,30 +324,61 @@ export default function Sidebar() {
       {/* ═══ Logout Modal ═══ */}
       {showLogout && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setShowLogout(false)}>
-          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} />
-          <div className="relative w-full max-w-[400px] rounded-2xl overflow-hidden"
-            style={{ background: theme === 'dark' ? 'var(--bg-surface)' : '#FFFFFF', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
-            onClick={e => e.stopPropagation()}>
-            <div style={{ height: 3, background: 'linear-gradient(90deg, #4D7FFF, #675BFF)' }} />
-            <div className="p-8 pb-7 relative">
-              <button onClick={() => setShowLogout(false)} className="absolute top-5 right-5 p-1.5 rounded-lg"
-                style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF', border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                <X style={{ width: 18, height: 18 }} />
-              </button>
-              <div className="flex justify-center mb-6">
-                <div style={{ width: 56, height: 56, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(91,140,255,0.1)' }}>
-                  <LogOut style={{ width: 28, height: 28, color: '#4D7FFF' }} />
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)' }} />
+          <div className="relative w-full max-w-[420px]" style={{
+            background: theme === 'dark' ? '#0D1320' : '#FFFFFF',
+            borderRadius: 24,
+            border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+            boxShadow: '0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03)',
+            overflow: 'hidden',
+          }} onClick={e => e.stopPropagation()}>
+            {/* Close */}
+            <button onClick={() => setShowLogout(false)} style={{ position: 'absolute', top: 16, right: 16, padding: 8, borderRadius: 10, background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', border: 'none', cursor: 'pointer', color: theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF', transition: `all 150ms ${EASE}`, zIndex: 1 }}
+              onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'; e.currentTarget.style.color = theme === 'dark' ? '#FFFFFF' : '#111827'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF'; }}>
+              <X style={{ width: 16, height: 16 }} />
+            </button>
+            <div style={{ padding: '40px 36px 36px' }}>
+              {/* Icon */}
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+                <div style={{ width: 64, height: 64, borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', background: theme === 'dark' ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${theme === 'dark' ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.1)'}` }}>
+                  <LogOut style={{ width: 28, height: 28, color: '#EF4444' }} />
                 </div>
               </div>
-              <div className="text-center mb-8">
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#111827', marginBottom: 8 }}>确认退出</h3>
-                <p style={{ fontSize: 13, color: theme === 'dark' ? 'rgba(255,255,255,0.45)' : '#6B7280', lineHeight: 1.6 }}>退出后将清除登录状态，需要重新输入密码登录</p>
+              {/* Text */}
+              <div style={{ textAlign: 'center', marginBottom: 28 }}>
+                <h3 style={{ fontSize: 20, fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#111827', marginBottom: 10, letterSpacing: '-0.02em' }}>确认退出</h3>
+                <p style={{ fontSize: 14, color: theme === 'dark' ? 'rgba(255,255,255,0.45)' : '#6B7280', lineHeight: 1.6 }}>退出后将清除登录状态<br />需要重新输入密码登录</p>
               </div>
-              <div className="flex gap-3">
-                <button onClick={() => setShowLogout(false)} className="flex-1 py-3 rounded-xl text-[13px] font-semibold"
-                  style={{ background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', color: theme === 'dark' ? 'rgba(255,255,255,0.7)' : '#6B7280', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, cursor: 'pointer' }}>取消</button>
-                <button onClick={confirmLogout} className="flex-1 py-3 rounded-xl text-[13px] font-semibold text-white"
-                  style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)', border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(239,68,68,0.2)' }}>确认退出</button>
+              {/* User Card */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 14, background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`, marginBottom: 28 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#FFFFFF', background: 'linear-gradient(135deg, #4D7FFF, #675BFF)', flexShrink: 0 }}>
+                  {user ? user.username[0].toUpperCase() : '?'}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: theme === 'dark' ? '#FFFFFF' : '#111827' }}>{user?.username || '—'}</div>
+                  <div style={{ fontSize: 12, color: theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF', marginTop: 2 }}>{user?.role || '—'}</div>
+                </div>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px rgba(16,185,129,0.4)' }} />
+              </div>
+              {/* Buttons */}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={() => setShowLogout(false)} style={{
+                  flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14, fontWeight: 600,
+                  background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                  color: theme === 'dark' ? 'rgba(255,255,255,0.7)' : '#6B7280',
+                  border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                  cursor: 'pointer', transition: `all 150ms ${EASE}`,
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.07)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'; }}>取消</button>
+                <button onClick={confirmLogout} style={{
+                  flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+                  background: 'linear-gradient(135deg, #EF4444, #DC2626)', border: 'none', cursor: 'pointer',
+                  boxShadow: '0 4px 20px rgba(239,68,68,0.25)', transition: `all 150ms ${EASE}`,
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 28px rgba(239,68,68,0.4)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(239,68,68,0.25)'; e.currentTarget.style.transform = 'translateY(0)'; }}>确认退出</button>
               </div>
             </div>
           </div>
@@ -357,56 +388,83 @@ export default function Sidebar() {
       {/* ═══ Version Modal ═══ */}
       {showVersion && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setShowVersion(false)}>
-          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} />
-          <div className="relative w-full max-w-[480px] rounded-2xl overflow-hidden"
-            style={{ background: theme === 'dark' ? 'var(--bg-surface)' : '#FFFFFF', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
-            onClick={e => e.stopPropagation()}>
-            <div style={{ height: 3, background: 'linear-gradient(90deg, #4D7FFF, #675BFF, #06B6D4)' }} />
-            <div className="p-8 relative">
-              <button onClick={() => setShowVersion(false)} className="absolute top-5 right-5 p-1.5 rounded-lg"
-                style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF', border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                <X style={{ width: 18, height: 18 }} />
-              </button>
-              <div className="flex items-center gap-4 mb-6">
-                <img src="/logo-128.png" alt="EOC" style={{ width: 52, height: 52, borderRadius: 14 }} />
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)' }} />
+          <div className="relative w-full max-w-[520px]" style={{
+            background: theme === 'dark' ? '#0D1320' : '#FFFFFF',
+            borderRadius: 24,
+            border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+            boxShadow: '0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03)',
+            overflow: 'hidden',
+            maxHeight: '85vh',
+            overflowY: 'auto',
+          }} onClick={e => e.stopPropagation()}>
+            {/* Close */}
+            <button onClick={() => setShowVersion(false)} style={{ position: 'absolute', top: 16, right: 16, padding: 8, borderRadius: 10, background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', border: 'none', cursor: 'pointer', color: theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF', transition: `all 150ms ${EASE}`, zIndex: 1 }}
+              onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'; e.currentTarget.style.color = theme === 'dark' ? '#FFFFFF' : '#111827'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF'; }}>
+              <X style={{ width: 16, height: 16 }} />
+            </button>
+
+            {/* Header */}
+            <div style={{ padding: '36px 36px 0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+                <img src="/logo-128.png" alt="EOC" style={{ width: 56, height: 56, borderRadius: 16 }} />
                 <div>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#111827' }}>Everett Operations Center</h2>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 6, fontFamily: 'monospace', background: 'rgba(91,140,255,0.12)', color: '#4D7FFF' }}>v1.0.0</span>
-                    <span style={{ fontSize: 11, color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF' }}>Build 2026.06</span>
+                  <h2 style={{ fontSize: 20, fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#111827', letterSpacing: '-0.02em' }}>Everett Operations Center</h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                    <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 8, fontFamily: 'var(--font-mono)', fontWeight: 600, background: 'rgba(77,127,255,0.12)', color: '#4D7FFF' }}>v1.0.0</span>
+                    <span style={{ fontSize: 12, color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF' }}>Build 2026.06</span>
                   </div>
                 </div>
               </div>
-              <div style={{ marginBottom: 24 }}>
-                <h3 style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' as const, color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF', marginBottom: 12 }}>功能亮点</h3>
-                <div className="grid grid-cols-2" style={{ gap: 10 }}>
-                  {[
-                    { icon: Package, text: '20 个项目统一管理', color: '#06B6D4' },
-                    { icon: Globe, text: '77 条 DNS 记录', color: '#A78BFA' },
-                    { icon: Server, text: '7 个 PM2 进程监控', color: '#10B981' },
-                    { icon: GitFork, text: '33 个 GitHub 仓库', color: '#F59E0B' },
-                  ].map((f, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
-                      <f.icon style={{ width: 16, height: 16, flexShrink: 0, color: f.color }} />
-                      <span style={{ fontSize: 11, color: theme === 'dark' ? 'rgba(255,255,255,0.6)' : '#6B7280' }}>{f.text}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h3 style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' as const, color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF', marginBottom: 12 }}>更新日志</h3>
+
+              {/* Stats Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 28 }}>
                 {[
-                  { ver: 'v1.0.0', date: '2026-06-09', text: '首次发布 — 完整运维控制中心' },
-                  { ver: 'v0.9.0', date: '2026-06-08', text: 'UI 重设计 — Liquid Glass 风格' },
-                  { ver: 'v0.8.0', date: '2026-06-08', text: '登录系统 + 账号管理' },
-                ].map((log, i) => (
-                  <div key={i} style={{ padding: '10px 14px', borderRadius: 12, marginBottom: 8, background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
-                      <span style={{ fontSize: 11, fontFamily: 'monospace', fontWeight: 600, color: '#4D7FFF' }}>{log.ver}</span>
-                      <span style={{ fontSize: 10, color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF' }}>{log.date}</span>
-                    </div>
-                    <div style={{ fontSize: 12, color: theme === 'dark' ? 'rgba(255,255,255,0.8)' : '#374151' }}>{log.text}</div>
+                  { value: '20', label: '项目', color: '#4D7FFF' },
+                  { value: '77', label: '域名', color: '#A78BFA' },
+                  { value: '33', label: '仓库', color: '#F59E0B' },
+                  { value: '7', label: 'PM2', color: '#10B981' },
+                ].map(s => (
+                  <div key={s.label} style={{ textAlign: 'center', padding: '12px 8px', borderRadius: 14, background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
+                    <div className="stat-value" style={{ fontSize: 22, fontWeight: 700, color: s.color, lineHeight: 1 }}>{s.value}</div>
+                    <div style={{ fontSize: 10, color: theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF', marginTop: 4 }}>{s.label}</div>
                   </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', margin: '0 36px' }} />
+
+            {/* Changelog */}
+            <div style={{ padding: '24px 36px 36px' }}>
+              <h3 style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' as const, color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : '#9CA3AF', marginBottom: 16 }}>更新日志</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[
+                  { ver: 'v1.0.0', date: '2026-06-09', text: '首次发布 — Liquid Glass 风格完整运维控制中心', tags: ['仪表盘', '项目管理', '域名', 'PM2', '认证', '主题'] },
+                  { ver: 'v0.9.0', date: '2026-06-08', text: 'UI 重设计 — 匹配 lyy.allapple.top 设计语言', tags: ['深色主题', '圆角卡片', '渐变侧边栏'] },
+                  { ver: 'v0.8.0', date: '2026-06-08', text: '登录系统 + JWT 认证 + 账号管理 + 退出确认', tags: ['JWT', '粒子背景', '二次确认'] },
+                ].map((log, i) => (
+                  <div key={i} style={{ padding: '14px 16px', borderRadius: 14, background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#4D7FFF' }}>{log.ver}</span>
+                      <span style={{ fontSize: 11, color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF' }}>{log.date}</span>
+                    </div>
+                    <div style={{ fontSize: 13, color: theme === 'dark' ? 'rgba(255,255,255,0.8)' : '#374151', marginBottom: 10, lineHeight: 1.5 }}>{log.text}</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {log.tags.map(t => (
+                        <span key={t} style={{ fontSize: 10, padding: '3px 8px', borderRadius: 6, background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', color: theme === 'dark' ? 'rgba(255,255,255,0.45)' : '#6B7280', fontWeight: 500 }}>{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tech Stack */}
+              <div style={{ marginTop: 20, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {['Next.js 16', 'Tailwind v4', 'SQLite', 'JWT', 'TypeScript', 'PM2', 'Inter'].map(t => (
+                  <span key={t} style={{ fontSize: 10, padding: '3px 10px', borderRadius: 20, background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF', border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`, fontWeight: 500 }}>{t}</span>
                 ))}
               </div>
             </div>
