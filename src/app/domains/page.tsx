@@ -21,7 +21,7 @@ export default function DomainsPage() {
   return (
     <AppShell>
       <TopBar title="域名中心" subtitle="DNS 记录管理" />
-      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+      <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{ display: 'flex', gap: 6 }}>
             {['all', 'allapple.top', 'vios.top'].map(z => (

@@ -19,7 +19,7 @@ export default function DeploymentsPage() {
   return (
     <AppShell>
       <TopBar title="部署中心" subtitle="部署状态总览" />
-      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+      <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>所有项目的部署状态</span>
           <button onClick={fetchData} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 10, fontSize: 12, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>

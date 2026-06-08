@@ -37,8 +37,8 @@ export default function RelationsPage() {
   return (
     <AppShell>
       <TopBar title="拓扑视图" subtitle="项目关联全景" />
-      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+      <div style={{ padding: 24,  }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
           <Section icon={GitFork} title="GitHub" count={githubProjects.length} color="#F59E0B"
             items={githubProjects.slice(0, 6).map(p => ({ name: p.github_repo, tag: p.domain, dotColor: '#10B981' }))} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

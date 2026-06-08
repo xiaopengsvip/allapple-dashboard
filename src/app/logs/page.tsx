@@ -18,7 +18,7 @@ export default function LogsPage() {
   return (
     <AppShell>
       <TopBar title="日志中心" subtitle="操作审计日志" />
-      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+      <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{logs.length} 条记录</span>
           <button onClick={fetchLogs} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 10, fontSize: 12, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>

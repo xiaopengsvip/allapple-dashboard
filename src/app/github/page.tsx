@@ -20,7 +20,7 @@ export default function GitHubPage() {
   return (
     <AppShell>
       <TopBar title="GitHub" subtitle="仓库管理" />
-      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+      <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{repos.length} 仓库</span>
           <div style={{ flex: 1 }} />
@@ -32,7 +32,7 @@ export default function GitHubPage() {
             <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> 刷新
           </button>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
           {filtered.map(r => (
             <div key={r.id} style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', padding: 20, transition: `all 250ms ${EASE}`, cursor: 'pointer', boxShadow: 'var(--shadow-card)' }}
               onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}

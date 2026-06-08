@@ -60,10 +60,10 @@ export default function DashboardPage() {
   return (
     <AppShell>
       <TopBar title="仪表盘" subtitle="Everett 运维总览" />
-      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+      <div style={{ padding: 24,  }}>
 
         {/* ═══════ KPI Cards ═══════ */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
           <KPICard delay={1} icon={Package} title="项目总数" value={loaded ? projects.length : '—'} sub="+2 本周新增" color="#4D7FFF" />
           <KPICard delay={2} icon={Globe} title="域名总数" value={loaded ? 77 : '—'} sub="+4 本月新增" color="#A78BFA" />
           <KPICard delay={3} icon={GitFork} title="GitHub 仓库" value={loaded ? 33 : '—'} sub="全部同步正常" color="#10B981" />
@@ -76,7 +76,7 @@ export default function DashboardPage() {
             <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>系统状态</h3>
             <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'var(--success-soft)', color: 'var(--success)', fontWeight: 600 }}>全部正常</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
             {[
               { name: 'GitHub API', status: 'ok', latency: '45ms' },
               { name: 'Vercel API', status: 'ok', latency: '32ms' },
@@ -130,7 +130,7 @@ export default function DashboardPage() {
             <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>项目中心</h3>
             <button style={{ fontSize: 12, fontWeight: 500, padding: '5px 14px', borderRadius: 10, background: 'var(--accent-soft)', color: 'var(--accent)', border: 'none', cursor: 'pointer' }}>查看全部 →</button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 }}>
             {projects.slice(0, 6).map((p: any, i: number) => (
               <ProjectCard key={p.id} project={p} delay={i + 1} />
             ))}

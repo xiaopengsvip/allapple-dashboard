@@ -20,7 +20,7 @@ export default function VercelPage() {
   return (
     <AppShell>
       <TopBar title="Vercel" subtitle="Edge 部署管理" />
-      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+      <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{projects.length} 项目</span>
           <div style={{ flex: 1 }} />

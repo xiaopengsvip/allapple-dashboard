@@ -32,10 +32,10 @@ export default function ServersPage() {
   return (
     <AppShell>
       <TopBar title="服务器管理" subtitle="PM2 进程与系统资源" />
-      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+      <div style={{ padding: 24,  }}>
         {/* System Stats */}
         {stats && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 14, marginBottom: 24 }}>
             {[
               { icon: Cpu, label: 'CPU', value: `${stats.cpu.cores} cores`, sub: `Load: ${stats.cpu.loadAvg.join(' / ')}`, color: '#4D7FFF' },
               { icon: MemoryStick, label: '内存', value: `${Math.round(stats.memory.used / stats.memory.total * 100)}%`, sub: `${fmtBytes(stats.memory.used)} / ${fmtBytes(stats.memory.total)}`, color: '#A78BFA' },
