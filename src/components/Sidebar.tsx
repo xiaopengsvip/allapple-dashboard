@@ -56,7 +56,7 @@ export default function Sidebar() {
   const [mounted, setMounted] = useState(false);
   const [transitionEnabled, setTransitionEnabled] = useState(false);
   const [locale, setLocale] = useState<'zh' | 'en'>('zh');
-  const [user, setUser] = useState<{ username: string; role: string } | null>(null);
+  const [user, setUser] = useState<{ username: string; role: string; avatar_url?: string } | null>(null);
   const [showLogout, setShowLogout] = useState(false);
   const [showVersion, setShowVersion] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -164,10 +164,16 @@ export default function Sidebar() {
         {/* Footer */}
         <div className="flex-shrink-0" style={{ borderTop: `1px solid ${s.border}`, padding: collapsed ? '12px 8px' : '12px 14px', transition: 'padding 250ms ' + EASE }}>
           {/* User */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', justifyContent: collapsed ? 'center' : 'flex-start', borderRadius: 12, marginBottom: 8 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#FFFFFF', background: 'linear-gradient(135deg, #4D7FFF, #675BFF)', cursor: 'pointer' }}>
-              {user ? user.username[0].toUpperCase() : '?'}
-            </div>
+          <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', justifyContent: collapsed ? 'center' : 'flex-start', borderRadius: 12, marginBottom: 8, textDecoration: 'none', cursor: 'pointer', transition: `background 150ms ${EASE}` }}
+            onMouseEnter={e => { e.currentTarget.style.background = s.bgCard; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="Avatar" style={{ width: 32, height: 32, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
+            ) : (
+              <div style={{ width: 32, height: 32, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#FFFFFF', background: 'linear-gradient(135deg, #4D7FFF, #675BFF)' }}>
+                {user ? user.username[0].toUpperCase() : '?'}
+              </div>
+            )}
             <div style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: s.text }}>{user?.username || '未登录'}</div>
               <div style={{ fontSize: 11, color: s.textMuted, marginTop: 1 }}>{user?.role || '—'}</div>
@@ -178,7 +184,7 @@ export default function Sidebar() {
                 onMouseLeave={e => { e.currentTarget.style.color = s.textMuted; e.currentTarget.style.background = 'transparent'; }}
                 title="退出登录"><LogOut style={{ width: 15, height: 15 }} /></button>
             )}
-          </div>
+          </Link>
 
           {/* Theme + Language */}
           {collapsed ? (
