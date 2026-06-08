@@ -94,7 +94,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: '#090B10' }}>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: 'var(--bg-root)' }}>
       {/* 粒子背景 */}
       <canvas ref={canvasRef} className="absolute inset-0 z-0" />
 
@@ -111,10 +111,10 @@ export default function LoginPage() {
           <div className="relative inline-block mb-4">
             <img src="/logo-128.png" alt="EOC" className="w-20 h-20 rounded-2xl mx-auto" />
             <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2"
-              style={{ background: '#10B981', borderColor: '#090B10', boxShadow: '0 0 10px rgba(16,185,129,0.6)' }} />
+              style={{ background: '#10B981', borderColor: 'var(--bg-root)', boxShadow: '0 0 10px rgba(16,185,129,0.6)' }} />
           </div>
           <h1 className="text-[24px] font-bold text-white tracking-tight">Everett Operations Center</h1>
-          <p className="text-[13px] mt-1.5" style={{ color: '#4B5563' }}>下一代企业级运维控制中心</p>
+          <p className="text-[13px] mt-1.5" style={{ color: 'var(--text-muted)' }}>下一代企业级运维控制中心</p>
         </div>
 
         {/* 表单卡片 */}
@@ -126,7 +126,7 @@ export default function LoginPage() {
           }}>
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-[12px] font-medium mb-2" style={{ color: '#9CA3AF' }}>用户名</label>
+              <label className="block text-[12px] font-medium mb-2" style={{ color: 'var(--text-muted)' }}>用户名</label>
               <input
                 type="text"
                 value={username}
@@ -143,7 +143,7 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label className="block text-[12px] font-medium mb-2" style={{ color: '#9CA3AF' }}>密码</label>
+              <label className="block text-[12px] font-medium mb-2" style={{ color: 'var(--text-muted)' }}>密码</label>
               <input
                 type="password"
                 value={password}
@@ -188,8 +188,8 @@ export default function LoginPage() {
 
         {/* 底部信息 */}
         <div className="text-center mt-6 space-y-1">
-          <p className="text-[11px]" style={{ color: '#374151' }}>Everett Operations Center v1.0.0</p>
-          <p className="text-[10px]" style={{ color: '#1F2937' }}>© 2026 Everett · AllApple.top</p>
+          <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Everett Operations Center v1.0.0</p>
+          <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>© 2026 Everett · AllApple.top</p>
         </div>
       </div>
     </div>
