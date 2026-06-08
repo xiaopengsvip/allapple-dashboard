@@ -7,7 +7,8 @@ import { createPortal } from 'react-dom';
 import {
   LayoutDashboard, Package, Globe, Rocket, GitBranch,
   GitFork, Cloud, Server, FileText, Settings, ChevronLeft,
-  ChevronRight, Activity, Sun, Moon, Languages, LogOut
+  ChevronRight, Activity, Sun, Moon, Languages, LogOut,
+  CheckCircle2, Zap, Shield, Rocket, Code2, Palette
 } from 'lucide-react';
 
 const navItems = [
@@ -39,6 +40,7 @@ export default function Sidebar() {
   const [locale, setLocale] = useState<'zh' | 'en'>('zh');
   const [user, setUser] = useState<{ username: string; role: string } | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showVersionInfo, setShowVersionInfo] = useState(false);
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(d => {
@@ -174,9 +176,15 @@ export default function Sidebar() {
               </span>
             </button>
             {/* 版本 */}
-            <div className="px-3 text-[10px]" style={{ color: 'var(--text-muted)' }}>
-              v1.0.0 · 2026-06-08
-            </div>
+            <button onClick={() => setShowVersionInfo(true)}
+              className="flex items-center justify-between w-full px-3 py-2 rounded-xl text-[10px] transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+            >
+              <span>v1.0.0 · 2026-06-09</span>
+              <ChevronRight className="w-3 h-3" />
+            </button>
           </div>
         ) : (
           <div className="pt-3 flex justify-center">
@@ -246,6 +254,86 @@ export default function Sidebar() {
                   onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 24px rgba(239,68,68,0.35)'; }}
                   onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(239,68,68,0.2)'; }}
                 >确认退出</button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 版本信息弹窗 */}
+      {showVersionInfo && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setShowVersionInfo(false)}>
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)' }} />
+          <div className="relative w-full max-w-[480px] rounded-2xl overflow-hidden"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 16px 64px rgba(0,0,0,0.6)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* 顶部 */}
+            <div className="h-[3px]" style={{ background: 'linear-gradient(90deg, #4F46E5, #7C3AED, #06B6D4)' }} />
+            <div className="p-8">
+              {/* Header */}
+              <div className="flex items-center gap-4 mb-6">
+                <img src="/logo-128.png" alt="EOC" className="w-14 h-14 rounded-2xl" />
+                <div>
+                  <h2 className="text-[18px] font-bold text-white">Everett Operations Center</h2>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[12px] px-2 py-0.5 rounded-md font-mono" style={{ background: 'var(--accent-soft)', color: '#818CF8' }}>v1.0.0</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>2026-06-09</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 功能亮点 */}
+              <div className="mb-6">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>功能亮点</h3>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {[
+                    { icon: Package, text: '20 个项目统一管理', color: '#06B6D4' },
+                    { icon: Globe, text: '77 条 DNS 记录', color: '#A78BFA' },
+                    { icon: Server, text: '7 个 PM2 进程监控', color: '#10B981' },
+                    { icon: GitFork, text: '33 个 GitHub 仓库', color: '#F59E0B' },
+                    { icon: Shield, text: 'JWT 安全认证', color: '#6366F1' },
+                    { icon: Palette, text: '深色/浅色主题', color: '#818CF8' },
+                  ].map((f, i) => (
+                    <div key={i} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+                      <f.icon className="w-4 h-4 flex-shrink-0" style={{ color: f.color }} />
+                      <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>{f.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 更新日志 */}
+              <div className="mb-6">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>更新日志</h3>
+                <div className="space-y-2.5">
+                  {[
+                    { ver: 'v1.0.0', date: '2026-06-09', text: '首次发布 — 完整运维控制中心', tags: ['仪表盘', '项目管理', '域名', 'PM2', '认证'] },
+                    { ver: 'v0.9.0', date: '2026-06-08', text: 'UI 重设计 — 匹配 lyy.allapple.top 风格', tags: ['深色主题', '圆角卡片', '渐变侧边栏'] },
+                    { ver: 'v0.8.0', date: '2026-06-08', text: '登录系统 + 账号管理 + 退出确认', tags: ['JWT', '粒子背景', '二次确认'] },
+                  ].map((log, i) => (
+                    <div key={i} className="px-4 py-3 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-[11px] font-mono font-semibold" style={{ color: '#818CF8' }}>{log.ver}</span>
+                        <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{log.date}</span>
+                      </div>
+                      <div className="text-[12px] text-white mb-2">{log.text}</div>
+                      <div className="flex flex-wrap gap-1">
+                        {log.tags.map(t => (
+                          <span key={t} className="text-[9px] px-1.5 py-0.5 rounded-md" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 技术栈 */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {['Next.js 16', 'Tailwind v4', 'SQLite', 'JWT', 'TypeScript', 'PM2', 'Inter'].map(t => (
+                  <span key={t} className="text-[9px] px-2 py-0.5 rounded-full" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>{t}</span>
+                ))}
               </div>
             </div>
           </div>
