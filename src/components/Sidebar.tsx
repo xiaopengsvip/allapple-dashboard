@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import {
   LayoutDashboard, Package, Globe, Rocket, GitBranch,
   GitFork, Cloud, Server, FileText, Settings, ChevronLeft,
-  ChevronRight, Activity, Sun, Moon, Languages
+  ChevronRight, Activity, Sun, Moon, Languages, LogOut
 } from 'lucide-react';
 
 const navItems = [
@@ -32,8 +32,21 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [user, setUser] = useState<{ username: string; role: string } | null>(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(d => {
+      if (d?.user) setUser(d.user);
+    }).catch(() => {});
+  }, [pathname]);
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+  };
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
@@ -106,9 +119,31 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-3 pb-4 space-y-1 flex-shrink-0">
-        {!collapsed && (
-          <>
+      <div className="px-3 pb-4 flex-shrink-0" style={{ borderTop: '1px solid var(--border)' }}>
+        {!collapsed ? (
+          <div className="pt-3 space-y-1">
+            {/* 用户信息 */}
+            <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0"
+                style={{ background: 'var(--accent-gradient)' }}>
+                {user ? user.username[0].toUpperCase() : '?'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[12px] font-medium text-white truncate">{user?.username || '未登录'}</div>
+                <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{user?.role || '—'}</div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="p-1.5 rounded-lg transition-colors"
+                style={{ color: 'var(--text-muted)' }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--error)'; e.currentTarget.style.background = 'var(--bg-card)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
+                title="退出登录"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            {/* 主题切换 */}
             <button onClick={toggleTheme}
               className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors"
               style={{ color: 'var(--text-secondary)' }}
@@ -118,10 +153,18 @@ export default function Sidebar() {
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               <span>{theme === 'dark' ? '浅色模式' : '深色模式'}</span>
             </button>
-            <div className="px-3 pt-2 text-[10px]" style={{ color: 'var(--text-muted)' }}>
+            {/* 版本 */}
+            <div className="px-3 text-[10px]" style={{ color: 'var(--text-muted)' }}>
               v1.0.0 · 2026-06-08
             </div>
-          </>
+          </div>
+        ) : (
+          <div className="pt-3 flex justify-center">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+              style={{ background: 'var(--accent-gradient)' }}>
+              {user ? user.username[0].toUpperCase() : '?'}
+            </div>
+          </div>
         )}
       </div>
     </aside>
