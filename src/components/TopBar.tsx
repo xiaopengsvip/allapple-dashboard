@@ -57,7 +57,7 @@ export default function TopBar({ title, subtitle }: { title: string; subtitle?: 
     text: l.detail || l.action, time: new Date(l.created_at).toLocaleString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' }),
     icon: l.status === 'success' ? CheckCircle2 : l.status === 'warning' ? AlertTriangle : Rocket,
   })) : [
-    { id: 0, type: 'info', text: '暂无通知', time: '', icon: Bell },
+    { id: 0, type: 'info', text: '{t("common.no_notifications")}', time: '', icon: Bell },
   ];
 
   const weekDay = ['日', '一', '二', '三', '四', '五', '六'];
@@ -114,7 +114,7 @@ export default function TopBar({ title, subtitle }: { title: string; subtitle?: 
                 boxShadow: '0 16px 48px rgba(0,0,0,0.4)', overflow: 'hidden',
               }} onClick={e => e.stopPropagation()}>
                 <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>通知</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{t("common.notifications")}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'var(--error-soft)', color: 'var(--error)', fontWeight: 600 }}>{notifications.length}</span>
                     <button onClick={() => setShowNotifs(false)} style={{ padding: 4, borderRadius: 6, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', transition: `all 150ms ${EASE}` }}

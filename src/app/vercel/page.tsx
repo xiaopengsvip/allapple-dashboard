@@ -51,7 +51,7 @@ export default function VercelPage() {
                   <td style={{ padding: '14px 20px' }}><a href={`https://${p.name}.vercel.app`} target="_blank" style={{ color: 'var(--text-muted)' }}><ExternalLink style={{ width: 14, height: 14 }} /></a></td>
                 </tr>
               ))}
-              {filtered.length === 0 && <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '暂无数据，请在设置中配置 Vercel Token'}</td></tr>}
+              {filtered.length === 0 && <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '{t("vercel.no_data")}'}</td></tr>}
             </tbody>
           </table>
         </div>

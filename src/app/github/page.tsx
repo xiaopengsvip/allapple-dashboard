@@ -55,7 +55,7 @@ export default function GitHubPage() {
               </div>
             </div>
           ))}
-          {filtered.length === 0 && <div style={{ gridColumn: '1 / -1', padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '暂无数据，请在设置中配置 GitHub Token'}</div>}
+          {filtered.length === 0 && <div style={{ gridColumn: '1 / -1', padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '{t("github.no_data")}'}</div>}
         </div>
       </div>
     </AppShell>

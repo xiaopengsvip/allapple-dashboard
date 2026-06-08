@@ -88,7 +88,7 @@ export default function ProjectsPage() {
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={() => setShowNew(false)}>
             <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} />
             <div style={{ position: 'relative', background: 'var(--bg-surface)', borderRadius: 20, padding: 32, width: 440, border: '1px solid var(--border)', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>新建项目</h3>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>{t("projects.new")}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <input placeholder="项目名称" value={newProject.name} onChange={e => setNewProject({...newProject, name: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
                 <input placeholder="描述" value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
@@ -103,8 +103,8 @@ export default function ProjectsPage() {
                 <input placeholder="域名" value={newProject.domain} onChange={e => setNewProject({...newProject, domain: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
                 <input placeholder="GitHub 仓库名" value={newProject.github_repo} onChange={e => setNewProject({...newProject, github_repo: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
                 <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 4 }}>
-                  <button onClick={() => setShowNew(false)} style={{ padding: '10px 20px', borderRadius: 12, fontSize: 13, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>取消</button>
-                  <button onClick={handleCreate} disabled={!newProject.name} style={{ padding: '10px 20px', borderRadius: 12, fontSize: 13, fontWeight: 600, background: 'var(--accent-gradient)', color: '#fff', border: 'none', cursor: 'pointer', opacity: newProject.name ? 1 : 0.4 }}>创建</button>
+                  <button onClick={() => setShowNew(false)} style={{ padding: '10px 20px', borderRadius: 12, fontSize: 13, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>{t("projects.cancel")}</button>
+                  <button onClick={handleCreate} disabled={!newProject.name} style={{ padding: '10px 20px', borderRadius: 12, fontSize: 13, fontWeight: 600, background: 'var(--accent-gradient)', color: '#fff', border: 'none', cursor: 'pointer', opacity: newProject.name ? 1 : 0.4 }}>{t("projects.create")}</button>
                 </div>
               </div>
             </div>

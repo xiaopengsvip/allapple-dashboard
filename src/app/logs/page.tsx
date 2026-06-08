@@ -44,7 +44,7 @@ export default function LogsPage() {
                   <td style={{ padding: '12px 20px' }}><span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: `${statusColor[l.status] || 'var(--text-muted)'}15`, color: statusColor[l.status] || 'var(--text-muted)' }}>{l.status}</span></td>
                 </tr>
               ))}
-              {logs.length === 0 && <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '暂无日志'}</td></tr>}
+              {logs.length === 0 && <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '{t("logs.no_logs")}'}</td></tr>}
             </tbody>
           </table>
         </div>
