@@ -56,7 +56,7 @@ export default function Sidebar() {
   const [mounted, setMounted] = useState(false);
   const [transitionEnabled, setTransitionEnabled] = useState(false);
   const [locale, setLocale] = useState<'zh' | 'en'>('zh');
-  const [user, setUser] = useState<{ username: string; role: string; avatar_url?: string } | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [showLogout, setShowLogout] = useState(false);
   const [showVersion, setShowVersion] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -71,8 +71,17 @@ export default function Sidebar() {
 
   useEffect(() => { if (mounted) localStorage.setItem('eoc-sidebar-collapsed', String(collapsed)); }, [collapsed, mounted]);
 
+  const fetchUser = () => {
+    fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(d => {
+      if (d?.user) setUser({ ...user, ...d.user });
+    }).catch(() => {});
+  };
+
   useEffect(() => {
-    fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(d => { if (d?.user) setUser(d.user); }).catch(() => {});
+    fetchUser();
+    // 监听用户数据更新事件（头像上传等）
+    window.addEventListener('eoc-user-updated', fetchUser);
+    return () => window.removeEventListener('eoc-user-updated', fetchUser);
   }, [pathname]);
 
   const handleLogout = () => setShowLogout(true);

@@ -78,7 +78,10 @@ export default function ProfilePage() {
       const res = await fetch('/api/auth/avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: reader.result }) });
       const data = await res.json();
       if (data.success) {
-        setUser({ ...user, avatar_url: data.avatar_url });
+        const updated = { ...user, avatar_url: data.avatar_url };
+        setUser(updated);
+        // 通知侧边栏刷新用户数据
+        window.dispatchEvent(new CustomEvent('eoc-user-updated'));
       } else {
         alert(data.error || '上传失败');
       }
@@ -92,7 +95,7 @@ export default function ProfilePage() {
   return (
     <AppShell>
       <TopBar title="个人资料" subtitle="管理您的账户信息" />
-      <div style={{ padding: 24, maxWidth: 680 }}>
+      <div style={{ padding: 24, maxWidth: 780 }}>
 
         {/* Avatar + Basic Info */}
         <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', padding: 28, marginBottom: 16, boxShadow: 'var(--shadow-card)' }}>
