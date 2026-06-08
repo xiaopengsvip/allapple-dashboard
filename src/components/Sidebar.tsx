@@ -54,15 +54,17 @@ export default function Sidebar() {
         onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
-        <img src="/favicon.png" alt="EOC" className="w-9 h-9 rounded-xl flex-shrink-0" />
+        <img src="/favicon.png" alt="EOC"
+          className={`w-9 h-9 rounded-xl flex-shrink-0 transition-all duration-300 ${collapsed ? 'sidebar-collapsed-logo' : ''}`}
+        />
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <div className="text-[15px] font-bold text-white tracking-tight">EOC</div>
             <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Everett Operations Center</div>
           </div>
         )}
-        <div className={`flex-shrink-0 p-1.5 rounded-lg transition-all duration-200 ${collapsed ? 'animate-pulse' : ''}`}
-          style={{ color: 'var(--text-muted)' }}>
+        <div className={`flex-shrink-0 p-1.5 rounded-lg transition-all duration-200 ${collapsed ? 'sidebar-collapsed-arrow' : ''}`}
+          style={{ color: collapsed ? '#818CF8' : 'var(--text-muted)' }}>
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </div>
       </div>
@@ -127,7 +129,7 @@ export default function Sidebar() {
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             title="展开侧边栏"
           >
-            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--success)', boxShadow: '0 0 6px rgba(16,185,129,0.5)' }} />
+            <ChevronRight className="w-3.5 h-3.5 sidebar-collapsed-arrow" />
           </button>
         )}
       </div>

@@ -91,3 +91,21 @@ body {
 .anim-delay-6 { animation-delay: 0.30s; }
 .anim-delay-7 { animation-delay: 0.35s; }
 .anim-delay-8 { animation-delay: 0.40s; }
+
+/* 侧边栏收起状态引导动画 */
+@keyframes expandHint {
+  0%, 100% { transform: translateX(0); opacity: 0.4; }
+  50% { transform: translateX(3px); opacity: 1; }
+}
+@keyframes logoGlow {
+  0%, 100% { box-shadow: 0 0 0px rgba(99,102,241,0); }
+  50% { box-shadow: 0 0 12px rgba(99,102,241,0.4); }
+}
+.sidebar-collapsed-arrow {
+  animation: expandHint 1.8s ease-in-out infinite;
+  color: #818CF8 !important;
+}
+.sidebar-collapsed-logo {
+  animation: logoGlow 2.5s ease-in-out infinite;
+  border-radius: 12px;
+}
