@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Package, Globe, Rocket, GitBranch,
   GitFork, Cloud, Server, FileText, Settings, ChevronLeft,
   ChevronRight, Activity, Sun, Moon, Languages, LogOut,
-  CheckCircle2, Zap, Shield, Code2, Palette
+  CheckCircle2, Zap, Shield, Code2, Palette, X
 } from 'lucide-react';
 
 const navItems = [
@@ -209,7 +209,17 @@ export default function Sidebar() {
             {/* 顶部装饰条 */}
             <div className="h-[3px]" style={{ background: 'linear-gradient(90deg, #EF4444, #F59E0B)' }} />
 
-            <div className="p-8 pb-7">
+            <div className="p-8 pb-7 relative">
+              {/* 关闭按钮 */}
+              <button onClick={() => setShowLogoutConfirm(false)}
+                className="absolute top-4 right-4 p-1.5 rounded-lg transition-colors"
+                style={{ color: 'var(--text-muted)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+              >
+                <X className="w-4 h-4" />
+              </button>
+
               {/* 图标 */}
               <div className="flex justify-center mb-6">
                 <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.12)' }}>
@@ -271,7 +281,17 @@ export default function Sidebar() {
           >
             {/* 顶部 */}
             <div className="h-[3px]" style={{ background: 'linear-gradient(90deg, #4F46E5, #7C3AED, #06B6D4)' }} />
-            <div className="p-8">
+            <div className="p-8 relative">
+              {/* 关闭按钮 */}
+              <button onClick={() => setShowVersionInfo(false)}
+                className="absolute top-4 right-4 p-1.5 rounded-lg transition-colors"
+                style={{ color: 'var(--text-muted)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+              >
+                <X className="w-4 h-4" />
+              </button>
+
               {/* Header */}
               <div className="flex items-center gap-4 mb-6">
                 <img src="/logo-128.png" alt="EOC" className="w-14 h-14 rounded-2xl" />
