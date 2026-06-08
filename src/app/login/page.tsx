@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
 export default function LoginPage() {
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -11,60 +13,57 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    const saved = localStorage.getItem('eoc-theme') || 'dark';
+    setTheme(saved as 'dark' | 'light');
+    document.documentElement.setAttribute('data-theme', saved);
+    setTimeout(() => setMounted(true), 100);
+  }, []);
 
-  // 粒子背景动画
+  // Particle canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
     let w = canvas.width = window.innerWidth;
     let h = canvas.height = window.innerHeight;
     const particles: { x: number; y: number; vx: number; vy: number; r: number; a: number }[] = [];
-    for (let i = 0; i < 60; i++) {
-      particles.push({
-        x: Math.random() * w, y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 2 + 0.5, a: Math.random() * 0.5 + 0.1,
-      });
+    for (let i = 0; i < 50; i++) {
+      particles.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, r: Math.random() * 1.5 + 0.5, a: Math.random() * 0.3 + 0.1 });
     }
-
     let frame: number;
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
-      // 连线
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
+          if (dist < 120) {
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${0.08 * (1 - dist / 150)})`;
+            ctx.strokeStyle = `rgba(77, 127, 255, ${0.06 * (1 - dist / 120)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
       }
-      // 粒子
       for (const p of particles) {
         p.x += p.vx; p.y += p.vy;
         if (p.x < 0 || p.x > w) p.vx *= -1;
         if (p.y < 0 || p.y > h) p.vy *= -1;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(129, 140, 248, ${p.a})`;
+        ctx.fillStyle = `rgba(77, 127, 255, ${p.a})`;
         ctx.fill();
       }
       frame = requestAnimationFrame(draw);
     };
     draw();
-
     const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
     window.addEventListener('resize', resize);
     return () => { cancelAnimationFrame(frame); window.removeEventListener('resize', resize); };
@@ -76,122 +75,120 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
+      const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
       const data = await res.json();
       if (res.ok && data.success) {
         router.push('/');
       } else {
         setError(data.error || '登录失败');
       }
-    } catch {
-      setError('网络错误');
-    }
+    } catch { setError('网络错误'); }
     setLoading(false);
   };
 
+  const isDark = theme === 'dark';
+
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: 'var(--bg-root)' }}>
-      {/* 粒子背景 */}
-      <canvas ref={canvasRef} className="absolute inset-0 z-0" />
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: isDark ? 'var(--bg-root)' : 'var(--bg-root)', position: 'relative', overflow: 'hidden',
+    }}>
+      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: isDark ? 1 : 0.3 }} />
 
-      {/* 背景光效 */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full opacity-20 blur-[120px] z-0"
-        style={{ background: 'radial-gradient(circle, #4F46E5, transparent)' }} />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full opacity-15 blur-[100px] z-0"
-        style={{ background: 'radial-gradient(circle, #7C3AED, transparent)' }} />
+      {/* Background glow */}
+      <div style={{ position: 'absolute', top: '20%', left: '30%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(77,127,255,0.08), transparent)', filter: 'blur(100px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', bottom: '20%', right: '20%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(103,91,255,0.06), transparent)', filter: 'blur(80px)', zIndex: 0 }} />
 
-      {/* 登录卡片 */}
-      <div className={`relative z-10 w-full max-w-[400px] mx-4 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="relative inline-block mb-4">
-            <img src="/logo-128.png" alt="EOC" className="w-20 h-20 rounded-2xl mx-auto" />
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2"
-              style={{ background: '#10B981', borderColor: 'var(--bg-root)', boxShadow: '0 0 10px rgba(16,185,129,0.6)' }} />
+      <div style={{
+        position: 'relative', zIndex: 1, width: '100%', maxWidth: 400, padding: 16,
+        opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(16px)',
+        transition: `all 600ms ${EASE}`,
+      }}>
+        {/* Logo + Title */}
+        <div style={{ textAlign: 'center', marginBottom: 36 }}>
+          <div style={{ position: 'relative', display: 'inline-block', marginBottom: 16 }}>
+            <img src="/logo-128.png" alt="EOC" style={{ width: 72, height: 72, borderRadius: 20 }} />
+            <div style={{ position: 'absolute', bottom: -2, right: -2, width: 18, height: 18, borderRadius: '50%', background: 'var(--success)', border: '3px solid var(--bg-root)', boxShadow: '0 0 10px rgba(16,185,129,0.5)' }} />
           </div>
-          <h1 className="text-[24px] font-bold text-white tracking-tight">Everett Operations Center</h1>
-          <p className="text-[13px] mt-1.5" style={{ color: 'var(--text-muted)' }}>下一代企业级运维控制中心</p>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 6 }}>Everett Operations Center</h1>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>下一代企业级运维控制中心</p>
         </div>
 
-        {/* 表单卡片 */}
-        <div className="rounded-2xl p-7 backdrop-blur-xl"
-          style={{
-            background: 'rgba(22, 24, 32, 0.85)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.05)',
-          }}>
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div>
-              <label className="block text-[12px] font-medium mb-2" style={{ color: 'var(--text-muted)' }}>用户名</label>
-              <input
-                type="text"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                placeholder="请输入用户名"
-                autoComplete="username"
-                className="w-full px-4 py-3 rounded-xl text-[14px] text-white outline-none transition-all duration-200"
-                style={{
-                  background: 'rgba(11, 13, 20, 0.8)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}
-                onFocus={e => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)'; }}
-                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}
-              />
-            </div>
-            <div>
-              <label className="block text-[12px] font-medium mb-2" style={{ color: 'var(--text-muted)' }}>密码</label>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="请输入密码"
-                autoComplete="current-password"
-                className="w-full px-4 py-3 rounded-xl text-[14px] text-white outline-none transition-all duration-200"
-                style={{
-                  background: 'rgba(11, 13, 20, 0.8)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}
-                onFocus={e => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)'; }}
-                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}
-              />
-            </div>
-
-            {error && (
-              <div className="text-[12px] px-4 py-2.5 rounded-xl flex items-center gap-2"
-                style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#EF4444' }}>
-                <span>⚠</span> {error}
+        {/* Card */}
+        <div style={{
+          background: 'var(--bg-card)', borderRadius: 24,
+          border: '1px solid var(--border)',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03)',
+          overflow: 'hidden',
+        }}>
+          <div style={{ padding: '32px 28px 28px' }}>
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>用户名</label>
+                <input type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder="请输入用户名" autoComplete="username"
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: 14, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 14, outline: 'none', transition: `border-color 150ms ${EASE}`, boxSizing: 'border-box' }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-soft)'; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }} />
               </div>
-            )}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>密码</label>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="请输入密码" autoComplete="current-password"
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: 14, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 14, outline: 'none', transition: `border-color 150ms ${EASE}`, boxSizing: 'border-box' }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-soft)'; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }} />
+              </div>
 
-            <button
-              type="submit"
-              disabled={loading || !username || !password}
-              className="w-full py-3 rounded-xl text-[14px] font-semibold text-white transition-all duration-200 disabled:opacity-40"
-              style={{
-                background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
-                boxShadow: loading ? 'none' : '0 4px 16px rgba(99,102,241,0.3)',
+              {error && (
+                <div style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--error-soft)', color: 'var(--error)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span>⚠</span> {error}
+                </div>
+              )}
+
+              <button type="submit" disabled={loading || !username || !password} style={{
+                width: '100%', padding: '13px 0', borderRadius: 14, fontSize: 14, fontWeight: 600,
+                color: '#FFFFFF', border: 'none', cursor: loading ? 'wait' : 'pointer',
+                background: 'var(--accent-gradient)', boxShadow: '0 4px 20px rgba(77,127,255,0.25)',
+                opacity: (!username || !password) ? 0.4 : 1,
+                transition: `all 200ms ${EASE}`, marginTop: 4,
               }}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  登录中...
-                </span>
-              ) : '登 录'}
-            </button>
-          </form>
+                onMouseEnter={e => { if (!loading && username && password) { e.currentTarget.style.boxShadow = '0 6px 28px rgba(77,127,255,0.4)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(77,127,255,0.25)'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                {loading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                    <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#FFFFFF', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                    登录中...
+                  </span>
+                ) : '登 录'}
+              </button>
+            </form>
+          </div>
         </div>
 
-        {/* 底部信息 */}
-        <div className="text-center mt-6 space-y-1">
-          <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Everett Operations Center v1.0.0</p>
-          <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>© 2026 Everett · AllApple.top</p>
+        {/* Footer */}
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>Everett Operations Center v1.0.0</p>
+          <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4, opacity: 0.5 }}>© 2026 Everett · AllApple.top</p>
+        </div>
+
+        {/* Theme toggle */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+          <button onClick={() => {
+            const next = isDark ? 'light' : 'dark';
+            setTheme(next);
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('eoc-theme', next);
+          }} style={{
+            padding: '6px 14px', borderRadius: 10, background: 'var(--bg-card)', border: '1px solid var(--border)',
+            color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer', transition: `all 150ms ${EASE}`,
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}>
+            {isDark ? '☀ 浅色模式' : '🌙 深色模式'}
+          </button>
         </div>
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `@keyframes spin { to { transform: rotate(360deg); } }` }} />
     </div>
   );
 }
