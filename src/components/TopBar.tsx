@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, Bell, Command } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function TopBar({ title, subtitle }: { title: string; subtitle?: string }) {
@@ -30,13 +30,12 @@ export default function TopBar({ title, subtitle }: { title: string; subtitle?: 
         <span className="text-[12px] flex-1" style={{ color: 'var(--text-muted)' }}>搜索...</span>
         <kbd className="text-[9px] px-1.5 py-0.5 rounded-md font-medium" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>⌘K</kbd>
       </div>
-      <button className="relative p-2.5 rounded-xl transition-colors" style={{ color: 'var(--text-muted)' }}>
-        <Bell className="w-[18px] h-[18px]" />
-        <div className="absolute top-2 right-2 w-2 h-2 rounded-full" style={{ background: 'var(--error)', boxShadow: '0 0 6px rgba(239,68,68,0.5)' }} />
-      </button>
-      <div className="flex items-center gap-3 pl-3" style={{ borderLeft: '1px solid var(--border)' }}>
+      <div className="flex items-center gap-2 pl-3" style={{ borderLeft: '1px solid var(--border)' }}>
         <span className="text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>{time}</span>
-        <div className="w-8 h-8 rounded-full text-white text-[12px] font-bold flex items-center justify-center" style={{ background: 'var(--accent-gradient)' }}>E</div>
+        <button className="relative p-2 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}>
+          <Bell className="w-[18px] h-[18px]" />
+          <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full" style={{ background: 'var(--error)', boxShadow: '0 0 6px rgba(239,68,68,0.5)' }} />
+        </button>
       </div>
     </header>
   );
