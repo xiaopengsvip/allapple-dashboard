@@ -214,13 +214,13 @@ export default function Sidebar() {
         {/* ═══ Footer ═══ */}
         <div className="flex-shrink-0" style={{
           borderTop: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-          padding: collapsed ? '12px 10px' : '12px 12px',
+          padding: collapsed ? '12px 8px' : '12px 12px',
           transition: 'padding 250ms ' + EASE,
         }}>
           {/* User */}
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 12, padding: collapsed ? '6px 0' : '6px 8px',
-            justifyContent: collapsed ? 'center' : 'flex-start',
+            display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 12, padding: collapsed ? '6px 0' : '6px 8px',
+            justifyContent: 'center',
             borderRadius: 12, marginBottom: 8,
             cursor: 'pointer',
           }}
@@ -248,8 +248,8 @@ export default function Sidebar() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <button onClick={toggleTheme}
               style={{
-                display: 'flex', alignItems: 'center', gap: 12, height: 36,
-                padding: collapsed ? '0' : '0 10px', justifyContent: collapsed ? 'center' : 'flex-start',
+                display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 12, height: 36,
+                padding: 0, justifyContent: 'center',
                 borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer',
                 fontSize: 12, fontWeight: 500,
                 color: theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280',
@@ -267,7 +267,7 @@ export default function Sidebar() {
             <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')}
               style={{
                 display: 'flex', alignItems: 'center', gap: 12, height: 36,
-                padding: collapsed ? '0' : '0 10px', justifyContent: collapsed ? 'center' : 'flex-start',
+                padding: 0, justifyContent: 'center',
                 borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer',
                 fontSize: 12, fontWeight: 500,
                 color: theme === 'dark' ? 'rgba(255,255,255,0.55)' : '#6B7280',
@@ -298,8 +298,8 @@ export default function Sidebar() {
           {/* Version */}
           <button onClick={() => setShowVersion(true)}
             style={{
-              display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between',
-              width: '100%', padding: collapsed ? '4px 0' : '4px 10px', height: 32,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '100%', padding: '4px 0', height: 32,
               borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer',
               fontSize: 10, fontFamily: 'monospace',
               color: theme === 'dark' ? 'rgba(255,255,255,0.25)' : '#9CA3AF',
