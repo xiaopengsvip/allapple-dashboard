@@ -138,11 +138,10 @@ export default function Sidebar() {
           {/* 折叠/展开箭头 */}
           <ChevronRight className="flex-shrink-0" style={{
             width: 16, height: 16,
-            color: collapsed ? '#4D7FFF' : (theme === 'dark' ? 'rgba(255,255,255,0.25)' : '#9CA3AF'),
+            color: collapsed ? '#4D7FFF' : (theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF'),
             transform: collapsed ? 'rotate(0)' : 'rotate(180deg)',
             transition: 'transform 250ms ' + EASE,
             animation: collapsed ? 'arrowPulse 2s ease-in-out infinite' : 'none',
-            opacity: collapsed ? 1 : 0,
           }} />
         </div>
 
