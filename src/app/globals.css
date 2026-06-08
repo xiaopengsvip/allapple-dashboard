@@ -94,16 +94,16 @@ body {
 
 /* 侧边栏收起状态引导动画 */
 @keyframes expandHint {
-  0%, 100% { transform: translateX(0); opacity: 0.3; }
-  50% { transform: translateX(6px); opacity: 1; }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
 }
 @keyframes logoGlow {
   0%, 100% { box-shadow: 0 0 0px rgba(99,102,241,0); }
   50% { box-shadow: 0 0 16px rgba(99,102,241,0.5); }
 }
 @keyframes arrowBounce {
-  0%, 100% { transform: translateX(0) scale(1); opacity: 0.5; }
-  50% { transform: translateX(5px) scale(1.15); opacity: 1; }
+  0%, 100% { transform: rotate(0) scale(1); opacity: 0.5; }
+  50% { transform: rotate(0) scale(1.2); opacity: 1; }
 }
 @keyframes arrowTrail {
   0% { opacity: 0; transform: translateX(-4px); }

@@ -74,12 +74,18 @@ export default function Sidebar() {
           className="w-8 h-8 rounded-lg flex-shrink-0"
           style={{ transition: 'all 0.3s', ...(collapsed ? { animation: 'logoGlow 2.5s ease-in-out infinite' } : {}) }}
         />
-        <div className="flex-1 min-w-0" style={{ opacity: collapsed ? 0 : 1, transition: 'opacity 0.2s', pointerEvents: collapsed ? 'none' : 'auto' }}>
+        <div className="flex-1 min-w-0 overflow-hidden" style={{ opacity: collapsed ? 0 : 1, maxWidth: collapsed ? 0 : 200, transition: 'opacity 0.2s, max-width 0.3s' }}>
           <div className="text-[14px] font-bold text-white tracking-tight whitespace-nowrap">EOC</div>
           <div className="text-[9px] whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>Operations Center</div>
         </div>
-        <div className="flex-shrink-0" style={{ transition: 'all 0.2s', ...(collapsed ? { animation: 'arrowBounce 1.5s ease-in-out infinite', color: '#818CF8' } : { color: 'var(--text-muted)' }) }}>
-          <ChevronRight className="w-4 h-4" style={{ transition: 'transform 0.3s', transform: collapsed ? 'rotate(0)' : 'rotate(180deg)' }} />
+        <div className="flex-shrink-0">
+          <ChevronRight className="w-4 h-4"
+            style={{
+              transition: 'transform 0.3s',
+              transform: collapsed ? 'rotate(0)' : 'rotate(180deg)',
+              color: collapsed ? '#818CF8' : 'var(--text-muted)',
+              animation: collapsed ? 'arrowBounce 1.5s ease-in-out infinite' : 'none',
+            }} />
         </div>
       </div>
 
@@ -110,7 +116,7 @@ export default function Sidebar() {
                     onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; } }}
                   >
                     <Icon className="w-[18px] h-[18px] flex-shrink-0" style={{ color: isActive ? '#fff' : 'var(--text-muted)' }} />
-                    <span style={{ opacity: collapsed ? 0 : 1, transition: 'opacity 0.2s', pointerEvents: collapsed ? 'none' : 'auto' }}>{item.label}</span>
+                    <span className="overflow-hidden" style={{ opacity: collapsed ? 0 : 1, maxWidth: collapsed ? 0 : 200, transition: 'opacity 0.2s, max-width 0.3s', whiteSpace: 'nowrap' }}>{item.label}</span>
                   </Link>
                 );
               })}
