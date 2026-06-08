@@ -87,6 +87,17 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('eoc-sidebar-collapsed');
+    if (saved === 'true') setCollapsed(true);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) localStorage.setItem('eoc-sidebar-collapsed', String(collapsed));
+  }, [collapsed, mounted]);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [locale, setLocale] = useState<'zh' | 'en'>('zh');
   const [user, setUser] = useState<{ username: string; role: string } | null>(null);
