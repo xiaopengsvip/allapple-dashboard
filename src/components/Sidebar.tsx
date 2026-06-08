@@ -39,9 +39,7 @@ export default function Sidebar() {
     <aside className={`${collapsed ? 'w-16' : 'w-56'} bg-[#12121a] border-r border-[#1e1e2e] flex flex-col flex-shrink-0 transition-all duration-300 h-screen sticky top-0`}>
       {/* Logo */}
       <div className="h-14 border-b border-[#1e1e2e] flex items-center px-4 gap-3">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#06d6a0] to-[#a78bfa] flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
-          E
-        </div>
+        <img src="/favicon.png" alt="E" className="w-8 h-8 rounded-lg flex-shrink-0" />
         {!collapsed && (
           <div className="overflow-hidden">
             <div className="text-sm font-semibold text-[#e4e4e7] truncate">Everett</div>
