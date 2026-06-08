@@ -1,10 +1,27 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ===== Design Tokens (匹配 lyy.allapple.top 风格) ===== */
+/* Tailwind v4 theme - 这些会生成 --color-* 前缀的变量 */
+@theme {
+  --color-bg-root: #0B0D14;
+  --color-bg-surface: #111318;
+  --color-bg-card: #161820;
+  --color-bg-hover: #1C1E28;
+  --color-bg-elevated: #1E2030;
+  --color-accent: #6366F1;
+  --color-accent-light: #818CF8;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-cyan: #06B6D4;
+  --color-purple: #A78BFA;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #9CA3AF;
+  --color-text-muted: #4B5563;
+}
+
+/* 直接定义组件使用的变量名 (不带 --color- 前缀) */
 :root {
   --bg-root: #0B0D14;
   --bg-surface: #111318;
@@ -25,16 +42,10 @@
   --warning: #F59E0B;
   --warning-soft: rgba(245,158,11,0.12);
   --error: #EF4444;
-  --error-soft: rgba(239,68,68,0.12);
   --cyan: #06B6D4;
-  --cyan-soft: rgba(6,182,212,0.12);
   --purple: #A78BFA;
-  --purple-soft: rgba(167,139,250,0.12);
   --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05);
   --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4);
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-lg: 16px;
 }
 
 [data-theme="light"] {
@@ -49,21 +60,19 @@
   --text-secondary: #6B7280;
   --text-muted: #9CA3AF;
   --accent: #4F46E5;
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 /* ===== Base ===== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { margin: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   background: var(--bg-root);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
-  line-height: 1.5;
 }
-::selection { background: var(--accent-soft); }
+::selection { background: rgba(99,102,241,0.2); }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
@@ -73,16 +82,12 @@ body {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 4px currentColor; }
-  50% { box-shadow: 0 0 10px currentColor; }
-}
 .anim-fade-up { animation: fadeUp 0.5s ease-out both; }
-.anim-delay-1 { animation-delay: 0.06s; }
-.anim-delay-2 { animation-delay: 0.12s; }
-.anim-delay-3 { animation-delay: 0.18s; }
-.anim-delay-4 { animation-delay: 0.24s; }
-.anim-delay-5 { animation-delay: 0.30s; }
-.anim-delay-6 { animation-delay: 0.36s; }
-.anim-delay-7 { animation-delay: 0.42s; }
-.anim-delay-8 { animation-delay: 0.48s; }
+.anim-delay-1 { animation-delay: 0.05s; }
+.anim-delay-2 { animation-delay: 0.10s; }
+.anim-delay-3 { animation-delay: 0.15s; }
+.anim-delay-4 { animation-delay: 0.20s; }
+.anim-delay-5 { animation-delay: 0.25s; }
+.anim-delay-6 { animation-delay: 0.30s; }
+.anim-delay-7 { animation-delay: 0.35s; }
+.anim-delay-8 { animation-delay: 0.40s; }
