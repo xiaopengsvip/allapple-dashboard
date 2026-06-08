@@ -88,10 +88,13 @@ export default function Sidebar() {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [transitionEnabled, setTransitionEnabled] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('eoc-sidebar-collapsed');
     if (saved === 'true') setCollapsed(true);
+    // 延迟启用过渡动画，避免首次渲染和页面切换时播放
+    setTimeout(() => setTransitionEnabled(true), 300);
     setMounted(true);
   }, []);
 
@@ -124,7 +127,7 @@ export default function Sidebar() {
           width: collapsed ? SIDEBAR_COLLAPSED_W : SIDEBAR_W,
           background: theme === 'dark' ? 'var(--bg-surface)' : '#FFFFFF',
           borderRight: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-          transition: `width 250ms ${EASE}`,
+          transition: transitionEnabled ? `width 250ms ${EASE}` : 'none',
           overflow: 'hidden',
         }}
       >
