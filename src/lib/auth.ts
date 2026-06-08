@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import db, { getSetting } from './db';
+import { getSetting, queryOne } from './db';
 import { cookies } from 'next/headers';
 
-function getJwtSecret(): string {
-  return getSetting('jwt_secret') || 'everett-dashboard-secret-key';
+async function getJwtSecret(): Promise<string> {
+  return (await getSetting('jwt_secret')) || 'everett-dashboard-secret-key';
 }
 
 export interface UserPayload {
@@ -13,13 +13,15 @@ export interface UserPayload {
   role: string;
 }
 
-export function signToken(user: UserPayload): string {
-  return jwt.sign(user, getJwtSecret(), { expiresIn: '7d' });
+export async function signToken(user: UserPayload): Promise<string> {
+  const secret = await getJwtSecret();
+  return jwt.sign(user, secret, { expiresIn: '7d' });
 }
 
-export function verifyToken(token: string): UserPayload | null {
+export async function verifyToken(token: string): Promise<UserPayload | null> {
   try {
-    return jwt.verify(token, getJwtSecret()) as UserPayload;
+    const secret = await getJwtSecret();
+    return jwt.verify(token, secret) as UserPayload;
   } catch {
     return null;
   }
@@ -32,8 +34,8 @@ export async function getAuthUser(): Promise<UserPayload | null> {
   return verifyToken(token);
 }
 
-export function authenticateUser(username: string, password: string): UserPayload | null {
-  const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as any;
+export async function authenticateUser(username: string, password: string): Promise<UserPayload | null> {
+  const user = await queryOne('SELECT * FROM users WHERE username = $1', [username]);
   if (!user) return null;
   if (!bcrypt.compareSync(password, user.password_hash)) return null;
   return { id: user.id, username: user.username, role: user.role };

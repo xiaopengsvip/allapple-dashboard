@@ -18,7 +18,9 @@
     "appearance": "Theme",
     "system_running": "All Systems Operational",
     "services_online": "services online",
-    "availability": "available"
+    "availability": "available",
+    "notifications": "Notifications",
+    "users": "Users"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -262,5 +264,23 @@
     "loading": "Loading...",
     "records": "records",
     "refresh": "Refresh"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "mark_all_read": "Mark all read",
+    "empty": "No notifications",
+    "mark_read": "Mark read",
+    "unread": "unread"
+  },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Manage dashboard users and roles",
+    "add_user": "Add User",
+    "username": "Username",
+    "password": "Password",
+    "role": "Role",
+    "created": "Created",
+    "delete": "Delete",
+    "confirm_delete": "Delete this user?"
   }
 }

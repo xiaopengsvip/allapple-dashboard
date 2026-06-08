@@ -18,7 +18,9 @@
     "appearance": "外观",
     "system_running": "系统运行正常",
     "services_online": "服务在线",
-    "availability": "可用"
+    "availability": "可用",
+    "notifications": "通知中心",
+    "users": "用户管理"
   },
   "dashboard": {
     "title": "仪表盘",
@@ -262,5 +264,23 @@
     "loading": "加载中...",
     "records": "条记录",
     "refresh": "刷新"
+  },
+  "notifications": {
+    "title": "通知中心",
+    "mark_all_read": "全部标为已读",
+    "empty": "暂无通知",
+    "mark_read": "标为已读",
+    "unread": "未读"
+  },
+  "users": {
+    "title": "用户管理",
+    "subtitle": "管理 dashboard 用户和角色",
+    "add_user": "添加用户",
+    "username": "用户名",
+    "password": "密码",
+    "role": "角色",
+    "created": "创建时间",
+    "delete": "删除",
+    "confirm_delete": "确定删除该用户?"
   }
 }

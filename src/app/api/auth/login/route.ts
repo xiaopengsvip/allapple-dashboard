@@ -5,12 +5,12 @@ import { addLog } from '@/lib/db';
 export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
-    const user = authenticateUser(username, password);
+    const user = await authenticateUser(username, password);
     if (!user) {
       return NextResponse.json({ error: '用户名或密码错误' }, { status: 401 });
     }
-    const token = signToken(user);
-    addLog('login', 'auth', `User ${username} logged in`);
+    const token = await signToken(user);
+    await addLog('login', 'auth', `User ${username} logged in`);
     const res = NextResponse.json({ success: true, user, token });
     res.cookies.set('token', token, {
       httpOnly: true,

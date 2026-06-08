@@ -9,7 +9,7 @@ import {
   LayoutDashboard, Package, Rocket, Globe, GitBranch,
   GitFork, Cloud, Server, Activity, Settings,
   ChevronLeft, ChevronRight, Sun, Moon, Languages,
-  LogOut, X
+  LogOut, X, Bell, Users
 } from 'lucide-react';
 
 const SIDEBAR_W = 240;
@@ -35,6 +35,8 @@ const navSections = [
   ]},
   { section: 'sidebar.operations', sectionEn: 'OPERATIONS', items: [
     { href: '/logs', icon: Activity, label: 'sidebar.logs', labelEn: 'Logs' },
+    { href: '/notifications', icon: Bell, label: 'sidebar.notifications', labelEn: 'Notifications' },
+    { href: '/users', icon: Users, label: 'sidebar.users', labelEn: 'Users' },
     { href: '/settings', icon: Settings, label: 'sidebar.settings', labelEn: 'Settings' },
   ]},
 ];

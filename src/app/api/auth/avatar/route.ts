@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
-import db from '@/lib/db';
+import { query } from '@/lib/db';
 import fs from 'fs';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,19 +16,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: '无效的图片数据' }, { status: 400 });
     }
 
-    // Extract base64 data
     const matches = image.match(/^data:image\/([a-zA-Z+]+);base64,(.+)$/);
     if (!matches) return NextResponse.json({ error: '图片格式错误' }, { status: 400 });
 
     const ext = matches[1].replace('+', '');
     const data = Buffer.from(matches[2], 'base64');
 
-    // Limit 10MB
     if (data.length > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: '图片大小不能超过 2MB' }, { status: 400 });
+      return NextResponse.json({ error: '图片大小不能超过 10MB' }, { status: 400 });
     }
 
-    // Save file
     const avatarDir = path.join(process.cwd(), 'public', 'avatars');
     if (!fs.existsSync(avatarDir)) fs.mkdirSync(avatarDir, { recursive: true });
 
@@ -38,9 +34,7 @@ export async function POST(request: Request) {
     fs.writeFileSync(filepath, data);
 
     const avatarUrl = `/avatars/${filename}`;
-
-    // Update DB
-    db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(avatarUrl, user.id);
+    await query('UPDATE users SET avatar_url = $1 WHERE id = $2', [avatarUrl, user.id]);
 
     return NextResponse.json({ success: true, avatar_url: avatarUrl });
   } catch (e: any) {
