@@ -61,6 +61,10 @@ db.exec(`
   );
 `);
 
+// Migrate: add columns if missing (for existing databases)
+try { db.prepare('ALTER TABLE users ADD COLUMN display_name TEXT DEFAULT ""').run(); } catch {}
+try { db.prepare('ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT ""').run(); } catch {}
+
 // Seed default admin (ignore if exists)
 import bcrypt from 'bcryptjs';
 try {
