@@ -95,7 +95,7 @@ export default function ProfilePage() {
   return (
     <AppShell>
       <TopBar title="个人资料" subtitle="管理您的账户信息" />
-      <div style={{ padding: 24, maxWidth: 780 }}>
+      <div style={{ padding: 24,  }}>
 
         {/* Avatar + Basic Info */}
         <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', padding: 28, marginBottom: 16, boxShadow: 'var(--shadow-card)' }}>
@@ -135,7 +135,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Info */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12, marginBottom: 20 }}>
             <div style={{ padding: '12px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)' }}>
               <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}><User style={{ width: 12, height: 12, display: 'inline', marginRight: 4 }} />用户名</div>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{user.username}</div>
