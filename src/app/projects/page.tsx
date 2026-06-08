@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
-import { Plus, Search, ExternalLink, Trash2 } from 'lucide-react';
+import { Plus, Search, ExternalLink, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
@@ -22,6 +22,8 @@ export default function ProjectsPage() {
   const [search, setSearch] = useState('');
   const [showNew, setShowNew] = useState(false);
   const [newProject, setNewProject] = useState({ name: '', category: '工具', deploy_target: 'vercel', domain: '', github_repo: '', color: '#4D7FFF', description: '' });
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 15;
 
   useEffect(() => { fetch('/api/projects').then(r => r.json()).then(d => setProjects(d.projects || [])); }, []);
 
@@ -134,7 +136,7 @@ export default function ProjectsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p, i) => (
+              {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((p, i) => (
                 <tr key={p.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
@@ -150,6 +152,18 @@ export default function ProjectsPage() {
             </tbody>
           </table>
         </Card>
+
+        {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 16 }}>
+            <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} style={{ padding: 6, borderRadius: 8, background: 'var(--bg-card)', border: '1px solid var(--border)', cursor: 'pointer', color: 'var(--text-muted)', opacity: page === 1 ? 0.3 : 1 }}>
+              <ChevronLeft style={{ width: 16, height: 16 }} />
+            </button>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{page} / {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <button onClick={() => setPage(Math.min(Math.ceil(filtered.length / PAGE_SIZE), page + 1))} disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} style={{ padding: 6, borderRadius: 8, background: 'var(--bg-card)', border: '1px solid var(--border)', cursor: 'pointer', color: 'var(--text-muted)', opacity: page >= Math.ceil(filtered.length / PAGE_SIZE) ? 0.3 : 1 }}>
+              <ChevronRight style={{ width: 16, height: 16 }} />
+            </button>
+          </div>
+        )}
       </div>
     </AppShell>
   );

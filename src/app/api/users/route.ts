@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
-import { queryAll, queryOne, query } from '@/lib/db';
+import { queryAll, queryOne, query, addLog } from '@/lib/db';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
 
@@ -26,6 +26,7 @@ export async function POST(request: Request) {
   const hash = bcrypt.hashSync(password, 10);
   const id = uuidv4();
   await query('INSERT INTO users (id, username, password_hash, role) VALUES ($1, $2, $3, $4)', [id, username, hash, role || 'viewer']);
+  await addLog('create', 'user', `Created user: ${username} (role: ${role || 'viewer'})`);
   return NextResponse.json({ user: { id, username, role: role || 'viewer' } });
 }
 
@@ -35,6 +36,8 @@ export async function DELETE(request: Request) {
 
   const { id } = await request.json();
   if (id === user.id) return NextResponse.json({ error: '不能删除自己' }, { status: 400 });
+  const target = await queryOne('SELECT username FROM users WHERE id = $1', [id]);
   await query('DELETE FROM users WHERE id = $1', [id]);
+  await addLog('delete', 'user', `Deleted user: ${target?.username || id}`);
   return NextResponse.json({ success: true });
 }
