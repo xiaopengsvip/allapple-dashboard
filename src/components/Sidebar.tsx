@@ -187,11 +187,42 @@ export default function Sidebar() {
             </button>
           </div>
         ) : (
-          <div className="pt-3 flex justify-center">
+          <div className="pt-3 space-y-1.5 flex flex-col items-center">
+            {/* 用户头像 */}
             <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
               style={{ background: 'var(--accent-gradient)' }}>
               {user ? user.username[0].toUpperCase() : '?'}
             </div>
+            {/* 主题 */}
+            <button onClick={toggleTheme}
+              className="p-2 rounded-lg transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+              title={theme === 'dark' ? '浅色模式' : '深色模式'}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            {/* 语言 */}
+            <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')}
+              className="p-2 rounded-lg transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+              title={locale === 'zh' ? 'English' : '中文'}
+            >
+              <Languages className="w-4 h-4" />
+            </button>
+            {/* 版本 */}
+            <button onClick={() => setShowVersionInfo(true)}
+              className="p-2 rounded-lg transition-colors text-[9px] font-mono"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+              title="v1.0.0"
+            >
+              v1
+            </button>
           </div>
         )}
       </div>
