@@ -9,7 +9,7 @@ import { Plus, Search, ExternalLink, GitFork, Server, Cloud, Link as LinkIcon, T
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('全部');
   const [platformFilter, setPlatformFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [showNew, setShowNew] = useState(false);
