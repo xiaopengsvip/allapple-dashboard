@@ -24,7 +24,6 @@ export default function LoginPage() {
     setTimeout(() => setMounted(true), 100);
   }, []);
 
-  // Particle canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -82,9 +81,9 @@ export default function LoginPage() {
       if (res.ok && data.success) {
         router.push('/');
       } else {
-        setError(data.error || '登录失败');
+        setError(data.error || t('login.login_failed'));
       }
-    } catch { setError('网络错误'); }
+    } catch { setError(t('login.network_error')); }
     setLoading(false);
   };
 
@@ -97,7 +96,6 @@ export default function LoginPage() {
     }}>
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: isDark ? 1 : 0.3 }} />
 
-      {/* Background glow */}
       <div style={{ position: 'absolute', top: '20%', left: '30%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(77,127,255,0.08), transparent)', filter: 'blur(100px)', zIndex: 0 }} />
       <div style={{ position: 'absolute', bottom: '20%', right: '20%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(103,91,255,0.06), transparent)', filter: 'blur(80px)', zIndex: 0 }} />
 
@@ -106,17 +104,15 @@ export default function LoginPage() {
         opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(16px)',
         transition: `all 600ms ${EASE}`,
       }}>
-        {/* Logo + Title */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <div style={{ position: 'relative', display: 'inline-block', marginBottom: 16 }}>
             <img src="/logo-128.png" alt="EOC" style={{ width: 72, height: 72, borderRadius: 20 }} />
             <div style={{ position: 'absolute', bottom: -2, right: -2, width: 18, height: 18, borderRadius: '50%', background: 'var(--success)', border: '3px solid var(--bg-root)', boxShadow: '0 0 10px rgba(16,185,129,0.5)' }} />
           </div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 6 }}>Everett Operations Center</h1>
-          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>下一代企业级运维控制中心</p>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 6 }}>{t('login.title')}</h1>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{t('login.subtitle')}</p>
         </div>
 
-        {/* Card */}
         <div style={{
           background: 'var(--bg-card)', borderRadius: 24,
           border: '1px solid var(--border)',
@@ -126,15 +122,15 @@ export default function LoginPage() {
           <div style={{ padding: '32px 28px 28px' }}>
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>用户名</label>
-                <input type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder="请输入用户名" autoComplete="username"
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>{t('login.username')}</label>
+                <input type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder={t('login.enter_username')} autoComplete="username"
                   style={{ width: '100%', padding: '12px 14px', borderRadius: 14, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 14, outline: 'none', transition: `border-color 150ms ${EASE}`, boxSizing: 'border-box' }}
                   onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-soft)'; }}
                   onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }} />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>密码</label>
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="请输入密码" autoComplete="current-password"
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>{t('login.password')}</label>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder={t('login.enter_password')} autoComplete="current-password"
                   style={{ width: '100%', padding: '12px 14px', borderRadius: 14, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 14, outline: 'none', transition: `border-color 150ms ${EASE}`, boxSizing: 'border-box' }}
                   onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-soft)'; }}
                   onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }} />
@@ -158,21 +154,19 @@ export default function LoginPage() {
                 {loading ? (
                   <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                     <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#FFFFFF', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                    登录中...
+                    {t('login.logging_in')}
                   </span>
-                ) : '登 录'}
+                ) : t('login.submit')}
               </button>
             </form>
           </div>
         </div>
 
-        {/* Footer */}
         <div style={{ textAlign: 'center', marginTop: 24 }}>
           <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>Everett Operations Center v1.0.0</p>
           <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4, opacity: 0.5 }}>© 2026 Everett · AllApple.top</p>
         </div>
 
-        {/* Theme toggle */}
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
           <button onClick={() => {
             const next = isDark ? 'light' : 'dark';
@@ -185,7 +179,7 @@ export default function LoginPage() {
           }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}>
-            {isDark ? '☀ 浅色模式' : '🌙 深色模式'}
+            {isDark ? t('login.light_mode') : t('login.dark_mode')}
           </button>
         </div>
       </div>

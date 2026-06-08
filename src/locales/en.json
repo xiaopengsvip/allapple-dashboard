@@ -75,7 +75,8 @@
     "confirm_delete": "Confirm delete?",
     "has_github": "Has GitHub",
     "dual_deploy": "Dual",
-    "project_name": "Project Name"
+    "project_name": "Project Name",
+    "server": "Server"
   },
   "domains": {
     "title": "Domains",
@@ -87,7 +88,9 @@
     "target": "Target",
     "proxy": "Proxy",
     "zone": "Zone",
-    "no_data": "No data. Configure Cloudflare Token in Settings"
+    "no_data": "No data. Configure Cloudflare Token in Settings",
+    "records": "records",
+    "all": "All"
   },
   "servers": {
     "title": "Servers",
@@ -96,14 +99,27 @@
     "restart": "Restart",
     "stop": "Stop",
     "logs": "Logs",
-    "online": "Online"
+    "online": "Online",
+    "refresh": "Refresh",
+    "restarting": "Restarting...",
+    "stopping": "Stopping...",
+    "confirm_restart": "Restart {name}?",
+    "confirm_stop": "Stop {name}?",
+    "restart_success": "Restarted successfully",
+    "stop_success": "Stopped successfully",
+    "action_failed": "Action failed",
+    "fetching_logs": "Fetching logs...",
+    "pm2_logs": "PM2 Logs",
+    "close": "Close",
+    "no_logs": "No logs"
   },
   "github": {
     "title": "GitHub",
     "subtitle": "Repository Management",
     "repos": "repos",
     "search": "Search repos...",
-    "no_data": "No data. Configure GitHub Token in Settings"
+    "no_data": "No data. Configure GitHub Token in Settings",
+    "refresh": "Refresh"
   },
   "vercel": {
     "title": "Vercel",
@@ -112,15 +128,26 @@
     "framework": "Framework",
     "last_update": "Last Update",
     "link": "Link",
-    "no_data": "No data. Configure Vercel Token in Settings"
+    "no_data": "No data. Configure Vercel Token in Settings",
+    "refresh": "Refresh",
+    "search": "Search..."
   },
   "deployments": {
     "title": "Deployments",
     "subtitle": "Deployment Status Overview",
-    "vercel_deploy": "Vercel Deployments",
-    "server_deploy": "Server Deployments (PM2)",
+    "vercel_deploy": "▲ Vercel Deployments",
+    "server_deploy": "🖥 Server Deployments (PM2)",
     "success": "Success",
-    "all_status": "All project deployment status"
+    "all_status": "All project deployment status",
+    "refresh": "Refresh",
+    "no_vercel": "No Vercel deployment projects",
+    "no_server": "No server deployment projects",
+    "deploy_history": "Deployment History",
+    "no_history": "No deployment records",
+    "trigger_deploy": "Trigger Deploy",
+    "environment": "Environment",
+    "commit": "Commit",
+    "duration": "Duration"
   },
   "topology": {
     "title": "Topology",
@@ -132,7 +159,9 @@
     "domain_mapping": "Domain Mapping",
     "repo": "repos",
     "projects": "projects",
-    "domains": "domains"
+    "domains": "domains",
+    "cicd": "CI/CD",
+    "edge": "Edge"
   },
   "logs": {
     "title": "Logs",
@@ -141,8 +170,10 @@
     "action": "Action",
     "target": "Target",
     "detail": "Detail",
+    "status": "Status",
     "no_logs": "No logs",
-    "records": "records"
+    "records": "records",
+    "refresh": "Refresh"
   },
   "settings": {
     "title": "Settings",
@@ -165,7 +196,8 @@
     "vercel_desc": "Edge deployment & projects",
     "gh_desc": "Repo management & webhooks",
     "srv_desc": "Tencent Cloud Tokyo instance",
-    "auth_desc": "JWT token signing key"
+    "auth_desc": "JWT token signing key",
+    "server_address": "Server Address"
   },
   "profile": {
     "title": "Profile",
@@ -178,13 +210,23 @@
     "current_password": "Current Password",
     "new_password": "New Password",
     "confirm_password": "Confirm New Password",
-    "password_changed": "Password changed successfully",
+    "password_changed": "✓ Password changed successfully",
     "uploading": "Uploading...",
     "enter_display_name": "Enter display name",
     "enter_current_pw": "Enter current password",
     "min_6_chars": "At least 6 characters",
     "enter_new_pw_again": "Re-enter new password",
-    "change_btn": "Change Password"
+    "change_btn": "Change Password",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "changing": "Changing...",
+    "fill_all_fields": "Please fill all fields",
+    "password_mismatch": "Passwords do not match",
+    "password_too_short": "Password must be at least 6 characters",
+    "change_failed": "Change failed",
+    "upload_failed": "Upload failed",
+    "image_too_large": "Image size cannot exceed 10MB",
+    "loading": "Loading..."
   },
   "login": {
     "title": "Everett Operations Center",
@@ -194,12 +236,17 @@
     "submit": "Sign In",
     "logging_in": "Signing in...",
     "enter_username": "Enter username",
-    "enter_password": "Enter password"
+    "enter_password": "Enter password",
+    "login_failed": "Login failed",
+    "network_error": "Network error",
+    "light_mode": "☀ Light Mode",
+    "dark_mode": "🌙 Dark Mode"
   },
   "logout": {
     "confirm": "Confirm Logout",
     "description": "Logging out will clear your session.\nYou will need to log in again.",
-    "confirm_btn": "Log Out"
+    "confirm_btn": "Log Out",
+    "title": "Logout"
   },
   "version": {
     "features": "Features",
@@ -213,6 +260,7 @@
     "notifications": "Notifications",
     "no_notifications": "No notifications",
     "loading": "Loading...",
-    "records": "records"
+    "records": "records",
+    "refresh": "Refresh"
   }
 }

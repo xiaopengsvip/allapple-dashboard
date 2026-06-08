@@ -22,15 +22,15 @@ export default function LogsPage() {
       <TopBar title={t("logs.title")} subtitle={t("logs.subtitle")} />
       <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{logs.length} 条记录</span>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{logs.length} {t("logs.records")}</span>
           <button onClick={fetchLogs} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 10, fontSize: 12, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>
-            <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> 刷新
+            <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> {t("logs.refresh")}
           </button>
         </div>
         <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr style={{ borderBottom: '1px solid var(--border)' }}>
-              {['时间', '操作', '目标', '详情', '状态'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 20px', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.5, textTransform: 'uppercase' as const }}>{h}</th>)}
+              {[t('logs.time'), t('logs.action'), t('logs.target'), t('logs.detail'), t('logs.status')].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 20px', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.5, textTransform: 'uppercase' as const }}>{h}</th>)}
             </tr></thead>
             <tbody>
               {logs.map((l, i) => (
@@ -44,7 +44,7 @@ export default function LogsPage() {
                   <td style={{ padding: '12px 20px' }}><span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: `${statusColor[l.status] || 'var(--text-muted)'}15`, color: statusColor[l.status] || 'var(--text-muted)' }}>{l.status}</span></td>
                 </tr>
               ))}
-              {logs.length === 0 && <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '{t("logs.no_logs")}'}</td></tr>}
+              {logs.length === 0 && <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? t('common.loading') : t('logs.no_logs')}</td></tr>}
             </tbody>
           </table>
         </div>

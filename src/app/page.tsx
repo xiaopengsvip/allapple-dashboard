@@ -120,8 +120,8 @@ export default function DashboardPage() {
             {sys ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <ResourceBar label="CPU" value={sys.cpu.loadAvg[0]} max={sys.cpu.cores} display={`${sys.cpu.loadAvg[0].toFixed(2)} / ${sys.cpu.cores} cores`} color="#4D7FFF" />
-                <ResourceBar label="内存" value={sys.memory.used} max={sys.memory.total} display={`${fmtBytes(sys.memory.used)} / ${fmtBytes(sys.memory.total)}`} color="#A78BFA" />
-                <ResourceBar label="磁盘" value={sys.disk.used} max={sys.disk.total} display={`${fmtBytes(sys.disk.used)} / ${fmtBytes(sys.disk.total)}`} color="#F59E0B" />
+                <ResourceBar label={t("dashboard.memory")} value={sys.memory.used} max={sys.memory.total} display={`${fmtBytes(sys.memory.used)} / ${fmtBytes(sys.memory.total)}`} color="#A78BFA" />
+                <ResourceBar label={t("dashboard.disk")} value={sys.disk.used} max={sys.disk.total} display={`${fmtBytes(sys.disk.used)} / ${fmtBytes(sys.disk.total)}`} color="#F59E0B" />
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
                   <span>Uptime: {fmtUptime(sys.uptime)}</span>
                   <span>{sys.cpu.cores} cores · {sys.arch}</span>

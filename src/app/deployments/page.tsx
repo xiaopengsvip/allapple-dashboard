@@ -23,28 +23,30 @@ export default function DeploymentsPage() {
       <TopBar title={t("deployments.title")} subtitle={t("deployments.subtitle")} />
       <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>所有项目的部署状态</span>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{t("deployments.all_status")}</span>
           <button onClick={fetchData} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 10, fontSize: 12, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>
-            <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> 刷新
+            <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> {t("deployments.refresh")}
           </button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {[{ title: '▲ Vercel 部署', items: vercelProjects, color: '#4D7FFF' }, { title: '🖥 服务器部署 (PM2)', items: serverProjects, color: '#10B981' }].map(section => (
+          {[{ title: t('deployments.vercel_deploy'), items: vercelProjects, color: '#4D7FFF', emptyMsg: t('deployments.no_vercel') }, { title: t('deployments.server_deploy'), items: serverProjects, color: '#10B981', emptyMsg: t('deployments.no_server') }].map(section => (
             <div key={section.title} style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', overflow: 'hidden' }}>
               <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
                 <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>{section.title}</h3>
               </div>
-              {section.items.map((p, i) => (
+              {section.items.length === 0 ? (
+                <div style={{ padding: 24, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{section.emptyMsg}</div>
+              ) : section.items.map((p, i) => (
                 <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 20px', borderBottom: i < section.items.length - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: 'var(--success)', boxShadow: '0 0 6px rgba(16,185,129,0.4)' }} />
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: p.status === 'active' ? 'var(--success)' : 'var(--warning)' }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{p.domain} {p.pm2_name ? `· ${p.pm2_name} :${p.server_port}` : ''}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{p.domain || p.pm2_name || '—'}</div>
                   </div>
-                  <span style={{ fontSize: 10, padding: '3px 10px', borderRadius: 20, background: 'var(--success-soft)', color: 'var(--success)', fontWeight: 600 }}>成功</span>
-                  {p.domain && <a href={`https://${p.domain}`} target="_blank" style={{ color: 'var(--text-muted)' }}><ExternalLink style={{ width: 14, height: 14 }} /></a>}
+                  {p.domain && <a href={`https://${p.domain}`} target="_blank" style={{ color: 'var(--accent)' }}><ExternalLink style={{ width: 14, height: 14 }} /></a>}
+                  <span style={{ fontSize: 10, padding: '3px 10px', borderRadius: 20, background: 'var(--success-soft)', color: 'var(--success)', fontWeight: 600 }}>{t("deployments.success")}</span>
                 </div>
               ))}
             </div>

@@ -194,7 +194,7 @@ export default function Sidebar() {
               <button onClick={handleLogout} style={{ padding: 6, borderRadius: 8, background: 'transparent', border: 'none', cursor: 'pointer', color: s.textMuted, flexShrink: 0, transition: `all 150ms ${EASE}`, opacity: collapsed ? 0 : 1 }}
                 onMouseEnter={e => { e.currentTarget.style.color = 'var(--error)'; e.currentTarget.style.background = 'var(--error-soft)'; }}
                 onMouseLeave={e => { e.currentTarget.style.color = s.textMuted; e.currentTarget.style.background = 'transparent'; }}
-                title="退出登录"><LogOut style={{ width: 15, height: 15 }} /></button>
+                title={t("logout.title")}><LogOut style={{ width: 15, height: 15 }} /></button>
             )}
           </Link>
 

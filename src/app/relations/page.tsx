@@ -28,24 +28,24 @@ export default function RelationsPage() {
           background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)',
           padding: 28, marginBottom: 24, boxShadow: 'var(--shadow-card)',
         }}>
-          <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5, marginBottom: 24 }}>基础设施拓扑</h3>
+          <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5, marginBottom: 24 }}>{t("topology.flow")}</h3>
 
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
             {/* GitHub */}
-            <FlowNode icon={GitFork} title="GitHub" count={githubProjects.length} subtitle="仓库" color="#F59E0B"
+            <FlowNode icon={GitFork} title="GitHub" count={githubProjects.length} subtitle={t("topology.repo")} color="#F59E0B"
               items={githubProjects.slice(0, 5).map(p => ({ name: p.github_repo, tag: p.domain }))} />
 
             {/* Arrow */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, paddingTop: 40 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 500 }}>CI/CD</div>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 500 }}>{t("topology.cicd")}</div>
               <ArrowRight style={{ width: 20, height: 20, color: 'var(--text-muted)' }} />
             </div>
 
             {/* Deploy Targets */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <FlowNode icon={Cloud} title="▲ Vercel" count={vercelProjects.length} subtitle="Edge" color="#FFFFFF"
+              <FlowNode icon={Cloud} title="▲ Vercel" count={vercelProjects.length} subtitle={t("topology.edge")} color="#FFFFFF"
                 items={vercelProjects.slice(0, 3).map(p => ({ name: p.name, tag: p.domain }))} />
-              <FlowNode icon={Server} title="🖥 服务器" count={serverProjects.length} subtitle="PM2" color="#4D7FFF"
+              <FlowNode icon={Server} title="🖥 Server" count={serverProjects.length} subtitle="PM2" color="#4D7FFF"
                 items={serverProjects.slice(0, 3).map(p => ({ name: p.name, tag: `:${p.server_port}` }))} />
             </div>
 
@@ -56,15 +56,14 @@ export default function RelationsPage() {
             </div>
 
             {/* Domains */}
-            <FlowNode icon={Globe} title="☁ Cloudflare" count={domains.length} subtitle="域名" color="#F59E0B"
+            <FlowNode icon={Globe} title="☁ Cloudflare" count={domains.length} subtitle={t("topology.domains")} color="#F59E0B"
               items={domains.slice(0, 5).map(p => ({ name: p.domain, tag: p.name }))} />
           </div>
         </div>
 
         {/* Detail Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
-          {/* GitHub Detail */}
-          <DetailCard title="GitHub 仓库" count={githubProjects.length} icon={GitFork} color="#F59E0B"
+          <DetailCard title={t("topology.github_repos")} count={githubProjects.length} icon={GitFork} color="#F59E0B"
             items={githubProjects.map(p => ({
               name: p.github_repo,
               sub: p.domain,
@@ -72,8 +71,7 @@ export default function RelationsPage() {
               dotColor: '#10B981',
             }))} />
 
-          {/* Vercel Detail */}
-          <DetailCard title="Vercel 项目" count={vercelProjects.length} icon={Cloud} color="#FFFFFF"
+          <DetailCard title={t("topology.vercel_projects")} count={vercelProjects.length} icon={Cloud} color="#FFFFFF"
             items={vercelProjects.map(p => ({
               name: p.name,
               sub: p.domain,
@@ -81,8 +79,7 @@ export default function RelationsPage() {
               dotColor: '#A78BFA',
             }))} />
 
-          {/* Server Detail */}
-          <DetailCard title="服务器 PM2" count={serverProjects.length} icon={Server} color="#4D7FFF"
+          <DetailCard title={t("topology.server_pm2")} count={serverProjects.length} icon={Server} color="#4D7FFF"
             items={serverProjects.map(p => ({
               name: p.name,
               sub: p.pm2_name ? `${p.pm2_name} :${p.server_port}` : p.domain,
@@ -90,8 +87,7 @@ export default function RelationsPage() {
               dotColor: '#4D7FFF',
             }))} />
 
-          {/* Domains Detail */}
-          <DetailCard title="域名映射" count={domains.length} icon={Globe} color="#F59E0B"
+          <DetailCard title={t("topology.domain_mapping")} count={domains.length} icon={Globe} color="#F59E0B"
             items={domains.map(p => ({
               name: p.domain,
               sub: p.name,
@@ -104,7 +100,7 @@ export default function RelationsPage() {
   );
 }
 
-/* Flow Node - for the topology diagram */
+/* Flow Node */
 function FlowNode({ icon: Icon, title, count, subtitle, color, items }: {
   icon: any; title: string; count: number; subtitle: string; color: string;
   items: { name: string; tag?: string }[];
@@ -136,7 +132,7 @@ function FlowNode({ icon: Icon, title, count, subtitle, color, items }: {
   );
 }
 
-/* Detail Card - for the bottom grid */
+/* Detail Card */
 function DetailCard({ title, count, icon: Icon, color, items }: {
   title: string; count: number; icon: any; color: string;
   items: { name: string; sub?: string; link?: string; dotColor: string }[];

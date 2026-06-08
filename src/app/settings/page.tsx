@@ -46,28 +46,28 @@ export default function SettingsPage() {
   };
 
   const sections = [
-    { key: 'cf', title: 'Cloudflare', desc: 'DNS 记录管理与域名解析', icon: Globe, color: '#F59E0B',
-      fields: [{ key: 'cloudflare_api_token', label: 'API Token', placeholder: '输入 Cloudflare API Token...' }] },
-    { key: 'vercel', title: 'Vercel', desc: 'Edge 部署与项目管理', icon: Cloud, color: '#FFFFFF',
-      fields: [{ key: 'vercel_token', label: 'Token', placeholder: '输入 Vercel Token...' }] },
-    { key: 'gh', title: 'GitHub', desc: '仓库管理与 Webhook 配置', icon: Zap, color: '#F59E0B',
+    { key: 'cf', title: 'Cloudflare', desc: t('settings.cf_desc'), icon: Globe, color: '#F59E0B',
+      fields: [{ key: 'cloudflare_api_token', label: 'API Token', placeholder: 'Cloudflare API Token...' }] },
+    { key: 'vercel', title: 'Vercel', desc: t('settings.vercel_desc'), icon: Cloud, color: '#FFFFFF',
+      fields: [{ key: 'vercel_token', label: 'Token', placeholder: 'Vercel Token...' }] },
+    { key: 'gh', title: 'GitHub', desc: t('settings.gh_desc'), icon: Zap, color: '#F59E0B',
       fields: [
-        { key: 'github_token', label: 'Token', placeholder: '输入 GitHub Token...' },
-        { key: 'github_org', label: '组织/用户', placeholder: 'xiaopengsvip' },
+        { key: 'github_token', label: 'Token', placeholder: 'GitHub Token...' },
+        { key: 'github_org', label: t('settings.server_address'), placeholder: 'xiaopengsvip' },
       ] },
-    { key: 'srv', title: '服务器', desc: '腾讯云 Tokyo 实例连接', icon: Server, color: '#4D7FFF',
-      fields: [{ key: 'server_host', label: '服务器地址', placeholder: '43.167.213.143' }] },
-    { key: 'auth', title: '认证', desc: 'JWT 令牌签发密钥', icon: Shield, color: '#A78BFA',
-      fields: [{ key: 'jwt_secret', label: 'JWT 密钥', placeholder: '自动生成的密钥' }] },
+    { key: 'srv', title: t('settings.server'), desc: t('settings.srv_desc'), icon: Server, color: '#4D7FFF',
+      fields: [{ key: 'server_host', label: t('settings.server_address'), placeholder: '43.167.213.143' }] },
+    { key: 'auth', title: 'JWT', desc: t('settings.auth_desc'), icon: Shield, color: '#A78BFA',
+      fields: [{ key: 'jwt_secret', label: 'JWT Secret', placeholder: '••••••••' }] },
   ];
 
   const systemInfo = [
-    { label: '版本', value: 'v1.0.0', icon: '🏷' },
-    { label: '框架', value: 'Next.js 16', icon: '⚡' },
-    { label: '数据库', value: 'SQLite', icon: '🗄' },
-    { label: '部署', value: 'PM2 + Caddy', icon: '🚀' },
-    { label: '服务器', value: '腾讯云 Tokyo', icon: '🖥' },
-    { label: '域名', value: 'dashboard.vios.top', icon: '🌐' },
+    { label: t('settings.version'), value: 'v1.0.0', icon: '🏷' },
+    { label: t('settings.framework'), value: 'Next.js 16', icon: '⚡' },
+    { label: t('settings.database'), value: 'SQLite', icon: '🗄' },
+    { label: t('settings.deployment'), value: 'PM2 + Caddy', icon: '🚀' },
+    { label: t('settings.server'), value: 'Tencent Cloud Tokyo', icon: '🖥' },
+    { label: t('settings.domain_label'), value: 'dashboard.vios.top', icon: '🌐' },
   ];
 
   return (
@@ -87,7 +87,6 @@ export default function SettingsPage() {
                 overflow: 'hidden', boxShadow: 'var(--shadow-card)',
                 transition: `border-color 200ms ${EASE}`,
               }}>
-                {/* Header */}
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px',
                   borderBottom: '1px solid var(--border)', background: 'var(--bg-elevated)',
@@ -99,7 +98,6 @@ export default function SettingsPage() {
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{section.title}</div>
                     <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>{section.desc}</div>
                   </div>
-                  {/* Status */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginRight: 8 }}>
                     {configured ? (
                       <><div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)', boxShadow: '0 0 6px rgba(16,185,129,0.4)' }} /><span style={{ fontSize: 11, color: 'var(--success)' }}>{t("settings.configured")}</span></>
@@ -107,7 +105,6 @@ export default function SettingsPage() {
                       <><div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--warning)' }} /><span style={{ fontSize: 11, color: 'var(--warning)' }}>{t("settings.not_configured")}</span></>
                     )}
                   </div>
-                  {/* Action Buttons */}
                   {isEditing ? (
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button onClick={cancelEdit} style={{
@@ -115,10 +112,7 @@ export default function SettingsPage() {
                         background: 'var(--bg-card)', color: 'var(--text-secondary)',
                         border: '1px solid var(--border)', cursor: 'pointer',
                         transition: `all 150ms ${EASE}`,
-                      }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-                      >{t("settings.cancel")}</button>
+                      }}>{t("settings.cancel")}</button>
                       <button onClick={() => handleSave(section.key, section.fields)} disabled={saving} style={{
                         display: 'flex', alignItems: 'center', gap: 6,
                         padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600,
@@ -127,7 +121,7 @@ export default function SettingsPage() {
                         boxShadow: '0 2px 8px rgba(77,127,255,0.2)',
                         opacity: saving ? 0.6 : 1, transition: `all 200ms ${EASE}`,
                       }}>
-                        {saved ? <><CheckCircle2 style={{ width: 13, height: 13 }} /> 已保存</> : saving ? '保存中...' : <><Save style={{ width: 13, height: 13 }} /> 保存</>}
+                        {saved ? <><CheckCircle2 style={{ width: 13, height: 13 }} /> {t("settings.saved")}</> : saving ? t("settings.saving") : <><Save style={{ width: 13, height: 13 }} /> {t("settings.save")}</>}
                       </button>
                     </div>
                   ) : (
@@ -141,12 +135,11 @@ export default function SettingsPage() {
                       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
                     >
-                      <Edit3 style={{ width: 13, height: 13 }} /> 编辑
+                      <Edit3 style={{ width: 13, height: 13 }} /> {t("settings.edit")}
                     </button>
                   )}
                 </div>
 
-                {/* Fields */}
                 <div style={{ padding: '16px 20px', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                   {section.fields.map(f => (
                     <div key={f.key} style={{ flex: '1 1 280px', minWidth: 0 }}>

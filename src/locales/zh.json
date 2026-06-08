@@ -75,7 +75,8 @@
     "confirm_delete": "确定删除?",
     "has_github": "有 GitHub",
     "dual_deploy": "双部署",
-    "project_name": "项目名称"
+    "project_name": "项目名称",
+    "server": "服务器"
   },
   "domains": {
     "title": "域名中心",
@@ -87,7 +88,9 @@
     "target": "目标",
     "proxy": "代理",
     "zone": "Zone",
-    "no_data": "暂无数据，请在设置中配置 Cloudflare Token"
+    "no_data": "暂无数据，请在设置中配置 Cloudflare Token",
+    "records": "条记录",
+    "all": "全部"
   },
   "servers": {
     "title": "服务器管理",
@@ -96,14 +99,27 @@
     "restart": "重启",
     "stop": "停止",
     "logs": "日志",
-    "online": "在线"
+    "online": "在线",
+    "refresh": "刷新",
+    "restarting": "重启中...",
+    "stopping": "停止中...",
+    "confirm_restart": "确定重启 {name}?",
+    "confirm_stop": "确定停止 {name}?",
+    "restart_success": "重启成功",
+    "stop_success": "停止成功",
+    "action_failed": "操作失败",
+    "fetching_logs": "获取日志中...",
+    "pm2_logs": "PM2 日志",
+    "close": "关闭",
+    "no_logs": "暂无日志"
   },
   "github": {
     "title": "GitHub",
     "subtitle": "仓库管理",
     "repos": "仓库",
     "search": "搜索仓库...",
-    "no_data": "暂无数据，请在设置中配置 GitHub Token"
+    "no_data": "暂无数据，请在设置中配置 GitHub Token",
+    "refresh": "刷新"
   },
   "vercel": {
     "title": "Vercel",
@@ -112,15 +128,26 @@
     "framework": "Framework",
     "last_update": "最近更新",
     "link": "链接",
-    "no_data": "暂无数据，请在设置中配置 Vercel Token"
+    "no_data": "暂无数据，请在设置中配置 Vercel Token",
+    "refresh": "刷新",
+    "search": "搜索..."
   },
   "deployments": {
     "title": "部署中心",
     "subtitle": "部署状态总览",
-    "vercel_deploy": "Vercel 部署",
-    "server_deploy": "服务器部署 (PM2)",
+    "vercel_deploy": "▲ Vercel 部署",
+    "server_deploy": "🖥 服务器部署 (PM2)",
     "success": "成功",
-    "all_status": "所有项目的部署状态"
+    "all_status": "所有项目的部署状态",
+    "refresh": "刷新",
+    "no_vercel": "暂无 Vercel 部署项目",
+    "no_server": "暂无服务器部署项目",
+    "deploy_history": "部署历史",
+    "no_history": "暂无部署记录",
+    "trigger_deploy": "触发部署",
+    "environment": "环境",
+    "commit": "提交",
+    "duration": "耗时"
   },
   "topology": {
     "title": "拓扑视图",
@@ -132,7 +159,9 @@
     "domain_mapping": "域名映射",
     "repo": "仓库",
     "projects": "项目",
-    "domains": "域名"
+    "domains": "域名",
+    "cicd": "CI/CD",
+    "edge": "Edge"
   },
   "logs": {
     "title": "日志中心",
@@ -141,8 +170,10 @@
     "action": "操作",
     "target": "目标",
     "detail": "详情",
+    "status": "状态",
     "no_logs": "暂无日志",
-    "records": "条记录"
+    "records": "条记录",
+    "refresh": "刷新"
   },
   "settings": {
     "title": "系统设置",
@@ -165,7 +196,8 @@
     "vercel_desc": "Edge 部署与项目管理",
     "gh_desc": "仓库管理与 Webhook 配置",
     "srv_desc": "腾讯云 Tokyo 实例连接",
-    "auth_desc": "JWT 令牌签发密钥"
+    "auth_desc": "JWT 令牌签发密钥",
+    "server_address": "服务器地址"
   },
   "profile": {
     "title": "个人资料",
@@ -178,13 +210,23 @@
     "current_password": "当前密码",
     "new_password": "新密码",
     "confirm_password": "确认新密码",
-    "password_changed": "密码修改成功",
+    "password_changed": "✓ 密码修改成功",
     "uploading": "上传中...",
     "enter_display_name": "输入显示名称",
     "enter_current_pw": "输入当前密码",
     "min_6_chars": "至少6位",
     "enter_new_pw_again": "再次输入新密码",
-    "change_btn": "修改密码"
+    "change_btn": "修改密码",
+    "saving": "保存中...",
+    "saved": "已保存",
+    "changing": "修改中...",
+    "fill_all_fields": "请填写所有字段",
+    "password_mismatch": "两次输入的新密码不一致",
+    "password_too_short": "新密码至少6位",
+    "change_failed": "修改失败",
+    "upload_failed": "上传失败",
+    "image_too_large": "图片大小不能超过 10MB",
+    "loading": "加载中..."
   },
   "login": {
     "title": "Everett Operations Center",
@@ -194,12 +236,17 @@
     "submit": "登 录",
     "logging_in": "登录中...",
     "enter_username": "请输入用户名",
-    "enter_password": "请输入密码"
+    "enter_password": "请输入密码",
+    "login_failed": "登录失败",
+    "network_error": "网络错误",
+    "light_mode": "☀ 浅色模式",
+    "dark_mode": "🌙 深色模式"
   },
   "logout": {
     "confirm": "确认退出",
     "description": "退出后将清除登录状态\n需要重新输入密码登录",
-    "confirm_btn": "确认退出"
+    "confirm_btn": "确认退出",
+    "title": "退出登录"
   },
   "version": {
     "features": "功能亮点",
@@ -213,6 +260,7 @@
     "notifications": "通知",
     "no_notifications": "暂无通知",
     "loading": "加载中...",
-    "records": "条记录"
+    "records": "条记录",
+    "refresh": "刷新"
   }
 }
