@@ -135,6 +135,15 @@ export default function Sidebar() {
             <div style={{ fontSize: 16, fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#111827', letterSpacing: '-0.02em' }}>EOC</div>
             <div style={{ fontSize: 10, color: theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF', marginTop: 1 }}>Everett Operations Center</div>
           </div>
+          {/* 折叠/展开箭头 */}
+          <ChevronRight className="flex-shrink-0" style={{
+            width: 16, height: 16,
+            color: collapsed ? '#4D7FFF' : (theme === 'dark' ? 'rgba(255,255,255,0.25)' : '#9CA3AF'),
+            transform: collapsed ? 'rotate(0)' : 'rotate(180deg)',
+            transition: 'transform 250ms ' + EASE,
+            animation: collapsed ? 'arrowPulse 2s ease-in-out infinite' : 'none',
+            opacity: collapsed ? 1 : 0,
+          }} />
         </div>
 
         {/* ═══ Navigation ═══ */}
@@ -223,23 +232,28 @@ export default function Sidebar() {
             padding: collapsed ? '6px 0' : '6px 0',
             justifyContent: collapsed ? 'center' : 'flex-start',
             borderRadius: 12, marginBottom: 8,
-            cursor: 'pointer',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-          >
+          }}>
             <div style={{
               width: 32, height: 32, borderRadius: 10, flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 13, fontWeight: 700, color: '#FFFFFF',
               background: 'linear-gradient(135deg, #4D7FFF, #675BFF)',
+              cursor: 'pointer',
             }}>
               {user ? user.username[0].toUpperCase() : '?'}
             </div>
-            <div style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
+            <div style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: theme === 'dark' ? '#FFFFFF' : '#111827' }}>{user?.username || '未登录'}</div>
               <div style={{ fontSize: 11, color: theme === 'dark' ? 'rgba(255,255,255,0.4)' : '#9CA3AF', marginTop: 1 }}>{user?.role || '—'}</div>
             </div>
+            {!collapsed && (
+              <button onClick={handleLogout} style={{ padding: 6, borderRadius: 8, background: 'transparent', border: 'none', cursor: 'pointer', color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF', flexShrink: 0, transition: `all 150ms ${EASE}`, opacity: collapsed ? 0 : 1 }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#EF4444'; e.currentTarget.style.background = theme === 'dark' ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.08)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = theme === 'dark' ? 'rgba(255,255,255,0.3)' : '#9CA3AF'; e.currentTarget.style.background = 'transparent'; }}
+                title="退出登录">
+                <LogOut style={{ width: 15, height: 15 }} />
+              </button>
+            )}
           </div>
 
           {/* Theme + Language (同一行) */}
