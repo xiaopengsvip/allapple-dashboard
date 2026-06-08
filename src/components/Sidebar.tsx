@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   LayoutDashboard, Package, Globe, Rocket, GitBranch,
   GitFork, Cloud, Server, FileText, Settings, ChevronLeft,
@@ -173,9 +174,9 @@ export default function Sidebar() {
         )}
       </div>
 
-      {/* 退出确认弹窗 */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center" onClick={() => setShowLogoutConfirm(false)}>
+      {/* 退出确认弹窗 — portal 到 body 最顶层 */}
+      {showLogoutConfirm && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center" onClick={() => setShowLogoutConfirm(false)}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
           <div className="relative rounded-2xl p-6 w-[320px] mx-4 animate-fade-up"
             style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}
@@ -201,7 +202,8 @@ export default function Sidebar() {
               >确认退出</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </aside>
   );
