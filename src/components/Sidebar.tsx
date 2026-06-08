@@ -46,11 +46,7 @@ export default function Sidebar() {
       className={`${collapsed ? 'w-[68px]' : 'w-[250px]'} flex flex-col flex-shrink-0 h-screen sticky top-0 transition-all duration-300 relative`}
       style={{ background: 'var(--bg-surface)', borderRight: '1px solid var(--border)' }}
     >
-      {/* 收起状态：右侧边缘引导箭头 */}
-      {collapsed && (
-        <div className="sidebar-expand-hint" onClick={() => setCollapsed(false)} title="展开侧边栏" />
-      )}
-      {/* Logo */}
+      {/* Logo + 折叠按钮 */}
       <div
         className="h-[72px] flex items-center px-5 gap-3 flex-shrink-0 cursor-pointer transition-colors"
         style={{ borderBottom: '1px solid var(--border)' }}
@@ -67,9 +63,9 @@ export default function Sidebar() {
             <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Everett Operations Center</div>
           </div>
         )}
-        <div className={`flex-shrink-0 p-1.5 rounded-lg transition-all duration-200 ${collapsed ? 'sidebar-collapsed-arrow' : ''}`}
+        <div className={`flex-shrink-0 p-1.5 rounded-lg transition-all duration-200 ${collapsed ? 'sidebar-collapsed-arrow' : 'sidebar-expanded-arrow'}`}
           style={{ color: collapsed ? '#818CF8' : 'var(--text-muted)' }}>
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${collapsed ? '' : 'rotate-180'}`} />
         </div>
       </div>
 
@@ -111,7 +107,7 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="px-3 pb-4 space-y-1 flex-shrink-0">
-        {!collapsed ? (
+        {!collapsed && (
           <>
             <button onClick={toggleTheme}
               className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors"
@@ -126,15 +122,6 @@ export default function Sidebar() {
               v1.0.0 · 2026-06-08
             </div>
           </>
-        ) : (
-          <button onClick={() => setCollapsed(false)}
-            className="w-full flex justify-center py-2 rounded-xl transition-colors"
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-            title="展开侧边栏"
-          >
-            <ChevronRight className="w-3.5 h-3.5 sidebar-collapsed-arrow" />
-          </button>
         )}
       </div>
     </aside>

@@ -114,6 +114,14 @@ body {
   animation: arrowBounce 1.5s ease-in-out infinite;
   color: #818CF8 !important;
 }
+.sidebar-expanded-arrow {
+  animation: none;
+  transition: all 0.2s;
+}
+.sidebar-expanded-arrow:hover {
+  color: #818CF8 !important;
+  transform: translateX(-2px);
+}
 .sidebar-collapsed-logo {
   animation: logoGlow 2.5s ease-in-out infinite;
   border-radius: 12px;
