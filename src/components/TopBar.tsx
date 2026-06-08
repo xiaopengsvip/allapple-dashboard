@@ -110,7 +110,14 @@ export default function TopBar({ title, subtitle }: { title: string; subtitle?: 
               }} onClick={e => e.stopPropagation()}>
                 <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>通知</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'var(--error-soft)', color: 'var(--error)', fontWeight: 600 }}>{notifications.length}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'var(--error-soft)', color: 'var(--error)', fontWeight: 600 }}>{notifications.length}</span>
+                    <button onClick={() => setShowNotifs(false)} style={{ padding: 4, borderRadius: 6, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', transition: `all 150ms ${EASE}` }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-elevated)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
+                      <X style={{ width: 14, height: 14 }} />
+                    </button>
+                  </div>
                 </div>
                 <div style={{ maxHeight: 340, overflowY: 'auto' }}>
                   {notifications.map((n, i) => {
@@ -166,7 +173,11 @@ export default function TopBar({ title, subtitle }: { title: string; subtitle?: 
                 placeholder="搜索项目、域名、GitHub 仓库..."
                 style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 15, color: 'var(--text-primary)' }}
               />
-              <kbd style={{ fontSize: 10, padding: '3px 8px', borderRadius: 6, background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)', fontWeight: 500 }}>ESC</kbd>
+              <button onClick={() => setShowSearch(false)} style={{ padding: 6, borderRadius: 8, background: 'var(--bg-elevated)', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', transition: `all 150ms ${EASE}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-elevated)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
+                <X style={{ width: 14, height: 14 }} />
+              </button>
             </div>
 
             {/* Results */}
