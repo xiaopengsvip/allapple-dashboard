@@ -47,7 +47,13 @@ export default function Sidebar() {
       style={{ background: 'var(--bg-surface)', borderRight: '1px solid var(--border)' }}
     >
       {/* Logo */}
-      <div className="h-[72px] flex items-center px-5 gap-3 flex-shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
+      <div
+        className="h-[72px] flex items-center px-5 gap-3 flex-shrink-0 cursor-pointer transition-colors"
+        style={{ borderBottom: '1px solid var(--border)' }}
+        onClick={() => setCollapsed(!collapsed)}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+      >
         <img src="/favicon.png" alt="EOC" className="w-9 h-9 rounded-xl flex-shrink-0" />
         {!collapsed && (
           <div className="flex-1 min-w-0">
@@ -55,13 +61,10 @@ export default function Sidebar() {
             <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Everett Operations Center</div>
           </div>
         )}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="p-1 rounded-lg transition-colors flex-shrink-0"
-          style={{ color: 'var(--text-muted)' }}
-        >
+        <div className={`flex-shrink-0 p-1.5 rounded-lg transition-all duration-200 ${collapsed ? 'animate-pulse' : ''}`}
+          style={{ color: 'var(--text-muted)' }}>
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
+        </div>
       </div>
 
       {/* Nav */}
@@ -102,7 +105,7 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="px-3 pb-4 space-y-1 flex-shrink-0">
-        {!collapsed && (
+        {!collapsed ? (
           <>
             <button onClick={toggleTheme}
               className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors"
@@ -117,6 +120,15 @@ export default function Sidebar() {
               v1.0.0 · 2026-06-08
             </div>
           </>
+        ) : (
+          <button onClick={() => setCollapsed(false)}
+            className="w-full flex justify-center py-2 rounded-xl transition-colors"
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            title="展开侧边栏"
+          >
+            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--success)', boxShadow: '0 0 6px rgba(16,185,129,0.5)' }} />
+          </button>
         )}
       </div>
     </aside>
