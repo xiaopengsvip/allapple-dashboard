@@ -5,62 +5,51 @@ import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
 import { Cloud, ExternalLink, RefreshCw, Search, Clock } from 'lucide-react';
 
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
 export default function VercelPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
 
-  const fetchProjects = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/vercel/projects');
-      const data = await res.json();
-      setProjects(data.projects || []);
-    } catch {}
-    setLoading(false);
-  };
-
+  const fetchProjects = async () => { setLoading(true); try { const res = await fetch('/api/vercel/projects'); const data = await res.json(); setProjects(data.projects || []); } catch {} setLoading(false); };
   useEffect(() => { fetchProjects(); }, []);
 
   const filtered = projects.filter(p => !search || p.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <AppShell>
-      <TopBar title="Vercel 项目" />
-      <div className="p-6">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="text-sm text-[#71717a]">{projects.length} 项目</div>
-          <div className="relative sm:ml-auto">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#71717a]" />
-            <input type="text" placeholder="搜索..." value={search} onChange={e => setSearch(e.target.value)} className="pl-8 pr-3 py-1.5 rounded-lg text-xs bg-[#12121a] border border-[#1e1e2e] text-[#e4e4e7] w-48" />
+      <TopBar title="Vercel" subtitle="Edge 部署管理" />
+      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{projects.length} 项目</span>
+          <div style={{ flex: 1 }} />
+          <div style={{ position: 'relative' }}>
+            <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 14, height: 14, color: 'var(--text-muted)' }} />
+            <input type="text" placeholder="搜索..." value={search} onChange={e => setSearch(e.target.value)} style={{ paddingLeft: 32, paddingRight: 12, paddingTop: 7, paddingBottom: 7, borderRadius: 10, fontSize: 12, width: 180, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }} />
           </div>
-          <button onClick={fetchProjects} disabled={loading} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-[#1e1e2e] text-[#71717a] hover:text-[#e4e4e7]">
-            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} /> 刷新
+          <button onClick={fetchProjects} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 10, fontSize: 12, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+            <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> 刷新
           </button>
         </div>
-
-        <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[#1e1e2e]">
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">项目</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">域名</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">Framework</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">最近更新</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">链接</th>
-              </tr>
-            </thead>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead><tr style={{ borderBottom: '1px solid var(--border)' }}>
+              {['项目', '域名', 'Framework', '最近更新', '链接'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 20px', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.5, textTransform: 'uppercase' as const }}>{h}</th>)}
+            </tr></thead>
             <tbody>
-              {filtered.map(p => (
-                <tr key={p.id} className="border-b border-[#1e1e2e] hover:bg-[#1a1a25]">
-                  <td className="px-4 py-3 text-sm font-medium">{p.name}</td>
-                  <td className="px-4 py-3 text-xs text-[#06d6a0]">{p.targets?.production?.alias?.[0] || p.name + '.vercel.app'}</td>
-                  <td className="px-4 py-3 text-xs text-[#71717a]">{p.framework || '—'}</td>
-                  <td className="px-4 py-3 text-xs text-[#71717a]"><Clock className="w-3 h-3 inline mr-1" />{p.updated_at ? new Date(p.updated_at).toLocaleDateString('zh-CN') : '—'}</td>
-                  <td className="px-4 py-3"><a href={`https://${p.name}.vercel.app`} target="_blank" className="text-[#71717a] hover:text-[#06d6a0]"><ExternalLink className="w-3.5 h-3.5" /></a></td>
+              {filtered.map((p, i) => (
+                <tr key={p.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+                  <td style={{ padding: '14px 20px', fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</td>
+                  <td style={{ padding: '14px 20px', fontSize: 12, color: 'var(--accent)' }}>{p.targets?.production?.alias?.[0] || p.name + '.vercel.app'}</td>
+                  <td style={{ padding: '14px 20px', fontSize: 12, color: 'var(--text-muted)' }}>{p.framework || '—'}</td>
+                  <td style={{ padding: '14px 20px', fontSize: 11, color: 'var(--text-muted)' }}><Clock style={{ width: 12, height: 12, display: 'inline', marginRight: 4 }} />{p.updated_at ? new Date(p.updated_at).toLocaleDateString('zh-CN') : '—'}</td>
+                  <td style={{ padding: '14px 20px' }}><a href={`https://${p.name}.vercel.app`} target="_blank" style={{ color: 'var(--text-muted)' }}><ExternalLink style={{ width: 14, height: 14 }} /></a></td>
                 </tr>
               ))}
-              {filtered.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-xs text-[#71717a]">{loading ? '加载中...' : '暂无数据，请在设置中配置 Vercel Token'}</td></tr>}
+              {filtered.length === 0 && <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '暂无数据，请在设置中配置 Vercel Token'}</td></tr>}
             </tbody>
           </table>
         </div>

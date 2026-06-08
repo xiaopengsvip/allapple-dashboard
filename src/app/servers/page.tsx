@@ -5,6 +5,8 @@ import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
 import { Server, RefreshCw, Play, Square, RotateCw, FileText, Cpu, HardDrive, MemoryStick, Clock } from 'lucide-react';
 
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
 export default function ServersPage() {
   const [pm2, setPm2] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
@@ -24,83 +26,67 @@ export default function ServersPage() {
   };
 
   useEffect(() => { fetchData(); }, []);
-
-  const fmtBytes = (b: number) => {
-    if (b > 1024*1024*1024) return (b/1024/1024/1024).toFixed(1) + 'GB';
-    if (b > 1024*1024) return (b/1024/1024).toFixed(0) + 'MB';
-    return (b/1024).toFixed(0) + 'KB';
-  };
-
-  const fmtUptime = (s: number) => {
-    const d = Math.floor(s/86400); const h = Math.floor((s%86400)/3600);
-    return d > 0 ? `${d}d ${h}h` : `${h}h`;
-  };
+  const fmtBytes = (b: number) => b > 1e9 ? (b / 1e9).toFixed(1) + ' GB' : (b / 1e6).toFixed(0) + ' MB';
+  const fmtUptime = (s: number) => { const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600); return `${d}d ${h}h`; };
 
   return (
     <AppShell>
-      <TopBar title="服务器管理" />
-      <div className="p-6 space-y-6">
+      <TopBar title="服务器管理" subtitle="PM2 进程与系统资源" />
+      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
         {/* System Stats */}
         {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2"><Cpu className="w-4 h-4 text-[#06d6a0]" /><span className="text-xs text-[#71717a]">CPU</span></div>
-              <div className="text-lg font-bold text-[#06d6a0]">{stats.cpu.cores} cores</div>
-              <div className="text-[10px] text-[#71717a]">Load: {stats.cpu.loadAvg.join(' / ')}</div>
-            </div>
-            <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2"><MemoryStick className="w-4 h-4 text-[#a78bfa]" /><span className="text-xs text-[#71717a]">内存</span></div>
-              <div className="text-lg font-bold text-[#a78bfa]">{stats.memory.percent}%</div>
-              <div className="text-[10px] text-[#71717a]">{fmtBytes(stats.memory.used)} / {fmtBytes(stats.memory.total)}</div>
-            </div>
-            <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2"><HardDrive className="w-4 h-4 text-[#60a5fa]" /><span className="text-xs text-[#71717a]">磁盘</span></div>
-              <div className="text-lg font-bold text-[#60a5fa]">{stats.disk.percent}%</div>
-              <div className="text-[10px] text-[#71717a]">{fmtBytes(stats.disk.used)} / {fmtBytes(stats.disk.total)}</div>
-            </div>
-            <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2"><Clock className="w-4 h-4 text-[#fb923c]" /><span className="text-xs text-[#71717a]">Uptime</span></div>
-              <div className="text-lg font-bold text-[#fb923c]">{fmtUptime(stats.uptime)}</div>
-              <div className="text-[10px] text-[#71717a]">{stats.hostname} · {stats.arch}</div>
-            </div>
-          </div>
-        )}
-
-        {/* PM2 Services */}
-        <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Server className="w-4 h-4 text-[#60a5fa]" />
-              <span className="text-sm font-semibold">PM2 服务</span>
-              <span className="text-[11px] text-[#34d399]">{pm2.filter(s => s.pm2_env?.status === 'online').length}/{pm2.length} 在线</span>
-            </div>
-            <button onClick={fetchData} disabled={loading} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-[#1e1e2e] text-[#71717a] hover:text-[#e4e4e7]">
-              <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} /> 刷新
-            </button>
-          </div>
-          <div className="space-y-2">
-            {pm2.map(s => (
-              <div key={s.name} className="flex items-center gap-4 px-4 py-3 rounded-lg bg-[#0a0a0f] border border-[#1e1e2e]">
-                <div className={`w-3 h-3 rounded-full ${s.pm2_env?.status === 'online' ? 'bg-[#34d399]' : 'bg-[#f87171]'}`}
-                  style={s.pm2_env?.status === 'online' ? { boxShadow: '0 0 8px #34d399' } : {}} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{s.name}</span>
-                    <span className="text-[10px] text-[#71717a]">v{s.pm2_env?.version || '?'}</span>
-                  </div>
-                  <div className="text-[11px] text-[#71717a] mt-0.5">
-                    PID {s.pid} · {s.monit ? fmtBytes(s.monit.memory) : '?'} · CPU {s.monit?.cpu || 0}% · Uptime {s.pm2_env?.pm_uptime ? fmtUptime(Math.floor((Date.now() - s.pm2_env.pm_uptime)/1000)) : '?'}
-                  </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
+            {[
+              { icon: Cpu, label: 'CPU', value: `${stats.cpu.cores} cores`, sub: `Load: ${stats.cpu.loadAvg.join(' / ')}`, color: '#4D7FFF' },
+              { icon: MemoryStick, label: '内存', value: `${Math.round(stats.memory.used / stats.memory.total * 100)}%`, sub: `${fmtBytes(stats.memory.used)} / ${fmtBytes(stats.memory.total)}`, color: '#A78BFA' },
+              { icon: HardDrive, label: '磁盘', value: `${Math.round(stats.disk.used / stats.disk.total * 100)}%`, sub: `${fmtBytes(stats.disk.used)} / ${fmtBytes(stats.disk.total)}`, color: '#F59E0B' },
+              { icon: Clock, label: 'Uptime', value: fmtUptime(stats.uptime), sub: `${stats.hostname} · ${stats.arch}`, color: '#10B981' },
+            ].map(s => (
+              <div key={s.label} style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', padding: '20px 22px', height: 120, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)' }}>{s.label}</span>
+                  <div style={{ width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${s.color}10` }}><s.icon style={{ width: 16, height: 16, color: s.color }} /></div>
                 </div>
-                <div className="flex gap-1">
-                  <button className="p-2 rounded-lg hover:bg-[#1e1e2e] text-[#71717a] hover:text-[#34d399]" title="重启"><RotateCw className="w-3.5 h-3.5" /></button>
-                  <button className="p-2 rounded-lg hover:bg-[#1e1e2e] text-[#71717a] hover:text-[#f87171]" title="停止"><Square className="w-3.5 h-3.5" /></button>
-                  <button className="p-2 rounded-lg hover:bg-[#1e1e2e] text-[#71717a] hover:text-[#e4e4e7]" title="日志"><FileText className="w-3.5 h-3.5" /></button>
+                <div>
+                  <div className="stat-value" style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1 }}>{s.value}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>{s.sub}</div>
                 </div>
               </div>
             ))}
-            {pm2.length === 0 && <div className="text-center text-xs text-[#71717a] py-8">{loading ? '加载中...' : '暂无 PM2 服务'}</div>}
           </div>
+        )}
+
+        {/* PM2 */}
+        <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>PM2 进程</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 10, padding: '3px 10px', borderRadius: 20, background: 'var(--success-soft)', color: 'var(--success)', fontWeight: 600 }}>{pm2.filter(s => s.status === 'online').length}/{pm2.length} 在线</span>
+              <button onClick={fetchData} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 8, fontSize: 11, background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: 'none', cursor: 'pointer' }}>
+                <RefreshCw style={{ width: 12, height: 12, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> 刷新
+              </button>
+            </div>
+          </div>
+          {pm2.map((s, i) => (
+            <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px 20px', borderBottom: i < pm2.length - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: s.status === 'online' ? 'var(--success)' : 'var(--error)', boxShadow: s.status === 'online' ? '0 0 8px rgba(16,185,129,0.4)' : 'none' }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{s.name}</div>
+                <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: 2 }}>PID {s.pid} · {s.memory ? fmtBytes(s.memory) : '—'} · CPU {s.cpu || 0}%</div>
+              </div>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {[{ icon: RotateCw, tip: '重启', color: 'var(--accent)' }, { icon: Square, tip: '停止', color: 'var(--error)' }, { icon: FileText, tip: '日志', color: 'var(--text-muted)' }].map(b => (
+                  <button key={b.tip} title={b.tip} style={{ padding: 7, borderRadius: 8, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', transition: `all 150ms ${EASE}` }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-elevated)'; e.currentTarget.style.color = b.color; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
+                    <b.icon style={{ width: 14, height: 14 }} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </AppShell>

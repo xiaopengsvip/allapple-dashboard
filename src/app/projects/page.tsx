@@ -3,9 +3,13 @@
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
-import StatusBadge from '@/components/StatusBadge';
-import PlatformBadge from '@/components/PlatformBadge';
-import { Plus, Search, ExternalLink, GitFork, Server, Cloud, Link as LinkIcon, Trash2, Edit } from 'lucide-react';
+import { Plus, Search, ExternalLink, Trash2 } from 'lucide-react';
+
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+function Card({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)', transition: `box-shadow 250ms ${EASE}, border-color 250ms ${EASE}`, ...style }}>{children}</div>;
+}
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -13,11 +17,9 @@ export default function ProjectsPage() {
   const [platformFilter, setPlatformFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [showNew, setShowNew] = useState(false);
-  const [newProject, setNewProject] = useState({ name: '', category: '工具', deploy_target: 'vercel', domain: '', github_repo: '', color: '#06d6a0', description: '' });
+  const [newProject, setNewProject] = useState({ name: '', category: '工具', deploy_target: 'vercel', domain: '', github_repo: '', color: '#4D7FFF', description: '' });
 
-  useEffect(() => {
-    fetch('/api/projects').then(r => r.json()).then(d => setProjects(d.projects || []));
-  }, []);
+  useEffect(() => { fetch('/api/projects').then(r => r.json()).then(d => setProjects(d.projects || [])); }, []);
 
   const categories = ['全部', '品牌官网', '工作台', 'AI应用', '数据可视化', '工具', '媒体', '教育'];
   const filtered = projects.filter(p => {
@@ -32,7 +34,7 @@ export default function ProjectsPage() {
   const handleCreate = async () => {
     const res = await fetch('/api/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newProject) });
     const d = await res.json();
-    if (d.project) { setProjects([d.project, ...projects]); setShowNew(false); setNewProject({ name: '', category: '工具', deploy_target: 'vercel', domain: '', github_repo: '', color: '#06d6a0', description: '' }); }
+    if (d.project) { setProjects([d.project, ...projects]); setShowNew(false); }
   };
 
   const handleDelete = async (id: string) => {
@@ -43,52 +45,64 @@ export default function ProjectsPage() {
 
   return (
     <AppShell>
-      <TopBar title="项目管理" />
-      <div className="p-6">
+      <TopBar title="项目中心" subtitle="统一管理所有项目" />
+      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5">
-          <div className="flex flex-wrap gap-1.5">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {categories.map(c => (
-              <button key={c} onClick={() => setFilter(c)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${filter === c ? 'bg-[#06d6a020] border border-[#06d6a040] text-[#06d6a0]' : 'bg-[#12121a] border border-[#1e1e2e] text-[#71717a] hover:text-[#e4e4e7]'}`}>{c} ({c === '全部' ? projects.length : projects.filter(p => p.category === c).length})</button>
+              <button key={c} onClick={() => setFilter(c)} style={{
+                padding: '6px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                background: filter === c ? 'var(--accent-soft)' : 'var(--bg-card)',
+                color: filter === c ? 'var(--accent)' : 'var(--text-muted)',
+                border: `1px solid ${filter === c ? 'rgba(77,127,255,0.2)' : 'var(--border)'}`,
+                transition: `all 150ms ${EASE}`,
+              }}>{c} ({c === '全部' ? projects.length : projects.filter(p => p.category === c).length})</button>
             ))}
           </div>
-          <div className="flex items-center gap-2 sm:ml-auto">
-            <div className="flex gap-1">
-              {[['all', '全部'], ['vercel', '▲ Vercel'], ['server', '🖥️ 服务器'], ['both', '🔗 双部署']].map(([k, v]) => (
-                <button key={k} onClick={() => setPlatformFilter(k)} className={`px-2 py-1 rounded-md text-[11px] transition-all ${platformFilter === k ? 'bg-[#06d6a020] text-[#06d6a0]' : 'text-[#71717a] hover:text-[#e4e4e7]'}`}>{v}</button>
-              ))}
-            </div>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#71717a]" />
-              <input type="text" placeholder="搜索项目..." value={search} onChange={e => setSearch(e.target.value)} className="pl-8 pr-3 py-1.5 rounded-lg text-xs bg-[#12121a] border border-[#1e1e2e] text-[#e4e4e7] placeholder:text-[#71717a] w-40" />
-            </div>
-            <button onClick={() => setShowNew(true)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs bg-[#06d6a0] text-black font-medium hover:bg-[#05c490]"><Plus className="w-3 h-3" /> 新建项目</button>
+          <div style={{ flex: 1 }} />
+          <div style={{ display: 'flex', gap: 6 }}>
+            {[['all', '全部'], ['vercel', '▲ Vercel'], ['server', '🖥 服务器'], ['both', '🔗 双部署']].map(([k, v]) => (
+              <button key={k} onClick={() => setPlatformFilter(k)} style={{
+                padding: '5px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
+                background: platformFilter === k ? 'var(--accent-soft)' : 'transparent',
+                color: platformFilter === k ? 'var(--accent)' : 'var(--text-muted)',
+                border: 'none', transition: `all 150ms ${EASE}`,
+              }}>{v}</button>
+            ))}
           </div>
+          <div style={{ position: 'relative' }}>
+            <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 14, height: 14, color: 'var(--text-muted)' }} />
+            <input type="text" placeholder="搜索项目..." value={search} onChange={e => setSearch(e.target.value)}
+              style={{ paddingLeft: 32, paddingRight: 12, paddingTop: 7, paddingBottom: 7, borderRadius: 10, fontSize: 12, width: 160, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }} />
+          </div>
+          <button onClick={() => setShowNew(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: 'var(--accent-gradient)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+            <Plus style={{ width: 14, height: 14 }} /> 新建项目
+          </button>
         </div>
 
         {/* New Project Modal */}
         {showNew && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowNew(false)}>
-            <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
-              <h3 className="text-lg font-semibold mb-4">新建项目</h3>
-              <div className="space-y-3">
-                <input placeholder="项目名称" value={newProject.name} onChange={e => setNewProject({...newProject, name: e.target.value})} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0f] border border-[#1e1e2e] text-sm" />
-                <input placeholder="描述" value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0f] border border-[#1e1e2e] text-sm" />
-                <div className="grid grid-cols-2 gap-3">
-                  <select value={newProject.category} onChange={e => setNewProject({...newProject, category: e.target.value})} className="px-3 py-2 rounded-lg bg-[#0a0a0f] border border-[#1e1e2e] text-sm">
+          <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={() => setShowNew(false)}>
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} />
+            <div style={{ position: 'relative', background: 'var(--bg-surface)', borderRadius: 20, padding: 32, width: 440, border: '1px solid var(--border)', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>新建项目</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <input placeholder="项目名称" value={newProject.name} onChange={e => setNewProject({...newProject, name: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
+                <input placeholder="描述" value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <select value={newProject.category} onChange={e => setNewProject({...newProject, category: e.target.value})} style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}>
                     {categories.filter(c => c !== '全部').map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
-                  <select value={newProject.deploy_target} onChange={e => setNewProject({...newProject, deploy_target: e.target.value})} className="px-3 py-2 rounded-lg bg-[#0a0a0f] border border-[#1e1e2e] text-sm">
-                    <option value="vercel">Vercel</option>
-                    <option value="server">服务器</option>
-                    <option value="both">双部署</option>
+                  <select value={newProject.deploy_target} onChange={e => setNewProject({...newProject, deploy_target: e.target.value})} style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}>
+                    <option value="vercel">Vercel</option><option value="server">服务器</option><option value="both">双部署</option>
                   </select>
                 </div>
-                <input placeholder="域名 (如 app.allapple.top)" value={newProject.domain} onChange={e => setNewProject({...newProject, domain: e.target.value})} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0f] border border-[#1e1e2e] text-sm" />
-                <input placeholder="GitHub 仓库名" value={newProject.github_repo} onChange={e => setNewProject({...newProject, github_repo: e.target.value})} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0f] border border-[#1e1e2e] text-sm" />
-                <div className="flex gap-3 justify-end">
-                  <button onClick={() => setShowNew(false)} className="px-4 py-2 rounded-lg text-sm border border-[#1e1e2e] text-[#71717a] hover:text-[#e4e4e7]">取消</button>
-                  <button onClick={handleCreate} disabled={!newProject.name} className="px-4 py-2 rounded-lg text-sm bg-[#06d6a0] text-black font-medium disabled:opacity-50">创建</button>
+                <input placeholder="域名" value={newProject.domain} onChange={e => setNewProject({...newProject, domain: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
+                <input placeholder="GitHub 仓库名" value={newProject.github_repo} onChange={e => setNewProject({...newProject, github_repo: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 4 }}>
+                  <button onClick={() => setShowNew(false)} style={{ padding: '10px 20px', borderRadius: 12, fontSize: 13, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>取消</button>
+                  <button onClick={handleCreate} disabled={!newProject.name} style={{ padding: '10px 20px', borderRadius: 12, fontSize: 13, fontWeight: 600, background: 'var(--accent-gradient)', color: '#fff', border: 'none', cursor: 'pointer', opacity: newProject.name ? 1 : 0.4 }}>创建</button>
                 </div>
               </div>
             </div>
@@ -96,38 +110,32 @@ export default function ProjectsPage() {
         )}
 
         {/* Table */}
-        <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl overflow-hidden">
-          <table className="w-full">
+        <Card style={{ overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr className="border-b border-[#1e1e2e]">
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">项目名称</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">分类</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">部署平台</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">域名</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">GitHub</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">状态</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">操作</th>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                {['项目名称', '分类', '部署平台', '域名', 'GitHub', '状态', '操作'].map(h => (
+                  <th key={h} style={{ textAlign: 'left', padding: '12px 20px', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.5, textTransform: 'uppercase' as const }}>{h}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {filtered.map(p => (
-                <tr key={p.id} className="border-b border-[#1e1e2e] hover:bg-[#1a1a25] transition-colors">
-                  <td className="px-4 py-3"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full" style={{ background: p.color }} /><span className="text-sm font-medium">{p.name}</span></div></td>
-                  <td className="px-4 py-3"><span className="text-[11px] px-2 py-0.5 rounded" style={{ background: `${p.color}10`, color: `${p.color}cc` }}>{p.category}</span></td>
-                  <td className="px-4 py-3"><PlatformBadge target={p.deploy_target} /></td>
-                  <td className="px-4 py-3">{p.domain && <a href={`https://${p.domain}`} target="_blank" className="text-xs text-[#06d6a0] hover:underline">{p.domain}</a>}</td>
-                  <td className="px-4 py-3">{p.github_repo ? <a href={`https://github.com/xiaopengsvip/${p.github_repo}`} target="_blank" className="text-xs text-[#71717a] hover:text-[#e4e4e7]">{p.github_repo}</a> : <span className="text-xs text-[#71717a]">—</span>}</td>
-                  <td className="px-4 py-3"><StatusBadge status={p.status} /></td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1">
-                      <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-md hover:bg-[#1e1e2e] text-[#71717a] hover:text-[#f87171]"><Trash2 className="w-3.5 h-3.5" /></button>
-                    </div>
-                  </td>
+              {filtered.map((p, i) => (
+                <tr key={p.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+                  <td style={{ padding: '14px 20px' }}><div style={{ display: 'flex', alignItems: 'center', gap: 10 }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color || '#4D7FFF', flexShrink: 0 }} /><span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</span></div></td>
+                  <td style={{ padding: '14px 20px' }}><span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: `${p.color}12`, color: `${p.color}cc` }}>{p.category}</span></td>
+                  <td style={{ padding: '14px 20px', fontSize: 12, color: 'var(--text-secondary)' }}>{p.deploy_target === 'vercel' ? '▲ Vercel' : p.deploy_target === 'server' ? '🖥 Server' : '🔗 Both'}</td>
+                  <td style={{ padding: '14px 20px' }}>{p.domain ? <a href={`https://${p.domain}`} target="_blank" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>{p.domain}</a> : <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>—</span>}</td>
+                  <td style={{ padding: '14px 20px' }}>{p.github_repo ? <a href={`https://github.com/xiaopengsvip/${p.github_repo}`} target="_blank" style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>{p.github_repo}</a> : <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>—</span>}</td>
+                  <td style={{ padding: '14px 20px' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-secondary)' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: p.status === 'active' ? 'var(--success)' : 'var(--warning)' }} />{p.status === 'active' ? '运行中' : '开发中'}</span></td>
+                  <td style={{ padding: '14px 20px' }}><button onClick={() => handleDelete(p.id)} style={{ padding: 6, borderRadius: 8, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><Trash2 style={{ width: 14, height: 14 }} /></button></td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
       </div>
     </AppShell>
   );

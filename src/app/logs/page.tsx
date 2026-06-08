@@ -3,58 +3,46 @@
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
-import { FileText, RefreshCw, Clock } from 'lucide-react';
+import { RefreshCw, Clock } from 'lucide-react';
+
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const fetchLogs = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/logs?limit=100');
-      const data = await res.json();
-      setLogs(data.logs || []);
-    } catch {}
-    setLoading(false);
-  };
-
+  const fetchLogs = async () => { setLoading(true); try { const res = await fetch('/api/logs?limit=100'); const data = await res.json(); setLogs(data.logs || []); } catch {} setLoading(false); };
   useEffect(() => { fetchLogs(); }, []);
 
-  const statusColor: Record<string, string> = { success: '#34d399', failed: '#f87171', warning: '#fb923c' };
+  const statusColor: Record<string, string> = { success: 'var(--success)', failed: 'var(--error)', warning: 'var(--warning)' };
 
   return (
     <AppShell>
-      <TopBar title="操作日志" />
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-5">
-          <div className="text-sm text-[#71717a]">{logs.length} 条记录</div>
-          <button onClick={fetchLogs} disabled={loading} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-[#1e1e2e] text-[#71717a] hover:text-[#e4e4e7]">
-            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} /> 刷新
+      <TopBar title="日志中心" subtitle="操作审计日志" />
+      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{logs.length} 条记录</span>
+          <button onClick={fetchLogs} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 10, fontSize: 12, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+            <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> 刷新
           </button>
         </div>
-        <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[#1e1e2e]">
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">时间</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">操作</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">目标</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">详情</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">状态</th>
-              </tr>
-            </thead>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead><tr style={{ borderBottom: '1px solid var(--border)' }}>
+              {['时间', '操作', '目标', '详情', '状态'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 20px', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.5, textTransform: 'uppercase' as const }}>{h}</th>)}
+            </tr></thead>
             <tbody>
-              {logs.map(l => (
-                <tr key={l.id} className="border-b border-[#1e1e2e] hover:bg-[#1a1a25]">
-                  <td className="px-4 py-2 text-xs text-[#71717a] font-mono"><Clock className="w-3 h-3 inline mr-1" />{new Date(l.created_at).toLocaleString('zh-CN')}</td>
-                  <td className="px-4 py-2 text-xs font-medium">{l.action}</td>
-                  <td className="px-4 py-2 text-xs text-[#71717a]">{l.target}</td>
-                  <td className="px-4 py-2 text-xs text-[#71717a] max-w-xs truncate">{l.detail}</td>
-                  <td className="px-4 py-2"><span className="text-[10px] px-2 py-0.5 rounded" style={{ background: `${statusColor[l.status] || '#71717a'}20`, color: statusColor[l.status] || '#71717a' }}>{l.status}</span></td>
+              {logs.map((l, i) => (
+                <tr key={l.id} style={{ borderBottom: i < logs.length - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+                  <td style={{ padding: '12px 20px', fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{new Date(l.created_at).toLocaleString('zh-CN')}</td>
+                  <td style={{ padding: '12px 20px', fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{l.action}</td>
+                  <td style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text-secondary)' }}>{l.target}</td>
+                  <td style={{ padding: '12px 20px', fontSize: 11, color: 'var(--text-muted)', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{l.detail}</td>
+                  <td style={{ padding: '12px 20px' }}><span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: `${statusColor[l.status] || 'var(--text-muted)'}15`, color: statusColor[l.status] || 'var(--text-muted)' }}>{l.status}</span></td>
                 </tr>
               ))}
-              {logs.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-xs text-[#71717a]">{loading ? '加载中...' : '暂无日志'}</td></tr>}
+              {logs.length === 0 && <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '暂无日志'}</td></tr>}
             </tbody>
           </table>
         </div>

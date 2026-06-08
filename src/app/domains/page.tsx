@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
-import { Globe, RefreshCw, Plus, Search, ExternalLink, Shield } from 'lucide-react';
+import { Globe, RefreshCw, Search } from 'lucide-react';
+
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function DomainsPage() {
   const [records, setRecords] = useState<any[]>([]);
@@ -11,69 +13,51 @@ export default function DomainsPage() {
   const [zone, setZone] = useState('all');
   const [search, setSearch] = useState('');
 
-  const fetchDomains = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/domains');
-      const data = await res.json();
-      setRecords(data.records || []);
-    } catch {}
-    setLoading(false);
-  };
-
+  const fetchDomains = async () => { setLoading(true); try { const res = await fetch('/api/domains'); const data = await res.json(); setRecords(data.records || []); } catch {} setLoading(false); };
   useEffect(() => { fetchDomains(); }, []);
 
-  const filtered = records.filter(r => {
-    if (zone !== 'all' && r.zone_name !== zone) return false;
-    if (search && !r.name.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  const filtered = records.filter(r => { if (zone !== 'all' && r.zone_name !== zone) return false; if (search && !r.name.toLowerCase().includes(search.toLowerCase())) return false; return true; });
 
   return (
     <AppShell>
-      <TopBar title="域名管理" />
-      <div className="p-6">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex gap-1.5">
+      <TopBar title="域名中心" subtitle="DNS 记录管理" />
+      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <div style={{ display: 'flex', gap: 6 }}>
             {['all', 'allapple.top', 'vios.top'].map(z => (
-              <button key={z} onClick={() => setZone(z)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${zone === z ? 'bg-[#06d6a020] border border-[#06d6a040] text-[#06d6a0]' : 'bg-[#12121a] border border-[#1e1e2e] text-[#71717a]'}`}>
+              <button key={z} onClick={() => setZone(z)} style={{ padding: '6px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, cursor: 'pointer', background: zone === z ? 'var(--accent-soft)' : 'var(--bg-card)', color: zone === z ? 'var(--accent)' : 'var(--text-muted)', border: `1px solid ${zone === z ? 'rgba(77,127,255,0.2)' : 'var(--border)'}`, transition: `all 150ms ${EASE}` }}>
                 {z === 'all' ? '全部' : z} ({z === 'all' ? records.length : records.filter(r => r.zone_name === z).length})
               </button>
             ))}
           </div>
-          <div className="relative sm:ml-auto">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#71717a]" />
-            <input type="text" placeholder="搜索域名..." value={search} onChange={e => setSearch(e.target.value)} className="pl-8 pr-3 py-1.5 rounded-lg text-xs bg-[#12121a] border border-[#1e1e2e] text-[#e4e4e7] w-48" />
+          <div style={{ flex: 1 }} />
+          <div style={{ position: 'relative' }}>
+            <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 14, height: 14, color: 'var(--text-muted)' }} />
+            <input type="text" placeholder="搜索域名..." value={search} onChange={e => setSearch(e.target.value)} style={{ paddingLeft: 32, paddingRight: 12, paddingTop: 7, paddingBottom: 7, borderRadius: 10, fontSize: 12, width: 180, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }} />
           </div>
-          <button onClick={fetchDomains} disabled={loading} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-[#1e1e2e] text-[#71717a] hover:text-[#e4e4e7]">
-            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} /> 刷新
+          <button onClick={fetchDomains} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 10, fontSize: 12, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+            <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> 刷新
           </button>
         </div>
 
-        <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[#1e1e2e]">
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">类型</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">域名</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">目标</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">代理</th>
-                <th className="text-left px-4 py-3 text-[11px] text-[#71717a] font-medium">Zone</th>
-              </tr>
-            </thead>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead><tr style={{ borderBottom: '1px solid var(--border)' }}>
+              {['类型', '域名', '目标', '代理', 'Zone'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 20px', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.5, textTransform: 'uppercase' as const }}>{h}</th>)}
+            </tr></thead>
             <tbody>
               {filtered.map((r, i) => (
-                <tr key={r.id || i} className="border-b border-[#1e1e2e] hover:bg-[#1a1a25] transition-colors">
-                  <td className="px-4 py-2"><span className="text-[10px] px-2 py-0.5 rounded bg-[#06d6a015] text-[#06d6a0] font-mono">{r.type}</span></td>
-                  <td className="px-4 py-2 text-xs font-mono text-[#e4e4e7]">{r.name}</td>
-                  <td className="px-4 py-2 text-xs font-mono text-[#71717a]">{r.content}</td>
-                  <td className="px-4 py-2"><span className={`text-[10px] px-2 py-0.5 rounded ${r.proxied ? 'bg-[#fb923c20] text-[#fb923c]' : 'bg-[#1a1a25] text-[#71717a]'}`}>{r.proxied ? 'PROXY' : 'DNS'}</span></td>
-                  <td className="px-4 py-2 text-[11px] text-[#71717a]">{r.zone_name}</td>
+                <tr key={r.id || i} style={{ borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+                  <td style={{ padding: '12px 20px' }}><span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, fontFamily: 'var(--font-mono)', background: 'var(--accent-soft)', color: 'var(--accent)' }}>{r.type}</span></td>
+                  <td style={{ padding: '12px 20px', fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>{r.name}</td>
+                  <td style={{ padding: '12px 20px', fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{r.content}</td>
+                  <td style={{ padding: '12px 20px' }}><span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: r.proxied ? 'var(--warning-soft)' : 'var(--bg-elevated)', color: r.proxied ? 'var(--warning)' : 'var(--text-muted)' }}>{r.proxied ? 'PROXY' : 'DNS'}</span></td>
+                  <td style={{ padding: '12px 20px', fontSize: 11, color: 'var(--text-muted)' }}>{r.zone_name}</td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={5} className="px-4 py-8 text-center text-xs text-[#71717a]">{loading ? '加载中...' : '暂无数据，请在设置中配置 Cloudflare Token'}</td></tr>
-              )}
+              {filtered.length === 0 && <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>{loading ? '加载中...' : '暂无数据'}</td></tr>}
             </tbody>
           </table>
         </div>

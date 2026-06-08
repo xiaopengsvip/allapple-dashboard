@@ -3,72 +3,50 @@
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
-import StatusBadge from '@/components/StatusBadge';
-import { Rocket, RefreshCw, ExternalLink, Clock } from 'lucide-react';
+import { Rocket, RefreshCw, ExternalLink } from 'lucide-react';
+
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function DeploymentsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/projects');
-      const data = await res.json();
-      setProjects(data.projects || []);
-    } catch {}
-    setLoading(false);
-  };
-
+  const fetchData = async () => { setLoading(true); try { const res = await fetch('/api/projects'); const data = await res.json(); setProjects(data.projects || []); } catch {} setLoading(false); };
   useEffect(() => { fetchData(); }, []);
+
+  const vercelProjects = projects.filter(p => p.deploy_target === 'vercel' || p.deploy_target === 'both');
+  const serverProjects = projects.filter(p => p.deploy_target === 'server' || p.deploy_target === 'both');
 
   return (
     <AppShell>
-      <TopBar title="部署管理" />
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-5">
-          <div className="text-sm text-[#71717a]">所有项目的部署状态</div>
-          <button onClick={fetchData} disabled={loading} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-[#1e1e2e] text-[#71717a] hover:text-[#e4e4e7]">
-            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} /> 刷新
+      <TopBar title="部署中心" subtitle="部署状态总览" />
+      <div style={{ padding: 24, maxWidth: 1440, margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>所有项目的部署状态</span>
+          <button onClick={fetchData} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 10, fontSize: 12, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+            <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> 刷新
           </button>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Vercel Deployments */}
-          <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl p-5">
-            <h3 className="text-sm font-semibold mb-4">▲ Vercel 部署</h3>
-            <div className="space-y-2">
-              {projects.filter(p => p.deploy_target === 'vercel' || p.deploy_target === 'both').map(p => (
-                <div key={p.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#0a0a0f]">
-                  <div className="w-2 h-2 rounded-full bg-[#34d399]" style={{ boxShadow: '0 0 6px #34d399' }} />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-medium truncate">{p.name}</div>
-                    <div className="text-[10px] text-[#71717a]">{p.domain}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          {[{ title: '▲ Vercel 部署', items: vercelProjects, color: '#4D7FFF' }, { title: '🖥 服务器部署 (PM2)', items: serverProjects, color: '#10B981' }].map(section => (
+            <div key={section.title} style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', overflow: 'hidden' }}>
+              <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+                <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>{section.title}</h3>
+              </div>
+              {section.items.map((p, i) => (
+                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 20px', borderBottom: i < section.items.length - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: 'var(--success)', boxShadow: '0 0 6px rgba(16,185,129,0.4)' }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{p.domain} {p.pm2_name ? `· ${p.pm2_name} :${p.server_port}` : ''}</div>
                   </div>
-                  <StatusBadge status={p.status} />
-                  {p.domain && <a href={`https://${p.domain}`} target="_blank" className="text-[#71717a] hover:text-[#06d6a0]"><ExternalLink className="w-3 h-3" /></a>}
+                  <span style={{ fontSize: 10, padding: '3px 10px', borderRadius: 20, background: 'var(--success-soft)', color: 'var(--success)', fontWeight: 600 }}>成功</span>
+                  {p.domain && <a href={`https://${p.domain}`} target="_blank" style={{ color: 'var(--text-muted)' }}><ExternalLink style={{ width: 14, height: 14 }} /></a>}
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Server Deployments */}
-          <div className="bg-[#12121a] border border-[#1e1e2e] rounded-xl p-5">
-            <h3 className="text-sm font-semibold mb-4">🖥️ 服务器部署 (PM2)</h3>
-            <div className="space-y-2">
-              {projects.filter(p => p.deploy_target === 'server' || p.deploy_target === 'both').map(p => (
-                <div key={p.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#0a0a0f]">
-                  <div className="w-2 h-2 rounded-full bg-[#60a5fa]" style={{ boxShadow: '0 0 6px #60a5fa' }} />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-medium truncate">{p.name}</div>
-                    <div className="text-[10px] text-[#71717a]">{p.pm2_name} :{p.server_port}</div>
-                  </div>
-                  <StatusBadge status={p.status} />
-                  {p.domain && <a href={`https://${p.domain}`} target="_blank" className="text-[#71717a] hover:text-[#06d6a0]"><ExternalLink className="w-3 h-3" /></a>}
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </AppShell>
