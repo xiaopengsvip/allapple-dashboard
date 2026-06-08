@@ -86,7 +86,7 @@ export default function SettingsPage() {
   return (
     <AppShell>
       <TopBar title="系统设置" subtitle="API 密钥与系统配置" />
-      <div style={{ padding: 24, maxWidth: 780 }}>
+      <div style={{ padding: 24,  }}>
         {/* API Keys */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
           {sections.map((section) => {
