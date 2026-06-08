@@ -47,25 +47,32 @@ export default function Sidebar() {
       style={{ background: 'var(--bg-surface)', borderRight: '1px solid var(--border)' }}
     >
       {/* Logo + 折叠按钮 */}
-      <div
-        className="h-[72px] flex items-center px-5 gap-3 flex-shrink-0 cursor-pointer transition-colors"
-        style={{ borderBottom: '1px solid var(--border)' }}
-        onClick={() => setCollapsed(!collapsed)}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-      >
-        <img src="/logo-128.png" alt="EOC"
-          className={`w-9 h-9 rounded-xl flex-shrink-0 transition-all duration-300 ${collapsed ? 'sidebar-collapsed-logo' : ''}`}
-        />
-        {!collapsed && (
-          <div className="flex-1 min-w-0">
-            <div className="text-[15px] font-bold text-white tracking-tight">EOC</div>
-            <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Everett Operations Center</div>
-          </div>
-        )}
-        <div className={`flex-shrink-0 p-1.5 rounded-lg transition-all duration-200 ${collapsed ? 'sidebar-collapsed-arrow' : 'sidebar-expanded-arrow'}`}
-          style={{ color: collapsed ? '#818CF8' : 'var(--text-muted)' }}>
-          <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${collapsed ? '' : 'rotate-180'}`} />
+      <div className="flex-shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div
+          className="h-[60px] flex items-center justify-center gap-3 cursor-pointer transition-colors px-4"
+          onClick={() => setCollapsed(!collapsed)}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+        >
+          <img src="/logo-128.png" alt="EOC"
+            className={`w-9 h-9 rounded-xl flex-shrink-0 transition-all duration-300 ${collapsed ? 'sidebar-collapsed-logo' : ''}`}
+          />
+          {!collapsed && (
+            <div className="flex-1 min-w-0">
+              <div className="text-[15px] font-bold text-white tracking-tight">EOC</div>
+              <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Everett Operations Center</div>
+            </div>
+          )}
+        </div>
+        {/* 折叠/展开箭头 - 始终在Logo下方居中 */}
+        <div
+          className={`flex items-center justify-center py-2 cursor-pointer transition-all duration-200 ${collapsed ? 'sidebar-collapsed-arrow' : 'sidebar-expanded-arrow'}`}
+          onClick={() => setCollapsed(!collapsed)}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+        >
+          <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${collapsed ? '' : 'rotate-180'}`}
+            style={{ color: collapsed ? '#818CF8' : 'var(--text-muted)' }} />
         </div>
       </div>
 
