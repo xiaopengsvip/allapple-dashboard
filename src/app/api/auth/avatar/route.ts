@@ -24,8 +24,8 @@ export async function POST(request: Request) {
     const ext = matches[1].replace('+', '');
     const data = Buffer.from(matches[2], 'base64');
 
-    // Limit 2MB
-    if (data.length > 2 * 1024 * 1024) {
+    // Limit 10MB
+    if (data.length > 10 * 1024 * 1024) {
       return NextResponse.json({ error: '图片大小不能超过 2MB' }, { status: 400 });
     }
 
