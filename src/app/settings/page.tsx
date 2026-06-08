@@ -3,37 +3,44 @@
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
-import { Save, Eye, EyeOff, Shield, Key, Cloud, Zap, Server, Globe, CheckCircle2 } from 'lucide-react';
+import { Save, Eye, EyeOff, Shield, Key, Cloud, Zap, Server, Globe, CheckCircle2, Edit3, X } from 'lucide-react';
 
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
-  const [original, setOriginal] = useState<Record<string, string>>({});
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
-  const [savingSection, setSavingSection] = useState<string | null>(null);
-  const [savedSection, setSavedSection] = useState<string | null>(null);
+  const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    fetch('/api/settings').then(r => r.json()).then(d => {
-      setSettings(d.settings || {});
-      setOriginal(d.settings || {});
-    });
+    fetch('/api/settings').then(r => r.json()).then(d => setSettings(d.settings || {}));
   }, []);
 
-  const update = (key: string, value: string) => setSettings({ ...settings, [key]: value });
+  const startEdit = (sectionKey: string, fields: { key: string }[]) => {
+    const draftData: Record<string, string> = {};
+    fields.forEach(f => { draftData[f.key] = settings[f.key] || ''; });
+    setDraft(draftData);
+    setEditingSection(sectionKey);
+    setSaved(false);
+  };
 
-  const isDirty = (fields: { key: string }[]) => fields.some(f => settings[f.key] !== original[f.key]);
+  const cancelEdit = () => {
+    setEditingSection(null);
+    setDraft({});
+  };
 
-  const handleSaveSection = async (sectionKey: string, fields: { key: string }[]) => {
-    setSavingSection(sectionKey);
+  const handleSave = async (sectionKey: string, fields: { key: string }[]) => {
+    setSaving(true);
     const payload: Record<string, string> = {};
-    fields.forEach(f => { payload[f.key] = settings[f.key]; });
+    fields.forEach(f => { payload[f.key] = draft[f.key]; });
     await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    setOriginal({ ...original, ...payload });
-    setSavingSection(null);
-    setSavedSection(sectionKey);
-    setTimeout(() => setSavedSection(null), 2000);
+    setSettings({ ...settings, ...payload });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => { setSaved(false); setEditingSection(null); }, 1500);
   };
 
   const sections = [
@@ -68,15 +75,15 @@ export default function SettingsPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
           {sections.map((section) => {
             const Icon = section.icon;
-            const dirty = isDirty(section.fields);
-            const saving = savingSection === section.key;
-            const saved = savedSection === section.key;
+            const isEditing = editingSection === section.key;
             const configured = section.fields.every(f => settings[f.key] && !settings[f.key].startsWith('***'));
 
             return (
               <div key={section.key} style={{
-                background: 'var(--bg-card)', borderRadius: 20, border: `1px solid ${dirty ? 'rgba(77,127,255,0.3)' : 'var(--border)'}`,
-                overflow: 'hidden', boxShadow: 'var(--shadow-card)', transition: `border-color 200ms ${EASE}`,
+                background: 'var(--bg-card)', borderRadius: 20,
+                border: `1px solid ${isEditing ? 'rgba(77,127,255,0.3)' : 'var(--border)'}`,
+                overflow: 'hidden', boxShadow: 'var(--shadow-card)',
+                transition: `border-color 200ms ${EASE}`,
               }}>
                 {/* Header */}
                 <div style={{
@@ -98,24 +105,43 @@ export default function SettingsPage() {
                       <><div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--warning)' }} /><span style={{ fontSize: 11, color: 'var(--warning)' }}>未配置</span></>
                     )}
                   </div>
-                  {/* Save button per section */}
-                  <button
-                    onClick={() => handleSaveSection(section.key, section.fields)}
-                    disabled={!dirty || saving}
-                    style={{
+                  {/* Action Buttons */}
+                  {isEditing ? (
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button onClick={cancelEdit} style={{
+                        padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500,
+                        background: 'var(--bg-card)', color: 'var(--text-secondary)',
+                        border: '1px solid var(--border)', cursor: 'pointer',
+                        transition: `all 150ms ${EASE}`,
+                      }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
+                      >取消</button>
+                      <button onClick={() => handleSave(section.key, section.fields)} disabled={saving} style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600,
+                        background: saved ? 'var(--success)' : 'var(--accent-gradient)',
+                        color: '#fff', border: 'none', cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(77,127,255,0.2)',
+                        opacity: saving ? 0.6 : 1, transition: `all 200ms ${EASE}`,
+                      }}>
+                        {saved ? <><CheckCircle2 style={{ width: 13, height: 13 }} /> 已保存</> : saving ? '保存中...' : <><Save style={{ width: 13, height: 13 }} /> 保存</>}
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={() => startEdit(section.key, section.fields)} style={{
                       display: 'flex', alignItems: 'center', gap: 6,
-                      padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600,
-                      background: saved ? 'var(--success)' : dirty ? 'var(--accent-gradient)' : 'var(--bg-card)',
-                      color: saved ? '#fff' : dirty ? '#fff' : 'var(--text-muted)',
-                      border: `1px solid ${dirty ? 'transparent' : 'var(--border)'}`,
-                      cursor: dirty ? 'pointer' : 'default',
-                      opacity: dirty && !saving ? 1 : 0.5,
-                      transition: `all 200ms ${EASE}`,
-                      boxShadow: dirty ? '0 2px 8px rgba(77,127,255,0.2)' : 'none',
+                      padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500,
+                      background: 'var(--bg-card)', color: 'var(--text-secondary)',
+                      border: '1px solid var(--border)', cursor: 'pointer',
+                      transition: `all 150ms ${EASE}`,
                     }}
-                  >
-                    {saved ? <><CheckCircle2 style={{ width: 13, height: 13 }} /> 已保存</> : saving ? '保存中...' : <><Save style={{ width: 13, height: 13 }} /> 保存</>}
-                  </button>
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+                    >
+                      <Edit3 style={{ width: 13, height: 13 }} /> 编辑
+                    </button>
+                  )}
                 </div>
 
                 {/* Fields */}
@@ -126,17 +152,19 @@ export default function SettingsPage() {
                       <div style={{ position: 'relative' }}>
                         <input
                           type={showSecrets[f.key] ? 'text' : 'password'}
-                          value={settings[f.key] || ''}
-                          onChange={e => update(f.key, e.target.value)}
-                          placeholder={f.placeholder}
+                          value={isEditing ? (draft[f.key] ?? '') : (settings[f.key] || '')}
+                          onChange={e => isEditing && setDraft({ ...draft, [f.key]: e.target.value })}
+                          readOnly={!isEditing}
+                          placeholder={isEditing ? f.placeholder : '••••••••'}
                           style={{
                             width: '100%', padding: '11px 40px 11px 14px', borderRadius: 12,
-                            background: 'var(--bg-root)', border: `1px solid ${settings[f.key] !== original[f.key] ? 'rgba(77,127,255,0.4)' : 'var(--border)'}`,
+                            background: isEditing ? 'var(--bg-root)' : 'var(--bg-elevated)',
+                            border: `1px solid ${isEditing ? 'rgba(77,127,255,0.3)' : 'var(--border)'}`,
                             color: 'var(--text-primary)', fontSize: 13, fontFamily: 'var(--font-mono)',
-                            outline: 'none', transition: `border-color 150ms ${EASE}`,
+                            outline: 'none', cursor: isEditing ? 'text' : 'default',
+                            opacity: isEditing ? 1 : 0.7,
+                            transition: `all 150ms ${EASE}`,
                           }}
-                          onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
-                          onBlur={e => { e.currentTarget.style.borderColor = settings[f.key] !== original[f.key] ? 'rgba(77,127,255,0.4)' : 'var(--border)'; }}
                         />
                         <button onClick={() => setShowSecrets({ ...showSecrets, [f.key]: !showSecrets[f.key] })}
                           style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', padding: 6, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
