@@ -12,8 +12,8 @@ import {
 } from 'lucide-react';
 
 /* ─── Design Tokens ─── */
-const SIDEBAR_W = 280;
-const SIDEBAR_COLLAPSED_W = 72;
+const SIDEBAR_W = 240;
+const SIDEBAR_COLLAPSED_W = 64;
 const LOGO_H = 76;
 const MENU_H = 44;
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
