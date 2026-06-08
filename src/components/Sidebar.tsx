@@ -180,38 +180,38 @@ export default function Sidebar() {
           {/* 遮罩 */}
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)' }} />
           {/* 弹窗 */}
-          <div className="relative w-full max-w-[360px] rounded-2xl overflow-hidden"
+          <div className="relative w-full max-w-[400px] rounded-2xl overflow-hidden"
             style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 16px 64px rgba(0,0,0,0.6), 0 0 1px rgba(255,255,255,0.05)' }}
             onClick={e => e.stopPropagation()}
           >
             {/* 顶部装饰条 */}
-            <div className="h-1" style={{ background: 'linear-gradient(90deg, #EF4444, #F59E0B)' }} />
+            <div className="h-[3px]" style={{ background: 'linear-gradient(90deg, #EF4444, #F59E0B)' }} />
 
-            <div className="p-6">
+            <div className="p-8 pb-7">
               {/* 图标 */}
-              <div className="flex justify-center mb-4">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.15)' }}>
-                  <LogOut className="w-7 h-7" style={{ color: '#EF4444' }} />
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.12)' }}>
+                  <LogOut className="w-8 h-8" style={{ color: '#EF4444' }} />
                 </div>
               </div>
 
               {/* 文字 */}
-              <div className="text-center mb-6">
-                <h3 className="text-[17px] font-bold text-white mb-2">确认退出</h3>
-                <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+              <div className="text-center mb-8">
+                <h3 className="text-[18px] font-bold text-white mb-3">确认退出</h3>
+                <p className="text-[13px] leading-relaxed max-w-[280px] mx-auto" style={{ color: 'var(--text-muted)' }}>
                   退出后将清除登录状态，需要重新输入密码登录
                 </p>
               </div>
 
               {/* 当前用户 */}
-              <div className="flex items-center gap-3 px-4 py-3 rounded-xl mb-5" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0"
+              <div className="flex items-center gap-3.5 px-4 py-3.5 rounded-xl mb-8" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+                <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white flex-shrink-0"
                   style={{ background: 'var(--accent-gradient)' }}>
                   {user ? user.username[0].toUpperCase() : '?'}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[13px] font-medium text-white">{user?.username || '—'}</div>
-                  <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{user?.role || '—'}</div>
+                  <div className="text-[11px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{user?.role || '—'}</div>
                 </div>
                 <div className="w-2 h-2 rounded-full" style={{ background: '#10B981', boxShadow: '0 0 6px rgba(16,185,129,0.5)' }} />
               </div>
@@ -220,17 +220,17 @@ export default function Sidebar() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}
-                  className="flex-1 py-3 rounded-xl text-[13px] font-semibold text-white transition-all duration-200"
-                  style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
+                  className="flex-1 py-3.5 rounded-xl text-[13px] font-semibold transition-all duration-200"
+                  style={{ background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
                 >取消</button>
                 <button
                   onClick={confirmLogout}
-                  className="flex-1 py-3 rounded-xl text-[13px] font-semibold text-white transition-all duration-200"
-                  style={{ background: 'linear-gradient(135deg, #DC2626, #EF4444)', boxShadow: '0 4px 16px rgba(239,68,68,0.25)' }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(239,68,68,0.4)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(239,68,68,0.25)'; }}
+                  className="flex-1 py-3.5 rounded-xl text-[13px] font-semibold text-white transition-all duration-200"
+                  style={{ background: 'linear-gradient(135deg, #DC2626, #EF4444)', boxShadow: '0 4px 16px rgba(239,68,68,0.2)' }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 24px rgba(239,68,68,0.35)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(239,68,68,0.2)'; }}
                 >确认退出</button>
               </div>
             </div>
