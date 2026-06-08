@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import {
   LayoutDashboard, Package, Rocket, Globe, GitBranch,
@@ -19,22 +20,22 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 const navSections = [
   { section: null, sectionEn: null, items: [
-    { href: '/', icon: LayoutDashboard, label: '仪表盘', labelEn: 'Dashboard' },
+    { href: '/', icon: LayoutDashboard, label: 'nav.dashboard', labelEn: 'Dashboard' },
   ]},
-  { section: '基础设施', sectionEn: 'INFRASTRUCTURE', items: [
-    { href: '/projects', icon: Package, label: '项目中心', labelEn: 'Projects' },
-    { href: '/deployments', icon: Rocket, label: '部署中心', labelEn: 'Deployments' },
-    { href: '/domains', icon: Globe, label: '域名中心', labelEn: 'Domains' },
-    { href: '/relations', icon: GitBranch, label: '拓扑视图', labelEn: 'Topology' },
+  { section: 'section.infrastructure', sectionEn: 'INFRASTRUCTURE', items: [
+    { href: '/projects', icon: Package, label: 'nav.projects', labelEn: 'Projects' },
+    { href: '/deployments', icon: Rocket, label: 'nav.deployments', labelEn: 'Deployments' },
+    { href: '/domains', icon: Globe, label: 'nav.domains', labelEn: 'Domains' },
+    { href: '/relations', icon: GitBranch, label: 'nav.topology', labelEn: 'Topology' },
   ]},
-  { section: '平台集成', sectionEn: 'INTEGRATIONS', items: [
+  { section: 'section.integrations', sectionEn: 'INTEGRATIONS', items: [
     { href: '/github', icon: GitFork, label: 'GitHub', labelEn: 'GitHub' },
     { href: '/vercel', icon: Cloud, label: 'Vercel', labelEn: 'Vercel' },
-    { href: '/servers', icon: Server, label: '服务器', labelEn: 'Servers' },
+    { href: '/servers', icon: Server, label: 'nav.servers', labelEn: 'Servers' },
   ]},
-  { section: '运维中心', sectionEn: 'OPERATIONS', items: [
-    { href: '/logs', icon: Activity, label: '日志中心', labelEn: 'Logs' },
-    { href: '/settings', icon: Settings, label: '系统设置', labelEn: 'Settings' },
+  { section: 'section.operations', sectionEn: 'OPERATIONS', items: [
+    { href: '/logs', icon: Activity, label: 'nav.logs', labelEn: 'Logs' },
+    { href: '/settings', icon: Settings, label: 'nav.settings', labelEn: 'Settings' },
   ]},
 ];
 
@@ -55,7 +56,9 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [transitionEnabled, setTransitionEnabled] = useState(false);
-  const [locale, setLocale] = useState<'zh' | 'en'>('zh');
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language as 'zh' | 'en';
+  const setLocale = (l: string) => { i18n.changeLanguage(l); localStorage.setItem('eoc-locale', l); };
   const [user, setUser] = useState<any>(null);
   const [showLogout, setShowLogout] = useState(false);
   const [showVersion, setShowVersion] = useState(false);
@@ -135,13 +138,13 @@ export default function Sidebar() {
                   padding: collapsed ? '0 0 8px' : '0 12px 8px', textAlign: collapsed ? 'center' : 'left',
                   opacity: collapsed ? 0 : 1, height: collapsed ? 0 : 'auto', overflow: 'hidden',
                   transition: `opacity 200ms ${EASE}, height 250ms ${EASE}`, textTransform: 'uppercase' as const,
-                }}>{locale === 'zh' ? section.section : section.sectionEn}</div>
+                }}>{t(section.section)}</div>
               )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {section.items.map((item) => {
                   const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
                   const Icon = item.icon;
-                  const label = locale === 'zh' ? item.label : item.labelEn;
+                  const label = t(item.label);
                   return (
                     <Link key={item.href} href={item.href}
                       ref={el => { hoverRefs.current[item.href] = el; }}
@@ -161,7 +164,7 @@ export default function Sidebar() {
                       onMouseOver={e => { if (!isActive) { e.currentTarget.style.background = s.bgHover; e.currentTarget.style.color = s.text; } }}
                       onMouseOut={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = s.textSec; } }}>
                       <Icon style={{ width: 22, height: 22, flexShrink: 0, strokeWidth: 2, color: isActive ? '#FFFFFF' : s.textMuted }} />
-                      <span style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>{label}</span>
+                      <span style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>{t(label)}</span>
                     </Link>
                   );
                 })}
@@ -184,7 +187,7 @@ export default function Sidebar() {
               </div>
             )}
             <div style={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, transition: `opacity 200ms ${EASE}, width 250ms ${EASE}` }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: s.text }}>{user?.username || '未登录'}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: s.text }}>{user?.username || t('sidebar.not_logged_in')}</div>
               <div style={{ fontSize: 11, color: s.textMuted, marginTop: 1 }}>{user?.role || '—'}</div>
             </div>
             {!collapsed && (
@@ -202,7 +205,7 @@ export default function Sidebar() {
                 onMouseEnter={e => { e.currentTarget.style.background = s.bgCard; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 title="切换主题"><Sun style={{ width: 18, height: 18 }} /></button>
-              <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} style={{ padding: 8, borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer', color: s.textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: `all 150ms ${EASE}` }}
+              <button onClick={() => setLocale(locale === 'zh' ? 'en' : 'zh')} style={{ padding: 8, borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer', color: s.textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: `all 150ms ${EASE}` }}
                 onMouseEnter={e => { e.currentTarget.style.background = s.bgCard; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 title={locale === 'zh' ? 'English' : '中文'}><Languages style={{ width: 18, height: 18 }} /></button>
@@ -217,9 +220,9 @@ export default function Sidebar() {
               }}
                 onMouseEnter={e => { e.currentTarget.style.background = s.bgHover; e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = s.border; }}>
-                <Sun style={{ width: 14, height: 14 }} /><span>外观</span>
+                <Sun style={{ width: 14, height: 14 }} /><span>{t('sidebar.appearance')}</span>
               </button>
-              <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} style={{
+              <button onClick={() => setLocale(locale === 'zh' ? 'en' : 'zh')} style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 height: 34, borderRadius: 10, border: `1px solid ${s.border}`,
                 background: 'transparent', cursor: 'pointer', fontSize: 11, fontWeight: 500,
