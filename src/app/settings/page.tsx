@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -9,6 +10,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
+  const { t } = useTranslation();
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -70,7 +72,7 @@ export default function SettingsPage() {
 
   return (
     <AppShell>
-      <TopBar title="系统设置" subtitle="API 密钥与系统配置" />
+      <TopBar title={t("settings.title")} subtitle={t("settings.subtitle")} />
       <div style={{ padding: 24 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
           {sections.map((section) => {
@@ -100,9 +102,9 @@ export default function SettingsPage() {
                   {/* Status */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginRight: 8 }}>
                     {configured ? (
-                      <><div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)', boxShadow: '0 0 6px rgba(16,185,129,0.4)' }} /><span style={{ fontSize: 11, color: 'var(--success)' }}>已配置</span></>
+                      <><div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)', boxShadow: '0 0 6px rgba(16,185,129,0.4)' }} /><span style={{ fontSize: 11, color: 'var(--success)' }}>{t("settings.configured")}</span></>
                     ) : (
-                      <><div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--warning)' }} /><span style={{ fontSize: 11, color: 'var(--warning)' }}>未配置</span></>
+                      <><div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--warning)' }} /><span style={{ fontSize: 11, color: 'var(--warning)' }}>{t("settings.not_configured")}</span></>
                     )}
                   </div>
                   {/* Action Buttons */}
@@ -116,7 +118,7 @@ export default function SettingsPage() {
                       }}
                         onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
                         onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-                      >取消</button>
+                      >{t("settings.cancel")}</button>
                       <button onClick={() => handleSave(section.key, section.fields)} disabled={saving} style={{
                         display: 'flex', alignItems: 'center', gap: 6,
                         padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600,
@@ -183,7 +185,7 @@ export default function SettingsPage() {
         <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', padding: 24, boxShadow: 'var(--shadow-card)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
             <Shield style={{ width: 18, height: 18, color: '#A78BFA' }} />
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>系统信息</h2>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>{t("settings.system_info")}</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
             {systemInfo.map(s => (

@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect, useRef } from 'react';
 import AppShell from '@/components/AppShell';
@@ -9,6 +10,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
+  const { t } = useTranslation();
   const [displayName, setDisplayName] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [savedProfile, setSavedProfile] = useState(false);
@@ -90,11 +92,11 @@ export default function ProfilePage() {
     reader.readAsDataURL(file);
   };
 
-  if (!user) return <AppShell><TopBar title="个人资料" /><div style={{ padding: 24, color: 'var(--text-muted)' }}>加载中...</div></AppShell>;
+  if (!user) return <AppShell><TopBar title={t("profile.title")} /><div style={{ padding: 24, color: 'var(--text-muted)' }}>加载中...</div></AppShell>;
 
   return (
     <AppShell>
-      <TopBar title="个人资料" subtitle="管理您的账户信息" />
+      <TopBar title={t("profile.title")} subtitle={t("profile.subtitle")} />
       <div style={{ padding: 24,  }}>
 
         {/* Avatar + Basic Info */}

@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { Search, Bell, X, Package, Globe, GitFork, Server, ExternalLink, Clock, CheckCircle2, AlertTriangle, Rocket } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
@@ -8,6 +9,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function TopBar({ title, subtitle }: { title: string; subtitle?: string }) {
   const [now, setNow] = useState(new Date());
+  const { t } = useTranslation();
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);

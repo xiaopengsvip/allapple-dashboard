@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -9,6 +10,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function DeploymentsPage() {
   const [projects, setProjects] = useState<any[]>([]);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const fetchData = async () => { setLoading(true); try { const res = await fetch('/api/projects'); const data = await res.json(); setProjects(data.projects || []); } catch {} setLoading(false); };
   useEffect(() => { fetchData(); }, []);
@@ -18,7 +20,7 @@ export default function DeploymentsPage() {
 
   return (
     <AppShell>
-      <TopBar title="部署中心" subtitle="部署状态总览" />
+      <TopBar title={t("deployments.title")} subtitle={t("deployments.subtitle")} />
       <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>所有项目的部署状态</span>

@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -9,6 +10,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function DomainsPage() {
   const [records, setRecords] = useState<any[]>([]);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [zone, setZone] = useState('all');
   const [search, setSearch] = useState('');
@@ -20,7 +22,7 @@ export default function DomainsPage() {
 
   return (
     <AppShell>
-      <TopBar title="域名中心" subtitle="DNS 记录管理" />
+      <TopBar title={t("domains.title")} subtitle={t("domains.subtitle")} />
       <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{ display: 'flex', gap: 6 }}>
@@ -33,7 +35,7 @@ export default function DomainsPage() {
           <div style={{ flex: 1 }} />
           <div style={{ position: 'relative' }}>
             <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 14, height: 14, color: 'var(--text-muted)' }} />
-            <input type="text" placeholder="搜索域名..." value={search} onChange={e => setSearch(e.target.value)} style={{ paddingLeft: 32, paddingRight: 12, paddingTop: 7, paddingBottom: 7, borderRadius: 10, fontSize: 12, width: 180, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }} />
+            <input type="text" placeholder={t("domains.search")} value={search} onChange={e => setSearch(e.target.value)} style={{ paddingLeft: 32, paddingRight: 12, paddingTop: 7, paddingBottom: 7, borderRadius: 10, fontSize: 12, width: 180, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }} />
           </div>
           <button onClick={fetchDomains} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 10, fontSize: 12, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>
             <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} /> 刷新

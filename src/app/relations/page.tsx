@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -9,6 +10,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function RelationsPage() {
   const [projects, setProjects] = useState<any[]>([]);
+  const { t } = useTranslation();
   useEffect(() => { fetch('/api/projects').then(r => r.json()).then(d => setProjects(d.projects || [])); }, []);
 
   const vercelProjects = projects.filter(p => p.deploy_target === 'vercel' || p.deploy_target === 'both');
@@ -18,7 +20,7 @@ export default function RelationsPage() {
 
   return (
     <AppShell>
-      <TopBar title="拓扑视图" subtitle="基础设施关联全景" />
+      <TopBar title={t("topology.title")} subtitle={t("topology.subtitle")} />
       <div style={{ padding: 24 }}>
 
         {/* Flow Diagram */}

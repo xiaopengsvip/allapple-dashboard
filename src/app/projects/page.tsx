@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -13,6 +14,7 @@ function Card({ children, style = {} }: { children: React.ReactNode; style?: Rea
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('全部');
   const [platformFilter, setPlatformFilter] = useState('all');
   const [search, setSearch] = useState('');
@@ -45,7 +47,7 @@ export default function ProjectsPage() {
 
   return (
     <AppShell>
-      <TopBar title="项目中心" subtitle="统一管理所有项目" />
+      <TopBar title={t("projects.title")} subtitle={t("projects.subtitle")} />
       <div style={{ padding: 24,  }}>
         {/* Filters */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
@@ -73,7 +75,7 @@ export default function ProjectsPage() {
           </div>
           <div style={{ position: 'relative' }}>
             <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 14, height: 14, color: 'var(--text-muted)' }} />
-            <input type="text" placeholder="搜索项目..." value={search} onChange={e => setSearch(e.target.value)}
+            <input type="text" placeholder={t("projects.search")} value={search} onChange={e => setSearch(e.target.value)}
               style={{ paddingLeft: 32, paddingRight: 12, paddingTop: 7, paddingBottom: 7, borderRadius: 10, fontSize: 12, width: 160, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }} />
           </div>
           <button onClick={() => setShowNew(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: 'var(--accent-gradient)', color: '#fff', border: 'none', cursor: 'pointer' }}>

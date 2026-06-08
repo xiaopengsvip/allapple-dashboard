@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -9,6 +10,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function GitHubPage() {
   const [repos, setRepos] = useState<any[]>([]);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -19,7 +21,7 @@ export default function GitHubPage() {
 
   return (
     <AppShell>
-      <TopBar title="GitHub" subtitle="仓库管理" />
+      <TopBar title={t("github.title")} subtitle={t("github.subtitle")} />
       <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{repos.length} 仓库</span>

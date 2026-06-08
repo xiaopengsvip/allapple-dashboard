@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -9,6 +10,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const fetchLogs = async () => { setLoading(true); try { const res = await fetch('/api/logs?limit=100'); const data = await res.json(); setLogs(data.logs || []); } catch {} setLoading(false); };
   useEffect(() => { fetchLogs(); }, []);
@@ -17,7 +19,7 @@ export default function LogsPage() {
 
   return (
     <AppShell>
-      <TopBar title="日志中心" subtitle="操作审计日志" />
+      <TopBar title={t("logs.title")} subtitle={t("logs.subtitle")} />
       <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{logs.length} 条记录</span>

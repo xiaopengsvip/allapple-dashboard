@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -9,6 +10,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function ServersPage() {
   const [pm2, setPm2] = useState<any[]>([]);
+  const { t } = useTranslation();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
@@ -31,7 +33,7 @@ export default function ServersPage() {
 
   return (
     <AppShell>
-      <TopBar title="服务器管理" subtitle="PM2 进程与系统资源" />
+      <TopBar title={t("servers.title")} subtitle={t("servers.subtitle")} />
       <div style={{ padding: 24,  }}>
         {/* System Stats */}
         {stats && (

@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -9,6 +10,7 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function VercelPage() {
   const [projects, setProjects] = useState<any[]>([]);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -19,7 +21,7 @@ export default function VercelPage() {
 
   return (
     <AppShell>
-      <TopBar title="Vercel" subtitle="Edge 部署管理" />
+      <TopBar title={t("vercel.title")} subtitle={t("vercel.subtitle")} />
       <div style={{ padding: 24,  }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{projects.length} 项目</span>

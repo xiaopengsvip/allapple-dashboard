@@ -1,4 +1,5 @@
 'use client';
+import { useTranslation } from 'react-i18next';
 
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
@@ -26,6 +27,7 @@ function Card({ children, delay = 0, style = {} }: { children: React.ReactNode; 
 
 export default function DashboardPage() {
   const [projects, setProjects] = useState<any[]>([]);
+  const { t } = useTranslation();
   const [pm2, setPm2] = useState<any[]>([]);
   const [sys, setSys] = useState<any>(null);
   const [domains, setDomains] = useState<any[]>([]);
@@ -74,15 +76,15 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <TopBar title="仪表盘" subtitle="Everett 运维总览" />
+      <TopBar title={t("dash.title")} subtitle={t("dash.subtitle")} />
       <div style={{ padding: 24 }}>
 
         {/* KPI Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
-          <KPICard delay={1} icon={Package} title="项目总数" value={loaded ? projects.length : '—'} color="#4D7FFF" />
-          <KPICard delay={2} icon={Globe} title="域名总数" value={loaded ? domainCount : '—'} color="#A78BFA" />
-          <KPICard delay={3} icon={GitFork} title="GitHub 仓库" value={loaded ? githubCount : '—'} color="#F59E0B" />
-          <KPICard delay={4} icon={Cloud} title="Vercel 项目" value={loaded ? vercelCount : '—'} color="#FFFFFF" />
+          <KPICard delay={1} icon={Package} title={t("dash.total_projects")} value={loaded ? projects.length : '—'} color="#4D7FFF" />
+          <KPICard delay={2} icon={Globe} title={t("dash.total_domains")} value={loaded ? domainCount : '—'} color="#A78BFA" />
+          <KPICard delay={3} icon={GitFork} title={t("dash.github_repos")} value={loaded ? githubCount : '—'} color="#F59E0B" />
+          <KPICard delay={4} icon={Cloud} title={t("dash.vercel_projects")} value={loaded ? vercelCount : '—'} color="#FFFFFF" />
         </div>
 
         {/* System Status + Resources + Today */}
@@ -90,7 +92,7 @@ export default function DashboardPage() {
           {/* System Status */}
           <Card delay={5} style={{ padding: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>系统状态</h3>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>{t("dash.system_status")}</h3>
               <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: allHealthy ? 'var(--success-soft)' : 'var(--warning-soft)', color: allHealthy ? 'var(--success)' : 'var(--warning)', fontWeight: 600 }}>
                 {allHealthy ? '全部正常' : `${serverCount}/${pm2.length} 在线`}
               </span>
@@ -114,7 +116,7 @@ export default function DashboardPage() {
 
           {/* Server Resources */}
           <Card delay={6} style={{ padding: 20 }}>
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16, letterSpacing: 0.5 }}>服务器资源</h3>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16, letterSpacing: 0.5 }}>{t("dash.server_resources")}</h3>
             {sys ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <ResourceBar label="CPU" value={sys.cpu.loadAvg[0]} max={sys.cpu.cores} display={`${sys.cpu.loadAvg[0].toFixed(2)} / ${sys.cpu.cores} cores`} color="#4D7FFF" />
@@ -130,7 +132,7 @@ export default function DashboardPage() {
 
           {/* Today Overview */}
           <Card delay={7} style={{ padding: 20 }}>
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16, letterSpacing: 0.5 }}>今日概览</h3>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16, letterSpacing: 0.5 }}>{t("dash.today_overview")}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <MiniStat label="PM2 进程" value={String(pm2.length)} color="#4D7FFF" />
               <MiniStat label="域名记录" value={String(domainCount)} color="#A78BFA" />
@@ -143,7 +145,7 @@ export default function DashboardPage() {
         {/* Project Center */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>项目中心</h3>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>{t("dash.project_center")}</h3>
             <button style={{ fontSize: 12, fontWeight: 500, padding: '5px 14px', borderRadius: 10, background: 'var(--accent-soft)', color: 'var(--accent)', border: 'none', cursor: 'pointer' }}>查看全部 →</button>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 }}>
@@ -158,7 +160,7 @@ export default function DashboardPage() {
           {/* PM2 */}
           <Card delay={5} style={{ padding: 0, overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>PM2 进程管理</h3>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>{t("dash.pm2_management")}</h3>
               <span style={{ fontSize: 10, padding: '3px 10px', borderRadius: 20, background: 'var(--success-soft)', color: 'var(--success)', fontWeight: 600 }}>{serverCount}/{pm2.length} 在线</span>
             </div>
             <div>
@@ -189,7 +191,7 @@ export default function DashboardPage() {
           {/* Event Timeline - from logs API */}
           <Card delay={6} style={{ padding: 0, overflow: 'hidden' }}>
             <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>实时事件流</h3>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>{t("dash.event_stream")}</h3>
             </div>
             <div>
               {logs.length > 0 ? logs.slice(0, 6).map((log: any, i: number) => (
