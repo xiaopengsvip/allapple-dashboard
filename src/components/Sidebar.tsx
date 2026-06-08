@@ -126,65 +126,67 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="flex-shrink-0 relative" style={{ borderTop: '1px solid var(--border)' }}>
-        {/* 展开状态 */}
-        <div className="px-3 pb-4 pt-3 space-y-1 overflow-hidden"
-          style={{ opacity: collapsed ? 0 : 1, pointerEvents: collapsed ? 'none' : 'auto', transition: 'opacity 0.2s', position: collapsed ? 'absolute' : 'relative', width: '100%' }}>
-          <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ background: 'var(--accent-gradient)' }}>
+      <div className="flex-shrink-0" style={{ borderTop: '1px solid var(--border)' }}>
+        <div style={{ height: collapsed ? 140 : 'auto', minHeight: collapsed ? 140 : 0, transition: 'height 0.3s cubic-bezier(0.4,0,0.2,1), min-height 0.3s cubic-bezier(0.4,0,0.2,1)' }}>
+          {/* 展开状态 */}
+          <div className="px-3 pb-4 pt-3 space-y-1"
+            style={{ opacity: collapsed ? 0 : 1, pointerEvents: collapsed ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
+            <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ background: 'var(--accent-gradient)' }}>
+                {user ? user.username[0].toUpperCase() : '?'}
+              </div>
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="text-[12px] font-medium text-white truncate">{user?.username || '未登录'}</div>
+                <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{user?.role || '—'}</div>
+              </div>
+              <button onClick={handleLogout} className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--error)'; e.currentTarget.style.background = 'var(--bg-card)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
+                title="退出登录"><LogOut className="w-3.5 h-3.5" /></button>
+            </div>
+            <button onClick={toggleTheme} className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors" style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              <span>{theme === 'dark' ? '浅色模式' : '深色模式'}</span>
+            </button>
+            <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors" style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+              <Languages className="w-4 h-4" />
+              <span>{locale === 'zh' ? '中文' : 'English'}</span>
+              <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>{locale === 'zh' ? 'EN' : '中'}</span>
+            </button>
+            <button onClick={() => setShowVersionInfo(true)} className="flex items-center justify-between w-full px-3 py-2 rounded-xl text-[10px] transition-colors" style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
+              <span>v1.0.0 · 2026-06-09</span>
+              <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+          {/* 收起状态 */}
+          <div className="py-3 space-y-1.5 flex flex-col items-center"
+            style={{ opacity: collapsed ? 1 : 0, pointerEvents: collapsed ? 'auto' : 'none', transition: 'opacity 0.2s 0.1s' }}>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: 'var(--accent-gradient)' }}>
               {user ? user.username[0].toUpperCase() : '?'}
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-[12px] font-medium text-white truncate">{user?.username || '未登录'}</div>
-              <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{user?.role || '—'}</div>
-            </div>
-            <button onClick={handleLogout} className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={e => { e.currentTarget.style.color = 'var(--error)'; e.currentTarget.style.background = 'var(--bg-card)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
-              title="退出登录"><LogOut className="w-3.5 h-3.5" /></button>
+            <button onClick={toggleTheme} className="p-2 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+              title={theme === 'dark' ? '浅色模式' : '深色模式'}>
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} className="p-2 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+              title={locale === 'zh' ? 'English' : '中文'}>
+              <Languages className="w-4 h-4" />
+            </button>
+            <button onClick={() => setShowVersionInfo(true)} className="p-2 rounded-lg transition-colors text-[9px] font-mono" style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+              title="v1.0.0">v1</button>
           </div>
-          <button onClick={toggleTheme} className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors" style={{ color: 'var(--text-secondary)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
-            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            <span>{theme === 'dark' ? '浅色模式' : '深色模式'}</span>
-          </button>
-          <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-[12px] transition-colors" style={{ color: 'var(--text-secondary)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
-            <Languages className="w-4 h-4" />
-            <span>{locale === 'zh' ? '中文' : 'English'}</span>
-            <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>{locale === 'zh' ? 'EN' : '中'}</span>
-          </button>
-          <button onClick={() => setShowVersionInfo(true)} className="flex items-center justify-between w-full px-3 py-2 rounded-xl text-[10px] transition-colors" style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
-            <span>v1.0.0 · 2026-06-09</span>
-            <ChevronRight className="w-3 h-3" />
-          </button>
-        </div>
-        {/* 收起状态 */}
-        <div className="pt-3 pb-4 space-y-1.5 flex flex-col items-center overflow-hidden"
-          style={{ opacity: collapsed ? 1 : 0, pointerEvents: collapsed ? 'auto' : 'none', transition: 'opacity 0.2s', position: collapsed ? 'relative' : 'absolute', width: '100%', maxWidth: 68 }}>
-          <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: 'var(--accent-gradient)' }}>
-            {user ? user.username[0].toUpperCase() : '?'}
-          </div>
-          <button onClick={toggleTheme} className="p-2 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-            title={theme === 'dark' ? '浅色模式' : '深色模式'}>
-            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
-          <button onClick={() => setLocale(l => l === 'zh' ? 'en' : 'zh')} className="p-2 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-            title={locale === 'zh' ? 'English' : '中文'}>
-            <Languages className="w-4 h-4" />
-          </button>
-          <button onClick={() => setShowVersionInfo(true)} className="p-2 rounded-lg transition-colors text-[9px] font-mono" style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-            title="v1.0.0">v1</button>
         </div>
       </div>
 
