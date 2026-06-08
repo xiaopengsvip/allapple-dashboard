@@ -15,7 +15,7 @@ function Card({ children, style = {} }: { children: React.ReactNode; style?: Rea
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const { t } = useTranslation();
-  const [filter, setFilter] = useState('全部');
+  const [filter, setFilter] = useState('all');
   const [platformFilter, setPlatformFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [showNew, setShowNew] = useState(false);
@@ -23,9 +23,19 @@ export default function ProjectsPage() {
 
   useEffect(() => { fetch('/api/projects').then(r => r.json()).then(d => setProjects(d.projects || [])); }, []);
 
-  const categories = ['全部', '品牌官网', '工作台', 'AI应用', '数据可视化', '工具', '媒体', '教育'];
+  const categories = [
+    { key: 'all', zh: '全部', en: 'All' },
+    { key: 'branding', zh: '品牌官网', en: 'Branding' },
+    { key: 'workspace', zh: '工作台', en: 'Workspace' },
+    { key: 'ai', zh: 'AI应用', en: 'AI Apps' },
+    { key: 'dataviz', zh: '数据可视化', en: 'Data Viz' },
+    { key: 'tools', zh: '工具', en: 'Tools' },
+    { key: 'media', zh: '媒体', en: 'Media' },
+    { key: 'education', zh: '教育', en: 'Education' },
+  ];
   const filtered = projects.filter(p => {
-    if (filter !== '全部' && p.category !== filter) return false;
+    const catMap: Record<string, string> = { branding: '品牌官网', workspace: '工作台', ai: 'AI应用', dataviz: '数据可视化', tools: '工具', media: '媒体', education: '教育' };
+    if (filter !== 'all' && p.category !== catMap[filter]) return false;
     if (platformFilter === 'vercel' && p.deploy_target !== 'vercel' && p.deploy_target !== 'both') return false;
     if (platformFilter === 'server' && p.deploy_target !== 'server' && p.deploy_target !== 'both') return false;
     if (platformFilter === 'both' && p.deploy_target !== 'both') return false;
@@ -40,7 +50,7 @@ export default function ProjectsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('确定删除?')) return;
+    if (!confirm(t('projects.confirm_delete'))) return;
     await fetch(`/api/projects/${id}`, { method: 'DELETE' });
     setProjects(projects.filter(p => p.id !== id));
   };
@@ -53,18 +63,18 @@ export default function ProjectsPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {categories.map(c => (
-              <button key={c} onClick={() => setFilter(c)} style={{
+              <button key={c.key} onClick={() => setFilter(c.key)} style={{
                 padding: '6px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                background: filter === c ? 'var(--accent-soft)' : 'var(--bg-card)',
-                color: filter === c ? 'var(--accent)' : 'var(--text-muted)',
-                border: `1px solid ${filter === c ? 'rgba(77,127,255,0.2)' : 'var(--border)'}`,
+                background: filter === c.key ? 'var(--accent-soft)' : 'var(--bg-card)',
+                color: filter === c.key ? 'var(--accent)' : 'var(--text-muted)',
+                border: `1px solid ${filter === c.key ? 'rgba(77,127,255,0.2)' : 'var(--border)'}`,
                 transition: `all 150ms ${EASE}`,
-              }}>{c} ({c === '全部' ? projects.length : projects.filter(p => p.category === c).length})</button>
+              }}>{t(`projects.${c.key}`) || c.zh} ({c.key === 'all' ? projects.length : projects.filter(p => p.category === c.zh).length})</button>
             ))}
           </div>
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', gap: 6 }}>
-            {[['all', '全部'], ['vercel', '▲ Vercel'], ['server', '🖥 服务器'], ['both', '🔗 双部署']].map(([k, v]) => (
+            {[['all', t('projects.all')], ['vercel', '▲ Vercel'], ['server', '🖥 Server'], ['both', '🔗 Dual']].map(([k, v]) => (
               <button key={k} onClick={() => setPlatformFilter(k)} style={{
                 padding: '5px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
                 background: platformFilter === k ? 'var(--accent-soft)' : 'transparent',
@@ -79,7 +89,7 @@ export default function ProjectsPage() {
               style={{ paddingLeft: 32, paddingRight: 12, paddingTop: 7, paddingBottom: 7, borderRadius: 10, fontSize: 12, width: 160, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }} />
           </div>
           <button onClick={() => setShowNew(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: 'var(--accent-gradient)', color: '#fff', border: 'none', cursor: 'pointer' }}>
-            <Plus style={{ width: 14, height: 14 }} /> 新建项目
+            <Plus style={{ width: 14, height: 14 }} /> {t("projects.new")}
           </button>
         </div>
 
@@ -90,18 +100,18 @@ export default function ProjectsPage() {
             <div style={{ position: 'relative', background: 'var(--bg-surface)', borderRadius: 20, padding: 32, width: 440, border: '1px solid var(--border)', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
               <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>{t("projects.new")}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <input placeholder="项目名称" value={newProject.name} onChange={e => setNewProject({...newProject, name: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
-                <input placeholder="描述" value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
+                <input placeholder={t("projects.project_name")} value={newProject.name} onChange={e => setNewProject({...newProject, name: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
+                <input placeholder={t("projects.description")} value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <select value={newProject.category} onChange={e => setNewProject({...newProject, category: e.target.value})} style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}>
-                    {categories.filter(c => c !== '全部').map(c => <option key={c} value={c}>{c}</option>)}
+                    {categories.filter(c => c.key !== 'all').map(c => <option key={c.key} value={c.zh}>{t(`projects.${c.key}`) || c.zh}</option>)}
                   </select>
                   <select value={newProject.deploy_target} onChange={e => setNewProject({...newProject, deploy_target: e.target.value})} style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}>
                     <option value="vercel">Vercel</option><option value="server">服务器</option><option value="both">双部署</option>
                   </select>
                 </div>
                 <input placeholder="域名" value={newProject.domain} onChange={e => setNewProject({...newProject, domain: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
-                <input placeholder="GitHub 仓库名" value={newProject.github_repo} onChange={e => setNewProject({...newProject, github_repo: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
+                <input placeholder={t("projects.github_repo")} value={newProject.github_repo} onChange={e => setNewProject({...newProject, github_repo: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }} />
                 <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 4 }}>
                   <button onClick={() => setShowNew(false)} style={{ padding: '10px 20px', borderRadius: 12, fontSize: 13, background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer' }}>{t("projects.cancel")}</button>
                   <button onClick={handleCreate} disabled={!newProject.name} style={{ padding: '10px 20px', borderRadius: 12, fontSize: 13, fontWeight: 600, background: 'var(--accent-gradient)', color: '#fff', border: 'none', cursor: 'pointer', opacity: newProject.name ? 1 : 0.4 }}>{t("projects.create")}</button>
@@ -116,7 +126,7 @@ export default function ProjectsPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                {['项目名称', '分类', '部署平台', '域名', 'GitHub', '状态', '操作'].map(h => (
+                {[t('projects.name'), t('projects.category'), t('projects.platform'), t('projects.domain'), 'GitHub', t('projects.status'), t('projects.actions')].map(h => (
                   <th key={h} style={{ textAlign: 'left', padding: '12px 20px', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.5, textTransform: 'uppercase' as const }}>{h}</th>
                 ))}
               </tr>
@@ -131,7 +141,7 @@ export default function ProjectsPage() {
                   <td style={{ padding: '14px 20px', fontSize: 12, color: 'var(--text-secondary)' }}>{p.deploy_target === 'vercel' ? '▲ Vercel' : p.deploy_target === 'server' ? '🖥 Server' : '🔗 Both'}</td>
                   <td style={{ padding: '14px 20px' }}>{p.domain ? <a href={`https://${p.domain}`} target="_blank" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>{p.domain}</a> : <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>—</span>}</td>
                   <td style={{ padding: '14px 20px' }}>{p.github_repo ? <a href={`https://github.com/xiaopengsvip/${p.github_repo}`} target="_blank" style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>{p.github_repo}</a> : <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>—</span>}</td>
-                  <td style={{ padding: '14px 20px' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-secondary)' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: p.status === 'active' ? 'var(--success)' : 'var(--warning)' }} />{p.status === 'active' ? '运行中' : '开发中'}</span></td>
+                  <td style={{ padding: '14px 20px' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-secondary)' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: p.status === 'active' ? 'var(--success)' : 'var(--warning)' }} />{p.status === 'active' ? t('projects.running') : t('projects.developing')}</span></td>
                   <td style={{ padding: '14px 20px' }}><button onClick={() => handleDelete(p.id)} style={{ padding: 6, borderRadius: 8, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><Trash2 style={{ width: 14, height: 14 }} /></button></td>
                 </tr>
               ))}
