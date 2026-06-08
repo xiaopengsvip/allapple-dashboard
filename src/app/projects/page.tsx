@@ -12,6 +12,8 @@ function Card({ children, style = {} }: { children: React.ReactNode; style?: Rea
   return <div style={{ background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)', transition: `box-shadow 250ms ${EASE}, border-color 250ms ${EASE}`, ...style }}>{children}</div>;
 }
 
+const catKeyMap: Record<string, string> = { '品牌官网': 'branding', '工作台': 'workspace', 'AI应用': 'ai_apps', '数据可视化': 'data_viz', '工具': 'tools', '媒体': 'media', '教育': 'education' };
+
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const { t } = useTranslation();
@@ -137,7 +139,7 @@ export default function ProjectsPage() {
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
                   <td style={{ padding: '14px 20px' }}><div style={{ display: 'flex', alignItems: 'center', gap: 10 }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color || '#4D7FFF', flexShrink: 0 }} /><span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</span></div></td>
-                  <td style={{ padding: '14px 20px' }}><span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: `${p.color}12`, color: `${p.color}cc` }}>{p.category}</span></td>
+                  <td style={{ padding: '14px 20px' }}><span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: `${p.color}12`, color: `${p.color}cc` }}>{t('projects.' + (catKeyMap[p.category] || 'tools')) || p.category}</span></td>
                   <td style={{ padding: '14px 20px', fontSize: 12, color: 'var(--text-secondary)' }}>{p.deploy_target === 'vercel' ? '▲ Vercel' : p.deploy_target === 'server' ? '🖥 Server' : '🔗 Both'}</td>
                   <td style={{ padding: '14px 20px' }}>{p.domain ? <a href={`https://${p.domain}`} target="_blank" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>{p.domain}</a> : <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>—</span>}</td>
                   <td style={{ padding: '14px 20px' }}>{p.github_repo ? <a href={`https://github.com/xiaopengsvip/${p.github_repo}`} target="_blank" style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>{p.github_repo}</a> : <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>—</span>}</td>
