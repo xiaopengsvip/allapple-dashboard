@@ -58,7 +58,7 @@ export default function Sidebar() {
         onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
-        <img src="/favicon.png" alt="EOC"
+        <img src="/logo-128.png" alt="EOC"
           className={`w-9 h-9 rounded-xl flex-shrink-0 transition-all duration-300 ${collapsed ? 'sidebar-collapsed-logo' : ''}`}
         />
         {!collapsed && (
