@@ -11,19 +11,13 @@ import {
 
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-/* ═══ Card Wrapper ═══ */
-function Card({ children, className = '', delay = 0, style = {} }: { children: React.ReactNode; className?: string; delay?: number; style?: React.CSSProperties }) {
+function Card({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
   return (
-    <div className={`anim-fade-up ${className}`}
-      style={{
-        background: 'var(--bg-card)',
-        borderRadius: 20,
-        border: '1px solid var(--border)',
-        boxShadow: 'var(--shadow-card)',
-        transition: `box-shadow 250ms ${EASE}, border-color 250ms ${EASE}, transform 250ms ${EASE}`,
-        animationDelay: `${delay * 0.04}s`,
-        ...style,
-      }}
+    <div className="anim-fade-up" style={{
+      background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)',
+      transition: `box-shadow 250ms ${EASE}, border-color 250ms ${EASE}, transform 250ms ${EASE}`,
+      animationDelay: `${delay * 0.04}s`, ...style,
+    }}
       onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; e.currentTarget.style.borderColor = 'var(--border-hover)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow-card)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'translateY(0)'; }}
     >{children}</div>
@@ -31,76 +25,97 @@ function Card({ children, className = '', delay = 0, style = {} }: { children: R
 }
 
 export default function DashboardPage() {
-  const [data, setData] = useState<any>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [pm2, setPm2] = useState<any[]>([]);
+  const [sys, setSys] = useState<any>(null);
+  const [domains, setDomains] = useState<any[]>([]);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [githubRepos, setGithubRepos] = useState<any[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [projRes, pm2Res, statsRes] = await Promise.all([
+        const [projRes, pm2Res, statsRes, domainsRes, logsRes, ghRes] = await Promise.all([
           fetch('/api/projects').then(r => r.json()).catch(() => ({ projects: [] })),
           fetch('/api/server/pm2').then(r => r.json()).catch(() => ({ services: [] })),
           fetch('/api/server/stats').then(r => r.json()).catch(() => ({ stats: null })),
+          fetch('/api/domains').then(r => r.json()).catch(() => ({ records: [] })),
+          fetch('/api/logs?limit=10').then(r => r.json()).catch(() => ({ logs: [] })),
+          fetch('/api/github/repos').then(r => r.json()).catch(() => ({ repos: [] })),
         ]);
-        setData({ projects: projRes.projects || [], pm2: pm2Res.services || [], stats: statsRes.stats });
+        setProjects(projRes.projects || []);
+        setPm2(pm2Res.services || []);
+        setSys(statsRes.stats);
+        setDomains(domainsRes.records || []);
+        setLogs(logsRes.logs || []);
+        setGithubRepos(ghRes.repos || []);
       } catch {}
       setTimeout(() => setLoaded(true), 50);
     };
     load();
   }, []);
 
-  const projects = data?.projects || [];
-  const pm2 = data?.pm2 || [];
-  const sys = data?.stats;
   const vercelCount = projects.filter((p: any) => p.deploy_target === 'vercel' || p.deploy_target === 'both').length;
   const serverCount = pm2.filter((s: any) => s.status === 'online').length;
+  const domainCount = domains.length;
+  const githubCount = githubRepos.length || projects.filter((p: any) => p.github_repo).length;
   const fmtBytes = (b: number) => b > 1e9 ? (b / 1e9).toFixed(1) + ' GB' : (b / 1e6).toFixed(0) + ' MB';
   const fmtUptime = (s: number) => { const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600); return `${d}d ${h}h`; };
+  const fmtTime = (t: string) => { try { return new Date(t).toLocaleString('zh-CN', { hour12: false, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch { return t; } };
+
+  // Compute health status
+  const allHealthy = serverCount === pm2.length && pm2.length > 0;
+  const sslCount = domains.filter((d: any) => d.proxied || d.type === 'CNAME').length;
+
+  // Zone counts
+  const allappleRecords = domains.filter((d: any) => d.zone_name === 'allapple.top');
+  const viosRecords = domains.filter((d: any) => d.zone_name === 'vios.top');
 
   return (
     <AppShell>
       <TopBar title="仪表盘" subtitle="Everett 运维总览" />
-      <div style={{ padding: 24,  }}>
+      <div style={{ padding: 24 }}>
 
-        {/* ═══════ KPI Cards ═══════ */}
+        {/* KPI Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
-          <KPICard delay={1} icon={Package} title="项目总数" value={loaded ? projects.length : '—'} sub="+2 本周新增" color="#4D7FFF" />
-          <KPICard delay={2} icon={Globe} title="域名总数" value={loaded ? 77 : '—'} sub="+4 本月新增" color="#A78BFA" />
-          <KPICard delay={3} icon={GitFork} title="GitHub 仓库" value={loaded ? 33 : '—'} sub="全部同步正常" color="#10B981" />
-          <KPICard delay={4} icon={Cloud} title="Vercel 项目" value={loaded ? vercelCount : '—'} sub="部署成功率 99%" color="#F59E0B" />
+          <KPICard delay={1} icon={Package} title="项目总数" value={loaded ? projects.length : '—'} color="#4D7FFF" />
+          <KPICard delay={2} icon={Globe} title="域名总数" value={loaded ? domainCount : '—'} color="#A78BFA" />
+          <KPICard delay={3} icon={GitFork} title="GitHub 仓库" value={loaded ? githubCount : '—'} color="#F59E0B" />
+          <KPICard delay={4} icon={Cloud} title="Vercel 项目" value={loaded ? vercelCount : '—'} color="#FFFFFF" />
         </div>
 
-        {/* ═══════ System Status Grid ═══════ */}
-        <Card delay={5} style={{ padding: 20, marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>系统状态</h3>
-            <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'var(--success-soft)', color: 'var(--success)', fontWeight: 600 }}>全部正常</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
-            {[
-              { name: 'GitHub API', status: 'ok', latency: '45ms' },
-              { name: 'Vercel API', status: 'ok', latency: '32ms' },
-              { name: 'Cloudflare', status: 'ok', latency: '28ms' },
-              { name: '腾讯云服务器', status: 'ok', latency: '12ms' },
-              { name: 'PM2 进程', status: 'ok', latency: '3ms' },
-            ].map(s => (
-              <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 12, background: 'var(--bg-root)', border: '1px solid var(--border)' }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success)', boxShadow: '0 0 8px rgba(16,185,129,0.4)', flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>{s.name}</div>
-                  <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: 2 }}>{s.latency}</div>
+        {/* System Status + Resources + Today */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16, marginBottom: 24 }}>
+          {/* System Status */}
+          <Card delay={5} style={{ padding: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>系统状态</h3>
+              <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: allHealthy ? 'var(--success-soft)' : 'var(--warning-soft)', color: allHealthy ? 'var(--success)' : 'var(--warning)', fontWeight: 600 }}>
+                {allHealthy ? '全部正常' : `${serverCount}/${pm2.length} 在线`}
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                { name: 'PM2 进程', ok: serverCount === pm2.length && pm2.length > 0, detail: `${serverCount}/${pm2.length}` },
+                { name: '服务器', ok: !!sys, detail: sys ? `${sys.cpu.loadAvg[0].toFixed(1)} load` : '—' },
+                { name: '数据库', ok: true, detail: 'SQLite' },
+                { name: '域名解析', ok: domainCount > 0, detail: `${domainCount} records` },
+                { name: 'GitHub', ok: githubCount > 0, detail: `${githubCount} repos` },
+              ].map(s => (
+                <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 10, background: 'var(--bg-root)', border: '1px solid var(--border)' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: s.ok ? 'var(--success)' : 'var(--warning)', boxShadow: s.ok ? '0 0 8px rgba(16,185,129,0.4)' : 'none', flexShrink: 0 }} />
+                  <span style={{ fontSize: 12, flex: 1, color: 'var(--text-secondary)' }}>{s.name}</span>
+                  <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{s.detail}</span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
 
-        {/* ═══════ Resources Row ═══════ */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
           {/* Server Resources */}
           <Card delay={6} style={{ padding: 20 }}>
             <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16, letterSpacing: 0.5 }}>服务器资源</h3>
-            {sys && (
+            {sys ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <ResourceBar label="CPU" value={sys.cpu.loadAvg[0]} max={sys.cpu.cores} display={`${sys.cpu.loadAvg[0].toFixed(2)} / ${sys.cpu.cores} cores`} color="#4D7FFF" />
                 <ResourceBar label="内存" value={sys.memory.used} max={sys.memory.total} display={`${fmtBytes(sys.memory.used)} / ${fmtBytes(sys.memory.total)}`} color="#A78BFA" />
@@ -110,21 +125,22 @@ export default function DashboardPage() {
                   <span>{sys.cpu.cores} cores · {sys.arch}</span>
                 </div>
               </div>
-            )}
+            ) : <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', padding: 20 }}>加载中...</div>}
           </Card>
-          {/* Today */}
+
+          {/* Today Overview */}
           <Card delay={7} style={{ padding: 20 }}>
             <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16, letterSpacing: 0.5 }}>今日概览</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <MiniStat label="部署次数" value="3" trend="+2" color="#10B981" />
-              <MiniStat label="提交次数" value="12" trend="+5" color="#4D7FFF" />
-              <MiniStat label="告警次数" value="0" color="#10B981" />
-              <MiniStat label="证书过期" value="0" color="#10B981" />
+              <MiniStat label="PM2 进程" value={String(pm2.length)} color="#4D7FFF" />
+              <MiniStat label="域名记录" value={String(domainCount)} color="#A78BFA" />
+              <MiniStat label="项目数" value={String(projects.length)} color="#10B981" />
+              <MiniStat label="GitHub 仓库" value={String(githubCount)} color="#F59E0B" />
             </div>
           </Card>
         </div>
 
-        {/* ═══════ Project Center ═══════ */}
+        {/* Project Center */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>项目中心</h3>
@@ -137,8 +153,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* ═══════ PM2 + Events ═══════ */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+        {/* PM2 + Events */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: 16, marginBottom: 24 }}>
           {/* PM2 */}
           <Card delay={5} style={{ padding: 0, overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
@@ -147,14 +163,9 @@ export default function DashboardPage() {
             </div>
             <div>
               {pm2.map((s: any, i: number) => (
-                <div key={s.name} style={{
-                  display: 'flex', alignItems: 'center', gap: 14, padding: '12px 20px',
-                  borderBottom: i < pm2.length - 1 ? '1px solid var(--border)' : 'none',
-                  transition: `background 150ms ${EASE}`,
-                }}
+                <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 20px', borderBottom: i < pm2.length - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                >
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: s.status === 'online' ? 'var(--success)' : 'var(--error)', boxShadow: s.status === 'online' ? '0 0 8px rgba(16,185,129,0.4)' : 'none' }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{s.name}</div>
@@ -171,73 +182,88 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ))}
+              {pm2.length === 0 && <div style={{ padding: 24, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>暂无 PM2 数据</div>}
             </div>
           </Card>
 
-          {/* Event Timeline */}
+          {/* Event Timeline - from logs API */}
           <Card delay={6} style={{ padding: 0, overflow: 'hidden' }}>
             <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
               <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: 0.5 }}>实时事件流</h3>
             </div>
             <div>
-              {[
-                { time: '23:41', text: 'dashboard 重新部署成功', source: 'PM2', status: 'success' },
-                { time: '23:38', text: 'Everett 运维中心 v1.0 构建完成', source: 'Build', status: 'success' },
-                { time: '23:33', text: 'allapple-dashboard pushed to main', source: 'GitHub', status: 'info' },
-                { time: '23:27', text: 'PM2 dashboard 进程启动成功', source: 'PM2', status: 'success' },
-                { time: '23:22', text: '端口 3400 被占用，自动清理完成', source: 'Server', status: 'warning' },
-              ].map((evt, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'center', gap: 14, padding: '12px 20px',
-                  borderBottom: i < 4 ? '1px solid var(--border)' : 'none',
-                  transition: `background 150ms ${EASE}`,
-                }}
+              {logs.length > 0 ? logs.slice(0, 6).map((log: any, i: number) => (
+                <div key={log.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 20px', borderBottom: i < Math.min(logs.length, 6) - 1 ? '1px solid var(--border)' : 'none', transition: `background 150ms ${EASE}` }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                >
-                  <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', width: 42, flexShrink: 0 }}>{evt.time}</span>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: evt.status === 'success' ? 'var(--success)' : evt.status === 'warning' ? 'var(--warning)' : 'var(--accent)', boxShadow: `0 0 6px ${evt.status === 'success' ? 'rgba(16,185,129,0.4)' : evt.status === 'warning' ? 'rgba(245,158,11,0.4)' : 'rgba(77,127,255,0.4)'}` }} />
-                  <span style={{ flex: 1, fontSize: 12, color: 'var(--text-secondary)' }}>{evt.text}</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: 'var(--bg-elevated)', color: 'var(--text-muted)', fontWeight: 500, flexShrink: 0 }}>{evt.source}</span>
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+                  <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', width: 80, flexShrink: 0 }}>{fmtTime(log.created_at)}</span>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: log.status === 'success' ? 'var(--success)' : log.status === 'warning' ? 'var(--warning)' : 'var(--accent)' }} />
+                  <span style={{ flex: 1, fontSize: 12, color: 'var(--text-secondary)' }}>{log.detail || log.action}</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: 'var(--bg-elevated)', color: 'var(--text-muted)', fontWeight: 500, flexShrink: 0 }}>{log.target || log.action}</span>
                 </div>
-              ))}
+              )) : (
+                <div style={{ padding: 24, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>暂无事件记录</div>
+              )}
             </div>
           </Card>
         </div>
 
-        {/* ═══════ Domain Overview ═══════ */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {[
-            { zone: 'allapple.top', count: 68, color: '#F59E0B', records: ['aios → A → 43.167.213.143', 'enxx → CNAME → vercel-dns', 'chat → A → 43.167.213.143'] },
-            { zone: 'vios.top', count: 9, color: '#10B981', records: ['aios → A → 43.167.213.143', 'game → A → 43.167.213.143', 'dashboard → A → 76.76.21.21'] },
-          ].map((d, di) => (
-            <Card key={d.zone} delay={di + 1} style={{ padding: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                <Globe style={{ width: 16, height: 16, color: d.color }} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{d.zone}</span>
-                <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: 'var(--accent-soft)', color: 'var(--accent)', fontWeight: 500 }}>{d.count} records</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {d.records.map((r, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 10, background: 'var(--bg-root)', fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-                    {r}
+        {/* Domain Overview - dynamic from API */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: 16 }}>
+          {domainCount > 0 ? (
+            <>
+              {allappleRecords.length > 0 && (
+                <Card delay={1} style={{ padding: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                    <Globe style={{ width: 16, height: 16, color: '#F59E0B' }} />
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>allapple.top</span>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: 'var(--accent-soft)', color: 'var(--accent)', fontWeight: 500 }}>{allappleRecords.length} records</span>
                   </div>
-                ))}
-                <div style={{ fontSize: 10, color: 'var(--text-muted)', padding: '0 12px' }}>+{d.count - 3} more...</div>
-              </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {allappleRecords.slice(0, 4).map((r: any, i: number) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 10, background: 'var(--bg-root)', fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#F59E0B', flexShrink: 0 }} />
+                        <span style={{ flex: 1 }}>{r.name} → {r.type} → {r.content}</span>
+                        <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 4, background: r.proxied ? 'var(--warning-soft)' : 'var(--bg-elevated)', color: r.proxied ? 'var(--warning)' : 'var(--text-muted)' }}>{r.proxied ? 'PROXY' : 'DNS'}</span>
+                      </div>
+                    ))}
+                    {allappleRecords.length > 4 && <div style={{ fontSize: 10, color: 'var(--text-muted)', padding: '0 12px' }}>+{allappleRecords.length - 4} more...</div>}
+                  </div>
+                </Card>
+              )}
+              {viosRecords.length > 0 && (
+                <Card delay={2} style={{ padding: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                    <Globe style={{ width: 16, height: 16, color: '#10B981' }} />
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>vios.top</span>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: 'var(--accent-soft)', color: 'var(--accent)', fontWeight: 500 }}>{viosRecords.length} records</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {viosRecords.slice(0, 4).map((r: any, i: number) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 10, background: 'var(--bg-root)', fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
+                        <span style={{ flex: 1 }}>{r.name} → {r.type} → {r.content}</span>
+                        <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 4, background: r.proxied ? 'var(--warning-soft)' : 'var(--bg-elevated)', color: r.proxied ? 'var(--warning)' : 'var(--text-muted)' }}>{r.proxied ? 'PROXY' : 'DNS'}</span>
+                      </div>
+                    ))}
+                    {viosRecords.length > 4 && <div style={{ fontSize: 10, color: 'var(--text-muted)', padding: '0 12px' }}>+{viosRecords.length - 4} more...</div>}
+                  </div>
+                </Card>
+              )}
+            </>
+          ) : (
+            <Card delay={1} style={{ padding: 20 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', padding: 20 }}>暂无域名数据，请在设置中配置 Cloudflare Token</div>
             </Card>
-          ))}
+          )}
         </div>
-
       </div>
     </AppShell>
   );
 }
 
-/* ═══ Components ═══ */
-
-function KPICard({ delay, icon: Icon, title, value, sub, color }: { delay: number; icon: any; title: string; value: number | string; sub: string; color: string }) {
+/* Components */
+function KPICard({ delay, icon: Icon, title, value, color }: { delay: number; icon: any; title: string; value: number | string; color: string }) {
   return (
     <Card delay={delay} style={{ padding: '20px 22px', height: 120, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -248,10 +274,6 @@ function KPICard({ delay, icon: Icon, title, value, sub, color }: { delay: numbe
       </div>
       <div>
         <div className="stat-value" style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1, letterSpacing: '-0.02em' }}>{value}</div>
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
-          <TrendingUp style={{ width: 12, height: 12, color: 'var(--success)' }} />
-          <span style={{ color: 'var(--success)' }}>{sub}</span>
-        </div>
       </div>
     </Card>
   );
@@ -272,14 +294,11 @@ function ResourceBar({ label, value, max, display, color }: { label: string; val
   );
 }
 
-function MiniStat({ label, value, trend, color }: { label: string; value: string; trend?: string; color: string }) {
+function MiniStat({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div style={{ padding: 14, borderRadius: 14, background: 'var(--bg-root)', border: '1px solid var(--border)' }}>
       <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>{label}</div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6 }}>
-        <span className="stat-value" style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1 }}>{value}</span>
-        {trend && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--success)', marginBottom: 2 }}>+{trend}</span>}
-      </div>
+      <span className="stat-value" style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1 }}>{value}</span>
     </div>
   );
 }

@@ -13,6 +13,7 @@ export default function TopBar({ title, subtitle }: { title: string; subtitle?: 
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [allProjects, setAllProjects] = useState<any[]>([]);
   const [showNotifs, setShowNotifs] = useState(false);
+  const [notifLogs, setNotifLogs] = useState<any[]>([]);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
@@ -27,9 +28,10 @@ export default function TopBar({ title, subtitle }: { title: string; subtitle?: 
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  // Load projects for search
+  // Load projects and logs
   useEffect(() => {
     fetch('/api/projects').then(r => r.json()).then(d => setAllProjects(d.projects || [])).catch(() => {});
+    fetch('/api/logs?limit=10').then(r => r.json()).then(d => setNotifLogs(d.logs || [])).catch(() => {});
   }, []);
 
   // Search filter
@@ -48,11 +50,12 @@ export default function TopBar({ title, subtitle }: { title: string; subtitle?: 
   // Focus search input when opened
   useEffect(() => { if (showSearch) setTimeout(() => searchRef.current?.focus(), 100); }, [showSearch]);
 
-  const notifications = [
-    { id: 1, type: 'success', text: 'dashboard 重新部署成功', time: '23:41', icon: CheckCircle2 },
-    { id: 2, type: 'success', text: 'Everett 运维中心 v1.0 构建完成', time: '23:38', icon: Rocket },
-    { id: 3, type: 'info', text: 'allapple-dashboard pushed to main', time: '23:33', icon: GitFork },
-    { id: 4, type: 'warning', text: '端口 3400 被占用，自动清理完成', time: '23:22', icon: AlertTriangle },
+  const notifications = notifLogs.length > 0 ? notifLogs.map((l: any) => ({
+    id: l.id, type: l.status === 'success' ? 'success' : l.status === 'warning' ? 'warning' : 'info',
+    text: l.detail || l.action, time: new Date(l.created_at).toLocaleString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+    icon: l.status === 'success' ? CheckCircle2 : l.status === 'warning' ? AlertTriangle : Rocket,
+  })) : [
+    { id: 0, type: 'info', text: '暂无通知', time: '', icon: Bell },
   ];
 
   const weekDay = ['日', '一', '二', '三', '四', '五', '六'];
