@@ -127,7 +127,7 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="flex-shrink-0" style={{ borderTop: '1px solid var(--border)' }}>
-        <div style={{ height: collapsed ? 140 : 'auto', minHeight: collapsed ? 140 : 0, transition: 'height 0.3s cubic-bezier(0.4,0,0.2,1), min-height 0.3s cubic-bezier(0.4,0,0.2,1)' }}>
+        <div style={{ maxHeight: collapsed ? 148 : 280, overflow: 'hidden', transition: 'max-height 0.35s cubic-bezier(0.4,0,0.2,1)' }}>
           {/* 展开状态 */}
           <div className="px-3 pb-4 pt-3 space-y-1"
             style={{ opacity: collapsed ? 0 : 1, pointerEvents: collapsed ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
