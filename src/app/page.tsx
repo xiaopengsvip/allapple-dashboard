@@ -34,29 +34,36 @@ export default function DashboardPage() {
   const [logs, setLogs] = useState<any[]>([]);
   const [githubRepos, setGithubRepos] = useState<any[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
+  const load = async () => {
+    try {
+      const [projRes, pm2Res, statsRes, domainsRes, logsRes, ghRes] = await Promise.all([
+        fetch('/api/projects').then(r => r.json()).catch(() => ({ projects: [] })),
+        fetch('/api/server/pm2').then(r => r.json()).catch(() => ({ services: [] })),
+        fetch('/api/server/stats').then(r => r.json()).catch(() => ({ stats: null })),
+        fetch('/api/domains').then(r => r.json()).catch(() => ({ records: [] })),
+        fetch('/api/logs?limit=10').then(r => r.json()).catch(() => ({ logs: [] })),
+        fetch('/api/github/repos').then(r => r.json()).catch(() => ({ repos: [] })),
+      ]);
+      setProjects(projRes.projects || []);
+      setPm2(pm2Res.services || []);
+      setSys(statsRes.stats);
+      setDomains(domainsRes.records || []);
+      setLogs(logsRes.logs || []);
+      setGithubRepos(ghRes.repos || []);
+    } catch {}
+    setTimeout(() => setLoaded(true), 50);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  // Auto-refresh every 30s
   useEffect(() => {
-    const load = async () => {
-      try {
-        const [projRes, pm2Res, statsRes, domainsRes, logsRes, ghRes] = await Promise.all([
-          fetch('/api/projects').then(r => r.json()).catch(() => ({ projects: [] })),
-          fetch('/api/server/pm2').then(r => r.json()).catch(() => ({ services: [] })),
-          fetch('/api/server/stats').then(r => r.json()).catch(() => ({ stats: null })),
-          fetch('/api/domains').then(r => r.json()).catch(() => ({ records: [] })),
-          fetch('/api/logs?limit=10').then(r => r.json()).catch(() => ({ logs: [] })),
-          fetch('/api/github/repos').then(r => r.json()).catch(() => ({ repos: [] })),
-        ]);
-        setProjects(projRes.projects || []);
-        setPm2(pm2Res.services || []);
-        setSys(statsRes.stats);
-        setDomains(domainsRes.records || []);
-        setLogs(logsRes.logs || []);
-        setGithubRepos(ghRes.repos || []);
-      } catch {}
-      setTimeout(() => setLoaded(true), 50);
-    };
-    load();
-  }, []);
+    if (!autoRefresh) return;
+    const timer = setInterval(load, 30000);
+    return () => clearInterval(timer);
+  }, [autoRefresh]);
 
   const vercelCount = projects.filter((p: any) => p.deploy_target === 'vercel' || p.deploy_target === 'both').length;
   const serverCount = pm2.filter((s: any) => s.status === 'online').length;

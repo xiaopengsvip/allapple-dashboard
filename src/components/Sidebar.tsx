@@ -52,7 +52,7 @@ const s = {
   accent: 'var(--accent)',
 };
 
-export default function Sidebar() {
+export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
@@ -149,6 +149,7 @@ export default function Sidebar() {
                   const label = t(item.label);
                   return (
                     <Link key={item.href} href={item.href}
+                      onClick={onNavigate}
                       ref={el => { hoverRefs.current[item.href] = el; }}
                       onMouseEnter={() => setHoveredItem(item.href)}
                       onMouseLeave={() => setHoveredItem(null)}

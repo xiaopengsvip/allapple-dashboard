@@ -40,8 +40,19 @@
   --text-secondary: #6B7280;
   --text-muted: #9CA3AF;
   --accent: #4D7FFF;
+  --accent-secondary: #675BFF;
+  --accent-gradient: linear-gradient(135deg, #4D7FFF, #675BFF);
+  --accent-soft: rgba(77,127,255,0.08);
+  --success: #10B981;
+  --success-soft: rgba(16,185,129,0.08);
+  --warning: #F59E0B;
+  --warning-soft: rgba(245,158,11,0.08);
+  --error: #EF4444;
+  --error-soft: rgba(239,68,68,0.08);
   --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
   --shadow-hover: 0 8px 24px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.06);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -73,4 +84,37 @@ body {
 .stat-value {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+}
+
+/* ─── Mobile Responsive ─── */
+@media (max-width: 767px) {
+  /* Tables: horizontal scroll */
+  .overflow-x-auto-mobile {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Grids: single column */
+  div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reduce padding */
+  div[style*="padding: 24"] {
+    padding: 16px !important;
+  }
+
+  /* TopBar: smaller search */
+  header div[style*="width: 240"] {
+    width: 160px !important;
+  }
+
+  /* Cards: smaller radius */
+  div[style*="borderRadius: 20"] {
+    border-radius: 16px !important;
+  }
+
+  /* Font sizes */
+  h1 { font-size: 14px !important; }
+  h3 { font-size: 12px !important; }
 }

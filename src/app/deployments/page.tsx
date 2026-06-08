@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
-import { Rocket, RefreshCw, ExternalLink } from 'lucide-react';
+import { Rocket, RefreshCw, ExternalLink, Play } from 'lucide-react';
 
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
@@ -12,7 +12,20 @@ export default function DeploymentsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [deploying, setDeploying] = useState<string | null>(null);
   const fetchData = async () => { setLoading(true); try { const res = await fetch('/api/projects'); const data = await res.json(); setProjects(data.projects || []); } catch {} setLoading(false); };
+
+  const handleDeploy = async (projectId: string, name: string) => {
+    if (!confirm(`Deploy ${name}?`)) return;
+    setDeploying(projectId);
+    try {
+      const res = await fetch('/api/deployments/trigger', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ project_id: projectId }) });
+      const data = await res.json();
+      alert(data.success ? `Deployed successfully (${data.duration}s)` : `Deploy failed: ${data.result}`);
+      fetchData();
+    } catch { alert('Deploy failed'); }
+    setDeploying(null);
+  };
   useEffect(() => { fetchData(); }, []);
 
   const vercelProjects = projects.filter(p => p.deploy_target === 'vercel' || p.deploy_target === 'both');
@@ -46,6 +59,10 @@ export default function DeploymentsPage() {
                     <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{p.domain || p.pm2_name || '—'}</div>
                   </div>
                   {p.domain && <a href={`https://${p.domain}`} target="_blank" style={{ color: 'var(--accent)' }}><ExternalLink style={{ width: 14, height: 14 }} /></a>}
+                  <button onClick={() => handleDeploy(p.id, p.name)} disabled={deploying === p.id} title="Deploy"
+                    style={{ padding: 6, borderRadius: 8, background: 'var(--accent-soft)', border: 'none', cursor: 'pointer', color: 'var(--accent)', opacity: deploying === p.id ? 0.5 : 1 }}>
+                    <Play style={{ width: 12, height: 12, animation: deploying === p.id ? 'spin 1s linear infinite' : 'none' }} />
+                  </button>
                   <span style={{ fontSize: 10, padding: '3px 10px', borderRadius: 20, background: 'var(--success-soft)', color: 'var(--success)', fontWeight: 600 }}>{t("deployments.success")}</span>
                 </div>
               ))}
