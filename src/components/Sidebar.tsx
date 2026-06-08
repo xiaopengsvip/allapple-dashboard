@@ -122,7 +122,7 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="flex-shrink-0 relative" style={{ borderTop: '1px solid var(--border)' }}>
         {/* 展开状态 */}
-        <div className="px-3 pb-4 pt-3 space-y-1"
+        <div className="px-3 pb-4 pt-3 space-y-1 overflow-hidden"
           style={{ opacity: collapsed ? 0 : 1, pointerEvents: collapsed ? 'none' : 'auto', transition: 'opacity 0.2s', position: collapsed ? 'absolute' : 'relative', width: '100%' }}>
           <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
             <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ background: 'var(--accent-gradient)' }}>
@@ -158,8 +158,8 @@ export default function Sidebar() {
           </button>
         </div>
         {/* 收起状态 */}
-        <div className="pt-3 pb-4 space-y-1.5 flex flex-col items-center"
-          style={{ opacity: collapsed ? 1 : 0, pointerEvents: collapsed ? 'auto' : 'none', transition: 'opacity 0.2s', position: collapsed ? 'relative' : 'absolute', width: '100%' }}>
+        <div className="pt-3 pb-4 space-y-1.5 flex flex-col items-center overflow-hidden"
+          style={{ opacity: collapsed ? 1 : 0, pointerEvents: collapsed ? 'auto' : 'none', transition: 'opacity 0.2s', position: collapsed ? 'relative' : 'absolute', width: '100%', maxWidth: 68 }}>
           <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: 'var(--accent-gradient)' }}>
             {user ? user.username[0].toUpperCase() : '?'}
           </div>
